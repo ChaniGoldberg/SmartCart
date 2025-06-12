@@ -1,48 +1,55 @@
+// 
+
+
+
 import { lastFileForStoreId } from '../lastFilesItem';
-describe('lastFilePromotionForStoreId', () => {
-    it('should return a sorted array of dates for a given storeId', async () => {
-        const allFiles = [
-            'PromoFull-060-20231026',
-            'PromoFull-060-20231027',
-            'PromoFull-070-20231025',
-            'PromoFull-060-20231025',
-        ];
-        const storeId = '060';
-        const expectedDates = ['20231025', '20231026', '20231027'];
-        const result = await lastFileForStoreId(allFiles, storeId);
-        expect(result).toEqual(expectedDates);
-    });
-    it('should return an empty array if no files match the storeId', async () => {
-        const allFiles = [
-            'PromoFull-070-20231025',
-            'PromoFull-070-20231026',
-        ];
-        const storeId = '060';
-        const expectedDates: string[] = [];
-        const result = await lastFileForStoreId(allFiles, storeId);
-        expect(result).toEqual(expectedDates);
-    });
-    it('should return an empty array if no files start with "PromoFull"', async () => {
-        const allFiles = [
-            'SomeOtherFile-060-20231025',
-            'PromoFull-070-20231026',
-        ];
-        const storeId = '060';
-        const expectedDates: string[] = [];
-        const result = await lastFileForStoreId(allFiles, storeId);
-        expect(result).toEqual(expectedDates);
-    });
-    it('should handle files with different date formats', async () => {
-        const allFiles = [
-            'PromoFull-060-20231026',
-            'PromoFull-060-20231027',
-            'PromoFull-070-20231025',
-            'PromoFull-060-20231025',
-            'PromoFull-060-2023-10-28',
-        ];
-        const storeId = '060';
-        const expectedDates = ['20231025', '20231026', '20231027'];
-        const result = await lastFileForStoreId(allFiles, storeId);
-        expect(result).toEqual(expectedDates);
-    });
+
+describe('lastFileForStoreId', () => {
+  it('should return the latest date for the given storeId', async () => {
+    const allFiles = [
+      'PriceFull-123-20231025.gz',
+      'PriceFull-123-20231027.gz',
+      'PriceFull-123-20231026.gz',
+      'PriceFull-999-20231030.gz'
+    ];
+    const storeId = '123';
+    const result = await lastFileForStoreId(allFiles, storeId);
+    expect(result).toBe('20231027');
+  });
+
+  it('should return undefined if no files match the storeId', async () => {
+    const allFiles = [
+      'PriceFull-999-20231030.gz',
+      'PriceFull-888-20231031.gz'
+    ];
+    const storeId = '123';
+    const result = await lastFileForStoreId(allFiles, storeId);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return undefined if no files start with "PriceFull"', async () => {
+    const allFiles = [
+      'PromoFull-123-20231025.gz',
+      'PromoFull-123-20231026.gz'
+    ];
+    const storeId = '123';
+    const result = await lastFileForStoreId(allFiles, storeId);
+    expect(result).toBeUndefined();
+  });
+
+  it('should handle empty input list', async () => {
+    const allFiles: string[] = [];
+    const storeId = '123';
+    const result = await lastFileForStoreId(allFiles, storeId);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return the only matching date if there is one file', async () => {
+    const allFiles = [
+      'PriceFull-123-20240101.gz'
+    ];
+    const storeId = '123';
+    const result = await lastFileForStoreId(allFiles, storeId);
+    expect(result).toBe('20240101');
+  });
 });
