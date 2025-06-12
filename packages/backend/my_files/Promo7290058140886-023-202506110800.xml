@@ -1,0 +1,52 @@
+﻿<Root>
+  <XmlDocVersion>19</XmlDocVersion>
+  <ChainId>7290058140886</ChainId>
+  <SubChainId>1</SubChainId>
+  <StoreId>023</StoreId>
+  <BikoretNo>6</BikoretNo>
+  <DllVerNo>9.4.0.50</DllVerNo>
+  <Promotions Count="1">
+    <Promotion>
+      <PromotionId>1367496</PromotionId>
+      <PromotionDescription>בשר טחון טרי ב54.90 מעל 75 מו9</PromotionDescription>
+      <PromotionUpdateDate>2025-06-11 07:08</PromotionUpdateDate>
+      <PromotionStartDate>2025-06-10</PromotionStartDate>
+      <PromotionStartHour>00:00:00</PromotionStartHour>
+      <PromotionEndDate>2025-06-24</PromotionEndDate>
+      <PromotionEndHour>23:59:00</PromotionEndHour>
+      <RewardType>6</RewardType>
+      <AllowMultipleDiscounts>1</AllowMultipleDiscounts>
+      <IsWeightedPromo>0</IsWeightedPromo>
+      <AdditionalRestrictions>
+        <AdditionalIsCoupon>0</AdditionalIsCoupon>
+        <AdditionalGiftCount>9000</AdditionalGiftCount>
+        <AdditionalIsTotal>0</AdditionalIsTotal>
+        <AdditionalIsActive>1</AdditionalIsActive>
+      </AdditionalRestrictions>
+      <MinQty>9000.00</MinQty>
+      <MaxQty>0.00</MaxQty>
+      <MinPurchaseAmnt>50.00</MinPurchaseAmnt>
+      <MinNoOfItemOfered>10</MinNoOfItemOfered>
+      <Remarks>
+        <Remark>סכום להטבה לא כולל פריטים במבצע</Remark>
+      </Remarks>
+      <WeightUnit>1</WeightUnit>
+      <PromotionItems>
+        <Item>
+          <ItemCode>7290001004746</ItemCode>
+          <ItemType>1</ItemType>
+          <IsGiftItem>0</IsGiftItem>
+        </Item>
+        <Item>
+          <ItemCode>7290001004746</ItemCode>
+          <ItemType>1</ItemType>
+          <IsGiftItem>1</IsGiftItem>
+          <GiftItemPrice>54.90</GiftItemPrice>
+        </Item>
+      </PromotionItems>
+      <Clubs>
+        <ClubId>0</ClubId>
+      </Clubs>
+    </Promotion>
+  </Promotions>
+</Root>

@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Item } from '@smartcart/shared';
+import { Item, } from '@smartcart/shared';
 
 export class DatabaseService {
   private readonly tableName = 'items';
@@ -89,10 +89,10 @@ export class DatabaseService {
   async initializeSampleData(): Promise<void> {
     try {
       const items = await this.getAllItems();
-      
+
       if (items.length === 0) {
         console.log('Initializing database with sample data...');
-        
+
         const sampleItems = [
           { name: 'Laptop', type: 'Electronics', amount: 1200 },
           { name: 'Coffee Beans', type: 'Food', amount: 25 },
@@ -103,7 +103,7 @@ export class DatabaseService {
         for (const item of sampleItems) {
           await this.createItem(item);
         }
-        
+
         console.log('Sample data initialized successfully');
       }
     } catch (error) {
@@ -111,6 +111,28 @@ export class DatabaseService {
       // Don't throw the error, just log it
     }
   }
+
+
+  // async ReturnsTheMostUpToDatePromotionsFile(allFiles: string[], storeId: string): Promise<string[] | null> {
+
+  //     const filterPromo: string[] = allFiles.filter(x => x.startsWith('PromoFull'))
+  //     const dates: string[] = []//מערך מסונן של תאריכים של הסניף הבודד
+
+  //     for (let i = 0; i < filterPromo.length; i++) {
+  //       const filename = filterPromo[i]
+  //       const parts = filename.split('-');
+  //       //התאריך נמצא בחלק השלישי
+  //       const dateWithExt = parts[2];
+  //       const data = dateWithExt.split('.')[0];
+
+  //         dates.push(data);        
+  //     }
+  //     dates.sort()
+
+  //     return dates
+
+  // }
 }
+
 
 export const databaseService = new DatabaseService();
