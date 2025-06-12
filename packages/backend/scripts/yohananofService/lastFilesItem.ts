@@ -1,5 +1,5 @@
 export async function lastFileForStoreId(allFiles: string[], storeId: string): Promise<string[]> {
-    const filterPromo: string[] = allFiles.filter(x => x.startsWith('PromoFull'))
+    const filterPromo: string[] = allFiles.filter(x => x.startsWith('PriceFull'))
     const dates: string[] = []//מערך מסונן של תאריכים של הסניף הבודד
     for (let i = 0; i < filterPromo.length; i++) {
         const filename = filterPromo[i]
