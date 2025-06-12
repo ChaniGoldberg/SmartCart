@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { Item, ItemsResponse, ItemResponse } from '@smartcart/shared';
 import { databaseService } from '../services/database';
-
 const router = Router();
 
 // Fallback mock data (used if database is not available)
@@ -63,6 +62,41 @@ router.get('/', async (req, res) => {
     res.json(response);
   }
 });
+
+
+
+// router.get('/store/:storeId', async (req, res) => {
+//   debugger
+//   console.log('Fetching last file for storeId:', req.params.storeId);
+  
+//     const storeId = req.params.storeId;
+
+//     try {
+//       const aa=["PriceFull7290803800003-004-202506100415",
+// "PriceFull7290803800003-004-202506100930","PriceFull7290803800003-007-202506101210",
+// ]
+      
+//     const firstFileName = await databaseService.lastFileForStoreId(aa,storeId); // המתנה לתוצאה מהפונקציה
+//     console.log(firstFileName)
+//     if (firstFileName!=null) {
+//       res.json({
+//         success: true,
+//         message: 'הפונקציה לקריאת קבצי פרומו הופעלה בהצלחה.',
+//         firstFile: firstFileName // הוספת שם הקובץ לתגובה
+//       });
+//     } else {
+//       res.json({
+//         success: true,
+//         message: 'הפונקציה לקריאת קבצי פרומו הופעלה, אך התיקייה ריקה.',
+//         firstFile: null
+//       });
+//     }
+//   } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// });
+
 
 // GET /api/items/:id - Get specific item
 router.get('/:id', async (req, res) => {

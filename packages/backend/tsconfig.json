@@ -14,7 +14,7 @@
       "declarationMap": true,
       "sourceMap": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/services/yohananofService"],
     "exclude": ["node_modules", "dist"],
     "ts-node": {
       "esm": false

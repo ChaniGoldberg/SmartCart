@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Item } from '@smartcart/shared';
+  import { log } from "console";
 
 export class DatabaseService {
   private readonly tableName = 'items';
@@ -89,10 +90,10 @@ export class DatabaseService {
   async initializeSampleData(): Promise<void> {
     try {
       const items = await this.getAllItems();
-      
+
       if (items.length === 0) {
         console.log('Initializing database with sample data...');
-        
+
         const sampleItems = [
           { name: 'Laptop', type: 'Electronics', amount: 1200 },
           { name: 'Coffee Beans', type: 'Food', amount: 25 },
@@ -103,7 +104,7 @@ export class DatabaseService {
         for (const item of sampleItems) {
           await this.createItem(item);
         }
-        
+
         console.log('Sample data initialized successfully');
       }
     } catch (error) {
@@ -111,6 +112,39 @@ export class DatabaseService {
       // Don't throw the error, just log it
     }
   }
-}
+  async getAllFiles(): Promise<File[]> {
+    const fs = require('fs').promises;
+    const files: File[] = [];
+      return files
+  }
+  // async returnTheUpdataListItems(): Promise<File> {
+  //   let lastModified
+  //   try {
+  //     const fs=require("fs").promises
+  //     const files= await fs.readdir('./files');
+  //     console.log('Files in directory:', files);
+      
+  //     const data = await this.getAllFiles();
+  //    lastModified = data[0]
+  //     for (const file of data) {
+  //       if (file.lastModified > lastModified.lastModified)
+  //         lastModified = file;
+  //     }
+  //   }
+  //   catch (er) {
+  //     console.error('Error in getAllFiles:', er);
+  //     throw er;
+  //   }
 
-export const databaseService = new DatabaseService();
+  //   return lastModified;
+  // }
+
+
+
+
+
+  
+   
+}
+  export const databaseService = new DatabaseService();
+  
