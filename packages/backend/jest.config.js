@@ -19,7 +19,14 @@ if (tsJestTransformCfg['^.+\\.(ts|tsx)$']) {
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  transform: tsJestTransformCfg,
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   roots: ['<rootDir>/scripts'],
+  globals: {
+    'ts-jest': {
+      useESM: false,
+    },
+  },
 };
