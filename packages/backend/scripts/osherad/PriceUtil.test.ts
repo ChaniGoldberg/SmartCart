@@ -1,4 +1,4 @@
-import { getLatestPromoFilesPerStore } from './PriceUtils';
+import { getLatestPriceFilesPerStore } from './PriceUtils';
 
 describe('getLatestPriceFilesPerStore', () => {
     it('should return only the latest PriceFull file per branch', () => {
@@ -10,7 +10,7 @@ describe('getLatestPriceFilesPerStore', () => {
             'Store7290103152017-002-202506120710', // לא PriceFull
             'PriceFull7290103152017-003-202406120710'  // ישן מאוד
         ];
-        const result = getLatestPromoFilesPerStore(files);
+        const result = getLatestPriceFilesPerStore(files);
         expect(result).toContain('PriceFull7290103152017-001-202506120805');
         expect(result).toContain('PriceFull7290103152017-002-202506120710');
         expect(result).toContain('PriceFull7290103152017-003-202406120710');
@@ -22,12 +22,12 @@ describe('getLatestPriceFilesPerStore', () => {
             'Store7290103152017-001-202506120800',
             'PromoFull7290103152017-001-202506120800'
         ];
-        const result = getLatestPromoFilesPerStore(files);
+        const result = getLatestPriceFilesPerStore(files);
         expect(result).toEqual([]);
     });
 
     it('should handle empty input', () => {
-        const result = getLatestPromoFilesPerStore([]);
+        const result = getLatestPriceFilesPerStore([]);
         expect(result).toEqual([]);
     });
 });

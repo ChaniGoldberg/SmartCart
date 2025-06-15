@@ -4,7 +4,7 @@ export type PriceFile = {
     store: string;
     type: string;
 };
-export function getLatestPromoFilesPerStore(fileNames: string[]): string[] {
+export function getLatestPriceFilesPerStore(fileNames: string[]): string[] {
     const latestByStore: Record<string, PriceFile> = {};
     fileNames.forEach(fileName => {
         if (!fileName.startsWith('PriceFull')) return;
