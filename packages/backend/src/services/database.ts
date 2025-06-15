@@ -117,33 +117,6 @@ export class DatabaseService {
     const files: File[] = [];
       return files
   }
-  // async returnTheUpdataListItems(): Promise<File> {
-  //   let lastModified
-  //   try {
-  //     const fs=require("fs").promises
-  //     const files= await fs.readdir('./files');
-  //     console.log('Files in directory:', files);
-      
-  //     const data = await this.getAllFiles();
-  //    lastModified = data[0]
-  //     for (const file of data) {
-  //       if (file.lastModified > lastModified.lastModified)
-  //         lastModified = file;
-  //     }
-  //   }
-  //   catch (er) {
-  //     console.error('Error in getAllFiles:', er);
-  //     throw er;
-  //   }
-
-  //   return lastModified;
-  // }
-
-
-
-
-
-  
    
 }
   export const databaseService = new DatabaseService();
