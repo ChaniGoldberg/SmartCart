@@ -1,28 +1,54 @@
-interface Promotion {
+import { Item } from "./types";
 
-    // Core identification
-    chainId: string;
-    subChainId: string;
-    storeId: string;
-    
+export interface Promotion {
+
     // promo core info
     promotionId: number;
     promotionDescription: string;
-    promotionUpdateDate: Date;
-    promotionStartDateTime: Date;
-    promotionEndDateTime: Date;
+
+    // time
+    startDate: Date;
+    endDate: Date;
+    lastUpdated: Date;
+    isActive: boolean;
 
     // Basic information
-    discountRate: number;
+    originalPrice?: number; // Need to lookup from item data
+    discountedPrice: number;
+    discountAmount?: number; // Calculated: originalPrice - discountedPrice
+    discountPercentage?: number; // Calculated percentage
+
     promotionItems?: Item[];
 
     // conditions of promotions
     conditionsOfPromo: ConditionsOfPromo;
 }
 
-interface Item {
-    itemCode: string;
-}
+
 interface ConditionsOfPromo{
     // add conditions
+    minQty?: number;
+    maxQty?: number;
+    clubs?: Club[];
+    additionalRestrictions?: AdditionalRestrictions;
+    minPurchaseAmnt?: number; 
+    minNoOfItemOfered?: number; 
+    // additional info
+    remarks?: string;
 }
+
+interface Club {
+    clubId: number; 
+}
+
+interface AdditionalRestrictions {
+    requiresCoupon: boolean;
+    requiresClubMembership: boolean;
+    clubId?: string;
+    additionalGiftCount?: number; 
+    additionalIsTotal?: 0 | 1; 
+    additionalIsActive?: 0 | 1; 
+}
+
+
+
