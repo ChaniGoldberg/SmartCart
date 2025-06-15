@@ -35,36 +35,6 @@ const mockItems: Item[] = [
 // Determine if we should use database or mock data
 const useDatabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
 
-
-// router.get('/read-promotions-file', async (req, res) => { 
-//   // const path="C:/Users/User/Documents/פרקטיקום/smartcart/packages/backend/my_files"
-//   const id="014"
-//   const allFiles=["PromoFull7290058140886-014-202506120600.xml"]
-//   try {
-//     const firstFileName = await databaseService.ReturnsTheMostUpToDatePromotionsFile(allFiles,id); // המתנה לתוצאה מהפונקציה
-//     console.log(firstFileName)
-//     if (firstFileName!=null) {
-//       res.json({ 
-//         success: true, 
-//         message: 'הפונקציה לקריאת קבצי פרומו הופעלה בהצלחה.',
-//         firstFile: firstFileName // הוספת שם הקובץ לתגובה
-//       });
-//     } else {
-//       res.json({ 
-//         success: true, 
-//         message: 'הפונקציה לקריאת קבצי פרומו הופעלה, אך התיקייה ריקה.',
-//         firstFile: null
-//       });
-//     }
-
-//   } catch (error: any) {
-//     console.error('שגיאה בהפעלת הפונקציה לקריאת קבצי פרומו:', error);
-    
-//     res.status(500).json({ success: false, error: 'שגיאה בהפעלת הפונקציה לקריאת קבצי פרומו', details: error.message });
-//   }
-  
-// });
-
 // GET /api/items - Get all items
 router.get('/', async (req, res) => {
   try {

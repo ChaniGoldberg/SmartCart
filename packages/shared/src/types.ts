@@ -16,10 +16,6 @@ export interface Item {
     data?: T;
     error?: string;
   }
-
-  export interface FileRamiLevi{
-    
-  }
   
   export type ItemsResponse = ApiResponse<Item[]>;
   export type ItemResponse = ApiResponse<Item>;
