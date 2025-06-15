@@ -1,10 +1,6 @@
-// 
+import { getUpdatedPriceFullByStoreId } from '../getPriceFullUpdatedFilerename';
 
-
-
-import { getUpdatedPriceFullByStoreIddelete } from '../getPriceFullUpdatedFilerename';
-
-describe('getUpdatedPriceFullByStoreIddelete', () => {
+describe('getUpdatedPriceFullByStoreId', () => {
   it('should return the latest date for the given storeId', async () => {
     const allFiles = [
       'PriceFull-123-20231025.gz',
@@ -13,7 +9,7 @@ describe('getUpdatedPriceFullByStoreIddelete', () => {
       'PriceFull-999-20231030.gz'
     ];
     const storeId = '123';
-    const result = await getUpdatedPriceFullByStoreIddelete(allFiles, storeId);
+    const result = await getUpdatedPriceFullByStoreId(allFiles, storeId);
     expect(result).toBe('20231027');
   });
 
@@ -23,7 +19,7 @@ describe('getUpdatedPriceFullByStoreIddelete', () => {
       'PriceFull-888-20231031.gz'
     ];
     const storeId = '123';
-    const result = await getUpdatedPriceFullByStoreIddelete(allFiles, storeId);
+    const result = await getUpdatedPriceFullByStoreId(allFiles, storeId);
     expect(result).toBeUndefined();
   });
 
@@ -33,14 +29,14 @@ describe('getUpdatedPriceFullByStoreIddelete', () => {
       'PromoFull-123-20231026.gz'
     ];
     const storeId = '123';
-    const result = await getUpdatedPriceFullByStoreIddelete(allFiles, storeId);
+    const result = await getUpdatedPriceFullByStoreId(allFiles, storeId);
     expect(result).toBeUndefined();
   });
 
   it('should handle empty input list', async () => {
     const allFiles: string[] = [];
     const storeId = '123';
-    const result = await getUpdatedPriceFullByStoreIddelete(allFiles, storeId);
+    const result = await getUpdatedPriceFullByStoreId(allFiles, storeId);
     expect(result).toBeUndefined();
   });
 
@@ -49,7 +45,7 @@ describe('getUpdatedPriceFullByStoreIddelete', () => {
       'PriceFull-123-20240101.gz'
     ];
     const storeId = '123';
-    const result = await getUpdatedPriceFullByStoreIddelete(allFiles, storeId);
+    const result = await getUpdatedPriceFullByStoreId(allFiles, storeId);
     expect(result).toBe('20240101');
   });
 });
