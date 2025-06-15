@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Item } from '@smartcart/shared';
+import { Item, } from '@smartcart/shared';
   import { log } from "console";
 
 export class DatabaseService {
@@ -91,6 +91,7 @@ export class DatabaseService {
     try {
       const items = await this.getAllItems();
 
+
       if (items.length === 0) {
         console.log('Initializing database with sample data...');
 
@@ -112,12 +113,8 @@ export class DatabaseService {
       // Don't throw the error, just log it
     }
   }
-  async getAllFiles(): Promise<File[]> {
-    const fs = require('fs').promises;
-    const files: File[] = [];
-      return files
-  }
-   
+
 }
-  export const databaseService = new DatabaseService();
-  
+
+
+export const databaseService = new DatabaseService();
