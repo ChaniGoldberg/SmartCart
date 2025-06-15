@@ -14,11 +14,7 @@
       "declarationMap": true,
       "sourceMap": true
     },
-<<<<<<< HEAD
-    "include": ["src/**/*", "src/services/yohananofService"],
-=======
     "include": ["src/**/*", "scripts/**/*", "jest.config.js"],
->>>>>>> 126306b06c1d39a2aae85104aff0ce298689984b
     "exclude": ["node_modules", "dist"],
     "ts-node": {
       "esm": false
