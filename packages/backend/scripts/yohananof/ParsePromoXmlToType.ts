@@ -1,0 +1,1 @@
+console.log("in this file will be functions that parse promo xml to type");
