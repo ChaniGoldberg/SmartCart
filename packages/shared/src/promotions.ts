@@ -26,7 +26,6 @@ export interface Promotion {
 
 
 interface ConditionsOfPromo{
-    // add conditions
     minQty?: number;
     maxQty?: number;
     clubs?: Club[];
@@ -46,8 +45,6 @@ interface AdditionalRestrictions {
     requiresClubMembership: boolean;
     clubId?: string;
     additionalGiftCount?: number; 
-    additionalIsTotal?: 0 | 1; 
-    additionalIsActive?: 0 | 1; 
 }
 
 
