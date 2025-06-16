@@ -21,30 +21,30 @@ export interface Promotion {
     promotionItems?: Item[];
 
     // conditions of promotions
-    conditionsOfPromo: ConditionsOfPromo;
+    promotionsTerms: PromotionsTerms;
 }
 
 
-interface ConditionsOfPromo{
+interface PromotionsTerms {
     minQty?: number;
     maxQty?: number;
     clubs?: Club[];
     additionalRestrictions?: AdditionalRestrictions;
-    minPurchaseAmnt?: number; 
-    minNoOfItemOfered?: number; 
+    minPurchaseAmnt?: number;
+    minNoOfItemOfered?: number;
     // additional info
     remarks?: string;
 }
 
 interface Club {
-    clubId: number; 
+    clubId: number;
 }
 
 interface AdditionalRestrictions {
     requiresCoupon: boolean;
     requiresClubMembership: boolean;
     clubId?: string;
-    additionalGiftCount?: number; 
+    additionalGiftCount?: number;
 }
 
 
