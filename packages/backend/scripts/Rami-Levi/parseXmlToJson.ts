@@ -1,6 +1,6 @@
 import * as xml2js from "xml2js";
 import fs from "fs";
-import { Chain, Store, SubChain } from '../../../shared/src/stores';
+import { Chain, Store, SubChain } from '@smartcart/shared/src/stores';
 
 export async function parseXmlToJson(xmlContent: string): Promise<object | undefined> {
     try {
