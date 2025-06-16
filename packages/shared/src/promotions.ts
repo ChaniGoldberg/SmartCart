@@ -2,6 +2,11 @@ import { Item } from "./types";
 
 export interface Promotion {
 
+    // Core identification
+    chainId: string;
+    subChainId: string;
+    storeId: string;
+
     // promo core info
     promotionId: number;
     promotionDescription: string;
