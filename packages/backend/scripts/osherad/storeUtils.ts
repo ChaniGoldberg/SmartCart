@@ -1,9 +1,13 @@
 export function getLatestStoreFile(fileNames: string[]): string | null {
-  
-  fileNames.sort((a,b)=>{
+  const storeFiles = fileNames.filter(name =>
+    name.startsWith("Stores") && /-(\d{12})\.xml$/.test(name)
+  );
+
+  storeFiles.sort((a, b) => {
     const timeA = a.match(/-(\d{12})\.xml$/)?.[1] ?? '';
     const timeB = b.match(/-(\d{12})\.xml$/)?.[1] ?? '';
     return timeB.localeCompare(timeA); 
-  })
-   return fileNames.length > 0 ? fileNames[0] : null;
+  });
+
+  return storeFiles.length > 0 ? storeFiles[0] : null;
 }
