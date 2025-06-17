@@ -1,4 +1,4 @@
-export function getLatestStoreFile(fileNames: string[]): string | null {
+export function getMostUpdatedStroeFile(fileNames: string[]): string | null {
   const storeFiles = fileNames.filter(name =>
     name.startsWith("Stores") && /-(\d{12})\.xml$/.test(name)
   );

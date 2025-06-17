@@ -1,6 +1,6 @@
-import { getLatestStoreFile } from "./storeUtils";
+import { getMostUpdatedStroeFile } from "./storeUtils";
 
-describe('getLatestStoreFile', () => {
+describe('getMostUpdatedStroeFile', () => {
   it('should return the file with the latest timestamp that starts with "Stores"', () => {
     const files = [
       'Stores7290103152017-202506100805.xml',
@@ -10,7 +10,7 @@ describe('getLatestStoreFile', () => {
       'stores7290103152017-202506140805.xml' 
     ];
 
-    const result = getLatestStoreFile(files);
+    const result = getMostUpdatedStroeFile(files);
 
     expect(result).toBe('Stores7290103152017-202506120805.xml');
   });
@@ -22,7 +22,7 @@ describe('getLatestStoreFile', () => {
       'stores7290103152017-202506140805.xml'
     ];
 
-    const result = getLatestStoreFile(files);
+    const result = getMostUpdatedStroeFile(files);
 
     expect(result).toBeNull();
   });
@@ -35,7 +35,7 @@ describe('getLatestStoreFile', () => {
       'Stores7290103152017-123.xml'
     ];
 
-    const result = getLatestStoreFile(files);
+    const result = getMostUpdatedStroeFile(files);
 
     expect(result).toBeNull();
   });
@@ -43,7 +43,7 @@ describe('getLatestStoreFile', () => {
   it('should return null for an empty array', () => {
     const files: string[] = [];
 
-    const result = getLatestStoreFile(files);
+    const result = getMostUpdatedStroeFile(files);
 
     expect(result).toBeNull();
   });
@@ -55,7 +55,7 @@ describe('getLatestStoreFile', () => {
       'AnotherInvalidFile.txt'
     ];
 
-    const result = getLatestStoreFile(files);
+    const result = getMostUpdatedStroeFile(files);
 
     expect(result).toBe('Stores7290103152017-202506150805.xml');
   });
