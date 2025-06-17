@@ -22,7 +22,7 @@ cd packages/shared && npm run build && cd ../..
 
 # Set up environment files
 cd packages/backend && cp .env.example .env #for windows cp=copy
-cd ../frontend && cp .env.example .env && cd ../..
+cd ../frontend && cp .env  .example .env && cd ../..
 
 # Start both frontend and backend
 npm run dev
@@ -283,7 +283,8 @@ Visit: `https://your-app.netlify.app`
 
 Your full-stack application is now running in production with:
 
-- ✅ **Frontend** on Netlify with global CDN
+- ✅ **Frontend** on Netlify with glocd packages/shared
+bal CDN
 - ✅ **Backend** on Render with auto-scaling
 - ✅ **Database** on Supabase with backups
 - ✅ **HTTPS** enabled everywhere
