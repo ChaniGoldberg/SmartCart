@@ -14,4 +14,5 @@ export async function getUpdatedPriceFullByStoreId(allFiles: string[], storeId: 
     matchingFiles.sort()
 
     return matchingFiles[matchingFiles.length - 1]  
+    
 }
