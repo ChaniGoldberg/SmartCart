@@ -1,4 +1,4 @@
-import { getGovData } from '../scripts/connect-nativ-hachesed';
+import { getGovData } from '../connect-nativ-hachesed';
 
 (async () => {
     try {
