@@ -1,5 +1,5 @@
 // // import fetch from "node-fetch";
-import { GOV_URLS } from '../url'; 
+import { GOV_URLS } from '../../url'; 
 
 export async function getGovData() {
   try {
