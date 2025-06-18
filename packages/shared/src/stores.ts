@@ -4,7 +4,7 @@
     // Core identification
     chainId: string;
     chainName: string;
-    
+    lastUpdateDate: Date;
     // Sub-chains within this chain
     subChains: SubChain[];
   }
@@ -30,4 +30,6 @@
     
     // Location
     address: string;
+    city: string;
+    zipCode: string;
   }
