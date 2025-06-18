@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Item, } from '@smartcart/shared';
+  import { log } from "console";
 
 export class DatabaseService {
   private readonly tableName = 'items';
@@ -89,6 +90,7 @@ export class DatabaseService {
   async initializeSampleData(): Promise<void> {
     try {
       const items = await this.getAllItems();
+
 
       if (items.length === 0) {
         console.log('Initializing database with sample data...');

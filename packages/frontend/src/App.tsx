@@ -12,6 +12,7 @@ function App() {
   const [healthStatus, setHealthStatus] = useState<string>('checking...');
 
   useEffect(() => {
+   
     loadItems();
     checkHealth();
   }, []);

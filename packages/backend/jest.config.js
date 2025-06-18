@@ -1,21 +1,12 @@
 const { createDefaultPreset } = require("ts-jest");
-
 const tsJestTransformCfg = createDefaultPreset().transform;
-
-if (tsJestTransformCfg['^.+\\.(ts|tsx)$']) {
-  if (Array.isArray(tsJestTransformCfg['^.+\\.(ts|tsx)$'])) {
-    tsJestTransformCfg['^.+\\.(ts|tsx)$'][1] = {
-      ...(tsJestTransformCfg['^.+\\.(ts|tsx)$'][1] || {}),
-      useESM: false,
-    };
-  } else {
-    tsJestTransformCfg['^.+\\.(ts|tsx)$'] = [
-      tsJestTransformCfg['^.+\\.(ts|tsx)$'],
-      { useESM: false },
-    ];
-  }
+/** @type {import("jest").Config} **/
+module.exports = {
+ preset: 'ts-jest',
+ testEnvironment: 'node',
+ moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 }
-
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
