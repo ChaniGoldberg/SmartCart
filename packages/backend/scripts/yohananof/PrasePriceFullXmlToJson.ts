@@ -19,7 +19,7 @@ export async function parseXmlItemsToJson(xmlFilePath: string): Promise<Item[]> 
     const itemsArray = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
 
     // Map each raw item to your Item interface
-    const items: Item[] = itemsArray.map((item: any) => ({
+    const items : Item[] = itemsArray.map((item: any) => ({
       PriceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : new Date(),
       ItemCode: item.ItemCode || "",
       ItemType: item.ItemType !== undefined ? Number(item.ItemType) : 0,
