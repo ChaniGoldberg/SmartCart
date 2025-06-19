@@ -2,7 +2,10 @@ export function lastUpdateStores(files: string[]): string | undefined {
     if (files.length === 0) {
         return undefined;
     }
-    const updateFile = files.sort().reverse()[0];
-    return updateFile.startsWith('StoresFull') ? updateFile : undefined;
+    const storesFiles = files.filter(file => file.startsWith('StoresFull'));
+    if (storesFiles.length === 0) {
+        return undefined;
+    }
+    return storesFiles.sort().reverse()[0];
 }
 
