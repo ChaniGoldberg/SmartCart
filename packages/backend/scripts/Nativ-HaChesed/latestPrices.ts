@@ -1,29 +1,14 @@
-export function getLatestDate(strings: string[], branch: string): string | null {
-    let latestDate: Date | null = null;
-    let latestString: string | null = null;
+export function getLatestUpdatePriceFullFile(strings: string[], branch: string): string | null {
 
-    for (const str of strings) {
-        if (str.startsWith("PriceFull")) {
-            
-            const subBranch = str.split("-");
-            if (subBranch.length > 1 && subBranch[1] === branch) {
+    const arr = strings.filter(str => str.startsWith("PriceFull") && str.includes(`-${branch}-`) && str.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/));
+    arr.sort((a, b) => {
+    ;
+        const dateA =a.slice(-12);// חותך את 12 התווים האחרונים וממיר לתאריך
+        const dateB = b.slice(-12); // חותך את 12 התווים האחרונים וממיר לתאריך
+        return +dateB - +dateA; // מחזיר את תוצאת ההשוואה
+    })
 
-                const match = str.match(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/)
-                if (match) {
-                    const year = parseInt(match[1]);
-                    const month = parseInt(match[2]) - 1; // months are 0-indexed in JavaScript
-                    const day = parseInt(match[3]);
-                    const hour = parseInt(match[4]);
-                    const minute = parseInt(match[5]);
-                    const date = new Date(year, month, day, hour, minute)
-                    if (!latestDate || date > latestDate) {
-                        latestDate = date;
-                        latestString = str;
-                    }
-                }
-            }
-        }
-    }
 
-    return latestString;
+    return arr[0]?arr[0]:null;
 };
+
