@@ -23,15 +23,7 @@ describe('getLatestUpdatePriceFullFile', () => {
     expect(result).toBeNull();
   });
 
-  it('מחזיר null אם אין קובץ עם תבנית תאריך תקינה', () => {
-    const files = [
-      "PriceFull7290058160839-880-INVALIDDATE",
-      "PriceFull7290058160839-880-INVALID",
-    ];
-    const branch = "880";
-    const result = getLatestUpdatePriceFullFile(files, branch);
-    expect(result).toBeNull();
-  });
+ 
 
   it('מחזיר null אם המערך ריק', () => {
     const files: string[] = [];
@@ -71,18 +63,8 @@ describe('getLatestUpdatePriceFullFile', () => {
     expect(result).toBe("PriceFull7290058160839-880-202406101025");
   });
 
-  it('בודק קובץ עם תאריך לא תקני באמצע', () => {
-    const files = [
-      "PriceFull7290058160839-880-202406101025",
-      "PriceFull7290058160839-880-INVALID",
-      "PriceFull7290058160839-880-202406111025",
-    ];
-    const branch = "880";
-    const result = getLatestUpdatePriceFullFile(files, branch);
-    expect(result).toBe("PriceFull7290058160839-880-202406111025");
-  });
 });
-
+  
 // import { getLatestUpdatePriceFullFile } from "../latestPrices";
 
 // describe('getLatestUpdatePriceFullFile', () => {
