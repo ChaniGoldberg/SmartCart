@@ -1,0 +1,20 @@
+[
+  {
+    "storeId": "store1",
+    "chainId": "chain1",
+    "subChainId": "subchain1",
+    "storeName": "סניף ירושלים",
+    "address": "רחוב המלך דוד 10",
+    "city": "ירושלים",
+    "zipCode": "91000"
+  },
+  {
+    "storeId": "store2",
+    "chainId": "chain1",
+    "subChainId": "subchain1",
+    "storeName": "סניף תל אביב",
+    "address": "רחוב אבן גבירול 50",
+    "city": "תל אביב",
+    "zipCode": "61000"
+  }
+]

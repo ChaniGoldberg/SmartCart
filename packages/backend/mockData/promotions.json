@@ -1,0 +1,54 @@
+[
+  {
+    "chainId": "chain1",
+    "subChainId": "subchain1",
+    "storeId": "store1",
+    "promotionId": 1,
+    "promotionDescription": "מבצע על תפוחים",
+    "startDate": "2025-06-20T00:00:00",
+    "endDate": "2025-06-30T00:00:00",
+    "lastUpdated": "2025-06-19T11:09:36.821001",
+    "isActive": true,
+    "originalPrice": 4.5,
+    "discountedPrice": 3.5,
+    "discountAmount": 1.0,
+    "discountPercentage": 22.22,
+    "promotionItems": [
+      {
+        "PriceUpdateDate": "2025-06-19T11:09:36.820757",
+        "ItemCode": "1001",
+        "ItemType": 1,
+        "ItemName": "תפוח עץ",
+        "ManufacturerName": "חקלאות ישראל",
+        "ManufactureCountry": "ישראל",
+        "ManufacturerItemDescription": "תפוח אדום טרי",
+        "UnitQty": "1",
+        "Quantity": 150,
+        "UnitOfMeasure": "יחידה",
+        "bIsWeighted": 0,
+        "QtyInPackage": "1",
+        "ItemPrice": 4.5,
+        "UnitOfMeasurePrice": 4.5,
+        "AllowDiscount": 1,
+        "ItemStatus": 1,
+        "ItemId": 101
+      }
+    ],
+    "promotionsTerms": {
+      "minQty": 1,
+      "maxQty": 10,
+      "clubs": [
+        {
+          "clubId": 1
+        }
+      ],
+      "additionalRestrictions": {
+        "requiresCoupon": false,
+        "requiresClubMembership": false
+      },
+      "minPurchaseAmnt": 10,
+      "minNoOfItemOfered": 1,
+      "remarks": "עד גמר המלאי"
+    }
+  }
+]
