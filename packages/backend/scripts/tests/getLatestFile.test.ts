@@ -1,34 +1,16 @@
-import { getLatestFile } from '../Rami-Levi/getLatestFile';
-import * as fs from 'fs/promises';
-
-// יוצרים mock ל־fs כדי שלא יקרא קבצים אמיתיים
-jest.mock('fs/promises');
+import getLatestFile from "../Rami-Levi/getLatestFile";
 
 describe('getLatestFile', () => {
-  const mockFiles = [
-    'PriceFull7290058140886-001-20230601.xml',
-    'PriceFull7290058140886-001-20230605.xml',
-    'PriceFull7290058140886-002-20230530.xml',
-    'PriceFull7290058140886-001-20230528.xml',
-  ];
-
-  beforeEach(() => {
-    (fs.readdir as jest.Mock).mockResolvedValue(mockFiles);
-  });
-
-  it('should return the latest file for given storeId', async () => {
-    const latestFile = await getLatestFile('001');
-    expect(latestFile).toBe('PriceFull7290058140886-001-20230605.xml');
-  });
-
-  it('should return null if no files for the storeId', async () => {
-    const latestFile = await getLatestFile('999');
-    expect(latestFile).toBeNull();
-  });
-
-  it('should return null if no files at all', async () => {
-    (fs.readdir as jest.Mock).mockResolvedValue([]);
-    const latestFile = await getLatestFile('001');
-    expect(latestFile).toBeNull();
-  });
+    test('Was the array of objects received properly? Returns a good answer.', () => {
+        let result = getLatestFile(["Stores7290058140886-000-20250622-050500.xml","Stores7290058140886-000-20250623-050500.xml","Stores7290058140886-000-20250624-050500.xml"]);
+        expect(result).toBe("Stores7290058140886-000-20250624-050500.xml");
+    });
+        test('if the array of objects is empty', () => {
+        let result = getLatestFile([]);
+        expect(result).toBe(null);
+    });
+        test('if input invalid file', () => {
+        let result = getLatestFile(["PriceFull7290058140886-001-202506110110.xml"]);
+        expect(result).toBe(null);
+    });
 });
