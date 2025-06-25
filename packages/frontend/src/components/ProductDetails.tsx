@@ -32,6 +32,11 @@ const fields:{label:string;value:React.ReactNode}[]=[
             <strong>{label}:</strong> {value}
           </p>
           ))}
+           {Number(item.AllowDiscount) === 1 && (
+        <p className="text-green-700 font-bold text-xl mt-2 bg-green-100 rounded px-2 py-1 inline-block">
+          זמין להנחה
+        </p>
+      )}
       </div>
   )
 }
