@@ -55,9 +55,23 @@ describe('convertXMLPromotionStringToFilteredJson', () => {
 
     expect(Array.isArray(json)).toBe(true);
     expect(json.length).toBe(1);
-    expect(json[0].promotionId).toBe('1000049953');
+
+    expect(json[0].promotionId).toBe(1000049953);
+    expect(json[0].promotionDescription).toBe("מגבונים דלוקס -3 ב10");
     expect(json[0].discountedPrice).toBe(10);
     expect(json[0].promotionItems[0].id).toBe('44410');
+
+    expect(json[0].chainId).toBe('7290058160839');
+    expect(json[0].subChainId).toBe('1');
+    expect(json[0].storeId).toBe('304');
+
+    expect(json[0].isActive).toBe(true);
+    expect(json[0].promotionsTerms.minQty).toBe(3);
+    expect(json[0].promotionsTerms.maxQty).toBe(0);
+    expect(json[0].promotionsTerms.minNoOfItemOfered).toBe(10);
+    expect(json[0].promotionsTerms.additionalRestrictions.requiresCoupon).toBe(false);
+    expect(json[0].promotionsTerms.additionalRestrictions.requiresClubMembership).toBe(false);
+    expect(json[0].promotionsTerms.additionalRestrictions.clubId).toBe('0');
   });
 
   it('should throw an error for empty XML', async () => {
