@@ -17,7 +17,6 @@ async function getCategoryFromGpt(product: string): Promise<string> {
 function checkCategoryInDB(categoryName: string): boolean {
     for (const category of categories) {
         if (category.name === categoryName) {
-            console.log(`הקטגוריה ${categoryName} קיימת ב-DB`);
             return true;
         }
     }
@@ -25,7 +24,7 @@ function checkCategoryInDB(categoryName: string): boolean {
 }
 
 function addCategory(categoryName: string): void {
-    console.log(`הקטגוריה ${categoryName} לא קיימת ב-DB, מוסיפים אותה`);
+    return;
 }
 
 export default async function categorizeProductByGPT(product: Price): Promise<string> {
