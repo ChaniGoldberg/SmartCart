@@ -1,0 +1,40 @@
+[
+  {
+    "PriceUpdateDate": "2025-06-19T11:09:36.820757",
+    "ItemCode": "1001",
+    "ItemType": 1,
+    "ItemName": "תפוח עץ",
+    "ManufacturerName": "חקלאות ישראל",
+    "ManufactureCountry": "ישראל",
+    "ManufacturerItemDescription": "תפוח אדום טרי",
+    "UnitQty": "1",
+    "Quantity": 150,
+    "UnitOfMeasure": "יחידה",
+    "bIsWeighted": 0,
+    "QtyInPackage": "1",
+    "ItemPrice": 4.5,
+    "UnitOfMeasurePrice": 4.5,
+    "AllowDiscount": 1,
+    "ItemStatus": 1,
+    "ItemId": 101
+  },
+  {
+    "PriceUpdateDate": "2025-06-19T11:09:36.820767",
+    "ItemCode": "1002",
+    "ItemType": 1,
+    "ItemName": "בננה",
+    "ManufacturerName": "חקלאות ישראל",
+    "ManufactureCountry": "ישראל",
+    "ManufacturerItemDescription": "בננות מתוקות",
+    "UnitQty": "1",
+    "Quantity": 200,
+    "UnitOfMeasure": "יחידה",
+    "bIsWeighted": 0,
+    "QtyInPackage": "1",
+    "ItemPrice": 3.8,
+    "UnitOfMeasurePrice": 3.8,
+    "AllowDiscount": 1,
+    "ItemStatus": 1,
+    "ItemId": 102
+  }
+]
