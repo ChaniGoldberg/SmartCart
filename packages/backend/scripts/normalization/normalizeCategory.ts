@@ -1,9 +1,12 @@
 import { categories } from "@smartcart/shared/src/categories"
 import { Price } from "@smartcart/shared/src/prices"
+require('dotenv').config();
+
+
 
 async function getCategoryFromGpt(product: string): Promise<string> {
 
-    const categoryUrl = `http://localhost:8080/Category/${encodeURIComponent(product)}`;
+    const categoryUrl = `${process.env.CATEGORY_URL}/${encodeURIComponent(product)}`;
     const categoryResponse = await fetch(categoryUrl);
 
     if (!categoryResponse.ok) {
