@@ -6,12 +6,13 @@ jest.mock('xml2js', () => ({
 }));
 
 describe('convertStoreXmlToStoreJson', () => {
-    it('should convert valid XML to flat Store[] array', async () => {
+    it('should convert valid XML to flat Store[] array with all fields', async () => {
         const xmlInput = `
             <root>
                 <chain>
                     <chainId>1</chainId>
                     <chainName>Chain 1</chainName>
+                    <lastUpdateDate>2025-06-26</lastUpdateDate>
                     <subchains>
                         <subchain>
                             <subChainId>10</subChainId>
@@ -21,6 +22,8 @@ describe('convertStoreXmlToStoreJson', () => {
                                     <storeId>100</storeId>
                                     <storeName>Store A</storeName>
                                     <address>Address 1</address>
+                                    <city>Tel Aviv</city>
+                                    <zipCode>12345</zipCode>
                                 </store>
                                 <store>
                                     <storeId>101</storeId>
@@ -38,14 +41,15 @@ describe('convertStoreXmlToStoreJson', () => {
                 chain: [{
                     chainId: ['1'],
                     chainName: ['Chain 1'],
+                    lastUpdateDate: ['2025-06-26'],
                     subchains: [{
                         subchain: [{
                             subChainId: ['10'],
                             subChainName: ['SubChain 1'],
                             stores: [{
                                 store: [
-                                    { storeId: ['100'], storeName: ['Store A'], address: ['Address 1'] },
-                                    { storeId: ['101'], storeName: ['Store B'], address: ['Address 2'] },
+                                    { storeId: ['100'], storeName: ['Store A'], address: ['Address 1'], city: ['Tel Aviv'], zipCode: ['12345'] },
+                                    { storeId: ['101'], storeName: ['Store B'], address: ['Address 2'] }
                                 ]
                             }]
                         }]
@@ -55,8 +59,8 @@ describe('convertStoreXmlToStoreJson', () => {
         });
 
         const expected = [
-            { storeId: '100', chainId: '1', subChainId: '10', storeName: 'Store A', address: 'Address 1' },
-            { storeId: '101', chainId: '1', subChainId: '10', storeName: 'Store B', address: 'Address 2' }
+            { storeId: '100', chainId: '1', subChainId: '10', storeName: 'Store A', address: 'Address 1', city: 'Tel Aviv', zipCode: '12345' },
+            { storeId: '101', chainId: '1', subChainId: '10', storeName: 'Store B', address: 'Address 2', city: '', zipCode: '' }
         ];
 
         const result = await convertStoreXmlToStoreJson(xmlInput);
