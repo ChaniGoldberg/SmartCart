@@ -4,38 +4,38 @@ require('dotenv').config();
 
 
 
-async function getCategoryFromGpt(product: string): Promise<string> {
+async function getTagFromGpt(product: string): Promise<string> {
 
-    const categoryUrl = `${process.env.CATEGORY_URL}/${encodeURIComponent(product)}`;
-    const categoryResponse = await fetch(categoryUrl);
+    const tagUrl = `${process.env.OPEN_AI_URL}/${encodeURIComponent(product)}`;
+    const tagResponse = await fetch(tagUrl);
 
-    if (!categoryResponse.ok) {
-        throw new Error(`Error fetching category: ${categoryResponse.statusText}`);
+    if (!tagResponse.ok) {
+        throw new Error(`Error fetching tag: ${tagResponse.statusText}`);
     }
 
-    const category = await categoryResponse.text();
-    return category;
+    const tag = await tagResponse.text();
+    return tag;
 }
 
-function checkCategoryInDB(categoryName: string): boolean {
-    for (const category of categories) {
-        if (category.name === categoryName) {
+function checkTagInDB(tagName: string): boolean {
+    for (const tag of categories) {
+        if (tag.name === tagName) {
             return true;
         }
     }
     return false;
 }
 
-function addCategory(categoryName: string): void {
+function addCategory(tagName: string): void {
     return;
 }
 
-export default async function categorizeProductByGPT(product: Price): Promise<string> {
+export default async function tagProductByGPT(product: Price): Promise<string> {
 
-    const categoryOfProduct = await getCategoryFromGpt(product.ItemName);
-    if (!checkCategoryInDB(categoryOfProduct)) {
-        addCategory(categoryOfProduct);
+    const tagOfProduct = await getTagFromGpt(product.ItemName);
+    if (!checkTagInDB(tagOfProduct)) {
+        addCategory(tagOfProduct);
     }
 
-    return categoryOfProduct;
+    return tagOfProduct;
 }
