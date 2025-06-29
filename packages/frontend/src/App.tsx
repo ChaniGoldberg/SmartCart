@@ -3,6 +3,7 @@ import { Item } from '@smartcart/shared';
 import { apiService } from './services/api';
 import ItemCard from './components/ItemCard';
 import './App.css';
+import Login from './pages/Login';
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
@@ -54,7 +55,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      {/* <header className="App-header">
         <h1>Base Project</h1>
         <div style={{ fontSize: '14px', opacity: 0.8 }}>
           Backend Status: <span style={{ 
@@ -147,7 +148,8 @@ function App() {
             )}
           </div>
         )}
-      </main>
+      </main> */}
+      <Login/>
     </div>
   );
 }
