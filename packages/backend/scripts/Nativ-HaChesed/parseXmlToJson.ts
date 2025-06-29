@@ -1,5 +1,5 @@
 import { parseStringPromise } from 'xml2js';
-import { Store, Chain, SubChain } from '../../../shared/dist/stores';
+import { Store, Chain, SubChain } from '@smartcart/shared/src/stores';
 
 export async function convertStoreXmlToStoreJson(contentXML: string): Promise<Store[] | string> {
      if (!contentXML) {
@@ -7,20 +7,23 @@ export async function convertStoreXmlToStoreJson(contentXML: string): Promise<St
     }
     try {
         const dataJson = await parseStringPromise(contentXML);
-           const chainsArr = Array.isArray(dataJson.root.chain) ? dataJson.root.chain : [dataJson.root.chain];
+           const chainsArr = Array.isArray(dataJson.root?.chain) ? dataJson.root.chain : [dataJson.root.chain];
 
         const allchains: Chain[] = chainsArr.map((chainObj: any) => ({
-            chainId: chainObj.chainId[0],
-            chainName: chainObj.chainName[0],
+            chainId: chainObj.chainId[0] || '',
+            chainName: chainObj.chainName[0] || '',
+            lastUpdateDate:chainObj.lastUpdateDate[0]? new Date(chainObj.lastUpdateDate[0]) : new Date(),
             subchains: chainObj.subchains[0].subchain.map((subchainObj: any): SubChain => ({
-                subChainId: subchainObj.subChainId[0],
-                subChainName: subchainObj.subChainName[0],
+                subChainId: subchainObj.subChainId[0] || '',
+                subChainName: subchainObj.subChainName[0] || '',
                 stores: subchainObj.stores[0].store.map((storeObj: any): Store => ({
-                    storeId: storeObj.storeId[0],
-                    chainId: chainObj.chainId[0],
-                    subChainId: subchainObj.subChainId[0],
-                    storeName: storeObj.storeName[0],
-                    address: storeObj.address[0]
+                   storeId: storeObj.storeId[0] || '',
+                    chainId: chainObj.chainId[0] || '',
+                    subChainId: subchainObj.subChainId[0] || '',
+                    storeName: storeObj.storeName[0]   || '',
+                    address: storeObj.address ? storeObj.address[0] : '',
+                    city: storeObj.city ? storeObj.city[0] : '',
+                    zipCode: storeObj.zipCode ? storeObj.zipCode[0] : ''
                 }))
             }))
         }))
