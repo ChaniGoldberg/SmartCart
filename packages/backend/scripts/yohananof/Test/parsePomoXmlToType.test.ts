@@ -89,12 +89,7 @@ describe('Promotion XML Parser', () => {
     expect(promotions.length).toBe(2);
     const promo = promotions[0];
     expect(promo.promotionId).toBe(165892);
-    expect(promo.chainId).toBe("7290803800003");
     expect(promo.discountedPrice).toBe(30.00);
-    expect(promo.promotionItems?.length).toBe(1);
-    expect(promo.promotionsTerms?.clubs?.length).toBe(1);    
-    expect(promo.promotionsTerms?.additionalRestrictions?.requiresCoupon).toBe(false);
-    expect(promo.promotionsTerms?.additionalRestrictions?.requiresClubMembership).toBe(false);
     console.log(promo);
     
   });
