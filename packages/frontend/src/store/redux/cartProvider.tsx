@@ -43,7 +43,7 @@ const removeFromCart = (item: Price, quantity: number = 1): void => {
 };
 
 return (
-  <cartContext.Provider value={{ cartItems, setCartItems }}>
+  <cartContext.Provider value={{ cartItems, setCartItems, addToCart, removeFromCart }}>
     {children}
   </cartContext.Provider>
 );
