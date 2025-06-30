@@ -1,7 +1,8 @@
 export interface Price {
   priceId: number;  //pk           // מזהה ייחודי למחיר
   storeId: number;  //fk   
-  itemId: number;   //fk 
+  itemId: number; 
+  itemCode:number//fk
   price: number;       // מחיר המוצר
   priceUpdateDate: Date;         // תאריך עדכון המחיר האחרון של המוצר
   unitQuantity: string;               // כמות ביחידת מידה (למשל: 1, 500ml)

@@ -1,7 +1,7 @@
 import { Tag } from "./tags";
 export interface Item {
-  itemId: number;//pk
-  itemCode: number;
+  itemCode: number;//pk
+  itemId: number;
   itemType: number;
   itemName: string;
   correctItemName: string;           // שם מתוקן של המוצר
@@ -9,5 +9,5 @@ export interface Item {
   manufactureCountry: string;
   manufacturerItemDescription: string;
   itemStatus: boolean;
-  tag: Tag[];//fk
+  tagsId?: number[];//fk
 }
