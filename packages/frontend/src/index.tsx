@@ -4,18 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import { CartProvider } from './store/redux/CartProvider';
+import { Routing } from './routes/routing';
+
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <CartProvider>
+
+<React.StrictMode>
       <BrowserRouter>
         <App />
+        <Routing />
       </BrowserRouter>
-    </CartProvider>
+
   </React.StrictMode>
 );
 
