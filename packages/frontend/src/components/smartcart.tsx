@@ -1,12 +1,12 @@
 import React from 'react';
-import Header from './Header';
+// import Header from './Header';
 
 const Smartcart: React.FC = () => {
     return (
         <div className="min-h-screen flex flex-col bg-white text-gray-800 font-sans">
             <header className="fixed top-0 left-0 right-0 bg-gradient-to-br from-[#08857d] to-[#0db0a5] text-white pb-12 z-50">
                 <div className="px-6 pt-3">
-                    <Header />
+                    {/* <Header /> */}
                 </div>
             </header>
 
