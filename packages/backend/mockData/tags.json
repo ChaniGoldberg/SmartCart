@@ -1,0 +1,32 @@
+[
+  {
+    "tagId": 1,
+    "tagName": "פירות וירקות",
+    "isAlreadyScanned": false
+  },
+  {
+    "tagId": 2,
+    "tagName": "פירות טריים",
+    "isAlreadyScanned": false
+  },
+  {
+    "tagId": 3,
+    "tagName": "ירקות טריים",
+    "isAlreadyScanned": false
+  },
+  {
+    "tagId": 4,
+    "tagName": "מוצרי חלב",
+    "isAlreadyScanned": false
+  },
+  {
+    "tagId": 5,
+    "tagName": "חלב",
+    "isAlreadyScanned": false
+  },
+  {
+    "tagId": 6,
+    "tagName": "גבינות",
+    "isAlreadyScanned": false
+  }
+]
