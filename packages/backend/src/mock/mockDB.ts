@@ -4,7 +4,7 @@ import userjson from "@smartcart/backend/mockData/users.json"
 import promotionjson from "@smartcart/backend/mockData/promotions.json"
 import storejson from "@smartcart/backend/mockData/stores.json"
 import pricejson from "@smartcart/backend/mockData/items.json"
-import tagjson from "@smartcart/backend/mockData/categories.json"
+import tagjson from "@smartcart/backend/mockData/tags.json"
 
 import { User } from "@smartcart/shared/src/users";
 import { Promotion } from "@smartcart/shared/src/promotions";
