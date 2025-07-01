@@ -1,9 +1,9 @@
-import { User } from "@smartcart/shared/src/users";
-import { Promotion } from "@smartcart/shared/src/promotions";
-import { Store } from "@smartcart/shared/src/stores";
-import { Price } from "@smartcart/shared/src/prices";
+import { User } from "@smartcart/shared/src/user";
+import { Promotion } from "@smartcart/shared/src/promotion";
+import { Store } from "@smartcart/shared/src/store";
+import { Price } from "@smartcart/shared/src/price";
 import { Item } from "@smartcart/shared";
-import {Tag} from "@smartcart/shared/src/tags"
+import {Tag} from "@smartcart/shared/src/tag"
 
 export interface IDB {
   User:User[],
