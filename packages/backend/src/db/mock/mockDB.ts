@@ -1,4 +1,4 @@
-import { IDB } from "../db/IDB";
+import { IDB } from "../IDB";
 
 import userjson from "@smartcart/backend/mockData/users.json"
 import promotionjson from "@smartcart/backend/mockData/promotions.json"
