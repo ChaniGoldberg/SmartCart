@@ -1,4 +1,3 @@
-// src/components/FloatingCart.jsx
 import React, {useContext} from "react";
 import {cartContext} from "../../contexts/cartContext"; // נוודא שהנתיב נכון
 
@@ -30,3 +29,4 @@ export default function FloatingCart() {
     </div>
   );
 }
+
