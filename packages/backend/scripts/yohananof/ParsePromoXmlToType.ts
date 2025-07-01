@@ -41,39 +41,30 @@ function convertRawPromotionToPromotion(
   subChainId: string,
   storeId: string
 ): Promotion {
-  const promotionItems = (rawPromo?.PromotionItems || []).map((item: any) => ({
-    id: item?.Item?.[0]?.ItemCode?.[0] ?? "",
-    name: "", // Placeholder – should be looked up elsewhere
-    type: parseInt(item?.Item?.[0]?.ItemType?.[0] ?? "0"),
-    amount: 0 // Placeholder – should be looked up elsewhere
-  }));
+  const promotionItemsCode = (rawPromo?.PromotionItems || []).map((item: any) => 
+    item?.Item?.[0]?.ItemCode?.[0] ?? "");
 
   return {
-    chainId,
-    subChainId,
-    storeId,
     promotionId: parseInt(rawPromo?.PromotionId?.[0] ?? "0"),
+    storeId: parseInt(storeId ?? "0"),
     promotionDescription: rawPromo?.PromotionDescription?.[0] ?? "",
     startDate: new Date(`${rawPromo?.PromotionStartDate?.[0] || ''}T${rawPromo?.PromotionStartHour?.[0] || ''}`),
-   endDate: new Date(`${rawPromo?.PromotionEndDate?.[0] || ''}T${rawPromo?.PromotionEndHour?.[0] || ''}`),
+    endDate: new Date(`${rawPromo?.PromotionEndDate?.[0] || ''}T${rawPromo?.PromotionEndHour?.[0] || ''}`),
     lastUpdated: new Date(rawPromo?.PromotionUpdateDate?.[0] ?? ""),
     isActive: true,
     discountedPrice: parseFloat(rawPromo?.DiscountedPrice?.[0] ?? "0"),
-    promotionItems,
-    promotionsTerms: {
-      minQty: parseFloat(rawPromo?.MinQty?.[0] ?? "0"),
-      maxQty: rawPromo?.MaxQty?.[0] ? parseFloat(rawPromo.MaxQty[0]) : undefined,
-      clubs: rawPromo?.Clubs?.[0]?.ClubId?.[0]
-        ? [{ clubId: parseInt(rawPromo.Clubs[0].ClubId[0]) }]
-        : [],
-      additionalRestrictions: {
-        requiresCoupon: rawPromo?.AdditionalRestrictions?.[0]?.AdditionalIsCoupon == "1",
-        requiresClubMembership: rawPromo?.Clubs?.[0]?.ClubId?.[0] != "0"
-      },
-      minNoOfItemOfered: parseInt(rawPromo?.MinNoOfItemOfered?.[0] ?? "0")
-    }
-  };
-}
+    promotionItemsCode,//fk
+    minQuantity: parseFloat(rawPromo?.MinQty?.[0] ?? "0"),
+    maxQuantity: rawPromo?.MaxQty?.[0] ? parseFloat(rawPromo.MaxQty[0]) : undefined,
+    requiresCoupon: rawPromo?.AdditionalRestrictions?.[0]?.AdditionalIsCoupon == "1",
+    requiresClubMembership: rawPromo?.Clubs?.[0]?.ClubId?.[0] != "0",
+    clubId: parseInt(rawPromo.Clubs[0].ClubId[0]),
+    additionalGiftCount: parseInt(rawPromo?.AdditionalRestrictions?.[0]?.AdditionalGiftCount?.[0] ?? "0"),
+    minNumberOfItemOfered: parseInt(rawPromo?.MinNoOfItemOfered?.[0] ?? "0"),
+    remarks: rawPromo?.Remarks?.[0] ?? "",
+  }
+};
+
 //main
 export async function parseXmlPromotionsToJson(xmlData: string): Promise<Promotion[]> {
   if (!xmlData) {
