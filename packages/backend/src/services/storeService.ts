@@ -87,6 +87,7 @@ export const getValidStores = async () => {
   const results = stores.filter(isValidAddress).map((store: Store) => ({
     storeId: store.storeId,
     chainId: store.chainId,
+    chainName: store.chainName,
     storeName:store.storeName,
     address: store.address,
     city: store.city
@@ -99,6 +100,7 @@ export const getValidStores = async () => {
       return {
         storeId: s.storeId,
         chainId: s.chainId,
+        chainName: s.chainName,
         storeName: s.storeName,
         fullAddress:fullAddress?? null,
         latitude: coords?.lat ?? null,
