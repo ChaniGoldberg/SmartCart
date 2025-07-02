@@ -8,4 +8,3 @@ export function lastUpdateStores(files: string[]): string | undefined {
     }
     return storesFiles.sort().reverse()[0];
 }
-
