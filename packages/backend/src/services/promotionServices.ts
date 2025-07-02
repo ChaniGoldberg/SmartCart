@@ -1,41 +1,32 @@
-import { IPromotions } from '../interfaces/Ipromotios';
-import { mockDb } from '../mock/mockDB'; // Importing mockDb
-import { IDB } from "../db/IDB"; // Import IDB if needed
+import { IPromotions } from "../interfaces/Ipromotions";
+import { db } from "../db/dbProvider"; // שימוש ב-db הכללי עם שם קובץ מתוקן
 
 export const promotionsService: IPromotions = {
-  async promotionsBySuperId(storeName: string): Promise<IDB['Promotion']> { // Using IDB['Promotion']
-    const today = new Date();
+    async getPromotionsByStoreId(storeId: number): Promise<typeof db.Promotion> {
+        if (!storeId || typeof storeId !== "number") {
+            throw { status: 400, message: "Invalid or missing storeId" };
+        }
 
-    try {
-      const store = mockDb.Store.find(s => s.storeName === storeName); // Using mockDb
+        const today = new Date();
 
-      if (!store) {
-        throw new Error(`Store with name '${storeName}' not found`);
-      }
+        const promotions = db.Promotion.filter((promotion) => {
+            const start = new Date(promotion.startDate);
+            const end = new Date(promotion.endDate);
 
-      const promotions: IDB['Promotion'] = mockDb.Promotion
-        .filter((promotion) => {
-          const promotionStartDate = new Date(promotion.startDate);
-          const promotionEndDate = new Date(promotion.endDate);
-
-          return promotion.storeId === store.storeId &&
-                 promotionStartDate <= today &&
-                 promotionEndDate >= today;
-        })
-        .map((promotion) => ({
-          ...promotion,
-          startDate: new Date(promotion.startDate),
-          endDate: new Date(promotion.endDate),
-          lastUpdated: new Date(promotion.lastUpdated),
+            return (
+                promotion.storeId === storeId &&
+                start <= today &&
+                end >= today
+            );
+        }).map((promotion) => ({
+            ...promotion,
+            startDate: new Date(promotion.startDate),
+            endDate: new Date(promotion.endDate),
+            lastUpdated: new Date(promotion.lastUpdated),
         }));
 
-      return promotions;
-    } catch (error) {
-      console.error('Error fetching promotions:', error);
-      throw new Error('Could not fetch promotions');
-    }
-  }
+        return promotions;
+    },
 };
-
 
 export default promotionsService;
