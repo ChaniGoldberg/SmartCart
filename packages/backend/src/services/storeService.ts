@@ -1,5 +1,6 @@
-import { Store } from "@smartcart/shared/src/stores";
-import { db } from "../dependencyInjection/db";
+import { Store } from "@smartcart/shared/src/store";
+import { db } from "../db/dbProvider";
+
 
 
 const OPENCAGE_API_KEY = process.env.OPENCAGE_API_KEY;//מפתח ה־API של OpenCage
