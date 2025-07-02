@@ -4,11 +4,12 @@ const swaggerJsdoc = require('swagger-jsdoc');
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-// import swaggerJsdoc from 'swagger-jsdoc';
 import healthRoutes from './routes/health';
 import itemsRoutes from './routes/items';
-import { databaseService } from './services/database';
+import storeRoutes from './routes/storeRouter';
 import promotionRoutes from './routes/promotionRoutes';
+import { setupSwagger } from './swagger';
+import { databaseService } from './services/database';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -37,13 +38,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
- app.use('/api/promotions', promotionRoutes);
-// Server
+app.use('/api/promotions', promotionRoutes);
+app.use('/api/stores', storeRoutes);
+
+setupSwagger(app);
+
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${CORS_ORIGIN}`);
-  
+
   // Initialize DB
   if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
     console.log('🗄️ Initializing database...');
@@ -51,7 +55,7 @@ app.listen(PORT, async () => {
       databaseService.canInitialize();
       try {
         await databaseService.initializeSampleData();
-        console.log('✅ Database initialized successfully');  
+        console.log('✅ Database initialized successfully');
       } catch (error) {
         console.error('❌ Database sample-data initialization failed');
       }
