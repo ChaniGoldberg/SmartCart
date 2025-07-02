@@ -1,5 +1,6 @@
-import { Store } from "@smartcart/shared/src/stores";
+import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
+
 
 //זכרון זמני לכתובות
 const addressCache = new Map<string, { lat: number; lng: number } | null>();

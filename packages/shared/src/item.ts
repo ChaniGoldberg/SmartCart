@@ -1,4 +1,3 @@
-import { Tag } from "./tags";
 export interface Item {
   itemCode: number;//pk
   itemId: number;

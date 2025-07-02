@@ -7,11 +7,11 @@ import { Tag } from '@smartcart/shared/src/tag';
 interface ProductDetailsProps {
   item: Item;
   price: Price;
-  tags?: Tag[];
-  allTags: Tag[]; // רשימת כל התגים במערכת
+  // allTags: Tag[]; // רשימת כל התגים במערכת
 
 }
-const ProductDetails: React.FC<ProductDetailsProps> = ({ item, price, tags, allTags }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ item, price }) => {
+  const allTags:Tag[]=[]
   const fields: { label: string; value: React.ReactNode }[] = [
     { label: 'שם מוצר', value: item.itemName },
     { label: 'יצרן', value: `${item.manufacturerName} (${item.manufactureCountry})` },

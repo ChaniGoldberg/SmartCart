@@ -1,6 +1,6 @@
 import React, { useState, ReactNode } from 'react';
 import { cartContext } from './cartRedux';
-import { Price } from '@smartcart/shared/src/prices';
+import { Price } from '@smartcart/shared/src/price';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<Price[]>([]);
