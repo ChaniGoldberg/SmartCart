@@ -1,5 +1,4 @@
 import { convertXMLPromotionStringToFilteredJson } from '../parseXMLPromosFullToJson';
-import * as fs from 'fs';
 
 const mockXml = `<Root>
   <ChainId>7290058160839</ChainId>
@@ -45,36 +44,33 @@ const mockXml = `<Root>
   </Promotions>
 </Root>`;
 
-describe('convertXMLPromotionStringToFilteredJson', () => {
-  it('should parse valid XML and create JSON file', async () => {
-    const outputPath = await convertXMLPromotionStringToFilteredJson(mockXml);
+describe.only('convertXMLPromotionStringToFilteredJson', () => {
+  it('should parse valid XML and return Promotion[]', async () => {
+    const result = await convertXMLPromotionStringToFilteredJson(mockXml);
 
-    expect(fs.existsSync(outputPath)).toBe(true);
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(1);
 
-    const json = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-
-    expect(Array.isArray(json)).toBe(true);
-    expect(json.length).toBe(1);
-
-    expect(json[0].promotionId).toBe(1000049953);
-    expect(json[0].promotionDescription).toBe("מגבונים דלוקס -3 ב10");
-    expect(json[0].discountedPrice).toBe(10);
-    expect(json[0].promotionItems[0].id).toBe('44410');
-
-    expect(json[0].chainId).toBe('7290058160839');
-    expect(json[0].subChainId).toBe('1');
-    expect(json[0].storeId).toBe('304');
-
-    expect(json[0].isActive).toBe(true);
-    expect(json[0].promotionsTerms.minQty).toBe(3);
-    expect(json[0].promotionsTerms.maxQty).toBe(0);
-    expect(json[0].promotionsTerms.minNoOfItemOfered).toBe(10);
-    expect(json[0].promotionsTerms.additionalRestrictions.requiresCoupon).toBe(false);
-    expect(json[0].promotionsTerms.additionalRestrictions.requiresClubMembership).toBe(false);
-    expect(json[0].promotionsTerms.additionalRestrictions.clubId).toBe('0');
+    const promo = result[0];
+    expect(promo.promotionId).toBe(1000049953);
+    expect(promo.promotionDescription).toBe("מגבונים דלוקס -3 ב10");
+    expect(promo.discountedPrice).toBe(10);
+    expect(promo.promotionItemsCode).toContain(44410); // צריך להיות מספר
+    expect(promo.storeId).toBe(304);
+    expect(promo.isActive).toBe(true);
+    expect(promo.minQuantity).toBe(3);
+    expect(promo.maxQuantity).toBe(0);
+    expect(promo.minNumberOfItemOfered).toBe(10);
+    expect(promo.requiresCoupon).toBe(false);
+    expect(promo.requiresClubMembership).toBe(false);
+    expect(promo.clubId).toBe(0);
+    expect(promo.remarks).toBe('');
+    expect(promo.lastUpdated).toBeInstanceOf(Date);
+    expect(promo.startDate).toBeInstanceOf(Date);
+    expect(promo.endDate).toBeInstanceOf(Date);
   });
 
   it('should throw an error for empty XML', async () => {
-    await expect(convertXMLPromotionStringToFilteredJson('')).rejects.toThrow('Empty XML content');
+    await expect(convertXMLPromotionStringToFilteredJson('')).rejects.toThrow('Invalid XML data');
   });
 });
