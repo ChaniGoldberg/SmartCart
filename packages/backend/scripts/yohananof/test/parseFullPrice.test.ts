@@ -1,87 +1,76 @@
-import { parseXmlToJson } from "../parseFullPriceXmlToJson";
-import { cleanJsonObjects } from "../parseFullPriceXmlToJson";
-import { Chain } from "@smartcart/shared/src/stores";
-describe('parseXmlToJson', () => {
-  it('should parse valid XML into cleaned JSON', async () => {
-    const xml = `
-      <Root>
-        <ChainID>123</ChainID>
-        <ChainName>Test Chain</ChainName>
-      </Root>
-    `;
+import { convertXMLPromotionStringToFilteredJson } from '../parseXMLPromosFullToJson';
 
-    const result:any = await parseXmlToJson(xml);
+const mockXml = `<Root>
+  <ChainId>7290058160839</ChainId>
+  <SubChainId>1</SubChainId>
+  <StoreId>304</StoreId>
+  <BikoretNo>7</BikoretNo>
+  <Promotions count="1">
+    <Promotion>
+      <PromotionId>1000049953</PromotionId>
+      <PromotionDescription>מגבונים דלוקס -3 ב10</PromotionDescription>
+      <PromotionUpdateDate>2025-06-19 14:44:00</PromotionUpdateDate>
+      <PromotionStartDate>2025-06-19</PromotionStartDate>
+      <PromotionStartHour>00:00:00</PromotionStartHour>
+      <PromotionEndDate>2025-06-28</PromotionEndDate>
+      <PromotionEndHour>23:59:00</PromotionEndHour>
+      <RewardType>1</RewardType>
+      <DiscountType>1</DiscountType>
+      <DiscountRate>0.00</DiscountRate>
+      <AllowMultipleDiscounts>0</AllowMultipleDiscounts>
+      <MinQty>3</MinQty>
+      <MAXQTY>0</MAXQTY>
+      <DiscountedPrice>10</DiscountedPrice>
+      <DiscountedPricePerMida>10</DiscountedPricePerMida>
+      <MinNoOfItemOfered>10</MinNoOfItemOfered>
+      <AdditionalRestrictions>
+        <AdditionalIsCoupon>0</AdditionalIsCoupon>
+        <AdditionalGiftCount>0</AdditionalGiftCount>
+        <Clubs>
+          <ClubId>0</ClubId>
+        </Clubs>
+        <AdditionalIsTotal>0</AdditionalIsTotal>
+        <AdditionalIsActive>1</AdditionalIsActive>
+      </AdditionalRestrictions>
+      <PromotionItems count="1">
+        <Item>
+          <ItemCode>44410</ItemCode>
+          <IsGiftItem>0</IsGiftItem>
+          <ItemType>1</ItemType>
+        </Item>
+      </PromotionItems>
+      <Remarks/>
+    </Promotion>
+  </Promotions>
+</Root>`;
 
-    expect(result).toBeDefined();
-    expect(result).toHaveProperty('Root');
-    expect(result?.Root.ChainID[0]).toBe('123');
-    expect(result?.Root.ChainName[0]).toBe('Test Chain');
+describe('convertXMLPromotionStringToFilteredJson', () => {
+  it('should parse valid XML and return Promotion[]', async () => {
+    const result = await convertXMLPromotionStringToFilteredJson(mockXml);
+
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(1);
+
+    const promo = result[0];
+    expect(promo.promotionId).toBe(1000049953);
+    expect(promo.promotionDescription).toBe("מגבונים דלוקס -3 ב10");
+    expect(promo.discountedPrice).toBe(10);
+    expect(promo.promotionItemsCode).toContain(44410); // <-- מספר ולא מחרוזת
+    expect(promo.storeId).toBe(304);
+    expect(promo.isActive).toBe(true);
+    expect(promo.minQuantity).toBe(3);
+    expect(promo.maxQuantity).toBe(0);
+    expect(promo.minNumberOfItemOfered).toBe(10);
+    expect(promo.requiresCoupon).toBe(false);
+    expect(promo.requiresClubMembership).toBe(false);
+    expect(promo.clubId).toBe(0);
+    expect(promo.remarks).toBe('');
+    expect(promo.lastUpdated).toBeInstanceOf(Date);
+    expect(promo.startDate).toBeInstanceOf(Date);
+    expect(promo.endDate).toBeInstanceOf(Date);
   });
 
-  it('should throw an error for empty input', async () => {
-    await expect(parseXmlToJson('')).rejects.toThrow('Invalid XML content');
-  });
-
-  it('should throw an error for invalid XML', async () => {
-    const invalidXml = `<Root><UnclosedTag></Root>`;
-    await expect(parseXmlToJson(invalidXml)).rejects.toThrow();
-  });
-});
-
-///////////////////////////////////////////////////////////////////
-
-describe("cleanJsonOcjects", () => {
-  const mockInput = {
-    Root: {
-      ChainID: ["123"],
-      ChainName: ["TestChain"],
-      LastUpdateDate: ["12"],
-      LastUpdateTime: ["3600000"],
-      SubChain: [
-        {
-          SubChainID: ["456"],
-          SubChainName: ["TestSubChain"]
-        }
-      ],
-      Stores: [
-        {
-          StoreID: ["789"],
-          StoreName: ["Test Store"],
-          Address: ["123 Test St"],
-          City: ["Testville"],
-          ZipCode: ["00000"]
-        }
-      ]
-    }
-  };
-
-  it("should convert raw JSON object to structured Chain object", async () => {
-    const result:Chain = await cleanJsonObjects(mockInput) as Chain;
-    expect(result).toBeDefined();
-    expect(result?.chainId).toBe("123");
-    expect(result?.chainName).toBe("TestChain");
-    expect(result?.subChains.length).toBe(1);
-
-    const subChain = result?.subChains[0];
-    expect(subChain.subChainId).toBe("456");
-    expect(subChain.subChainName).toBe("TestSubChain");
-    expect(subChain.stores.length).toBe(1);
-
-    const store = subChain.stores[0];
-    expect(store.storeId).toBe("789");
-    expect(store.storeName).toBe("Test Store");
-    expect(store.address).toBe("123 Test St");
-    expect(store.city).toBe("Testville");
-    expect(store.zipCode).toBe("00000");
-    expect(store.chainId).toBe("123");
-    expect(store.subChainId).toBe("456");
-
-    expect(result?.lastUpdateDate).toBeInstanceOf(Date);
-  });
-
-  it("should handle invalid input gracefully", async () => {
-    const badInput = {};
-    const result = await cleanJsonObjects(badInput);
-    expect(result).toBeUndefined();
+  it('should throw an error for empty XML', async () => {
+    await expect(convertXMLPromotionStringToFilteredJson('')).rejects.toThrow('Invalid XML data');
   });
 });
