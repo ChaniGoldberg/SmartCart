@@ -87,10 +87,11 @@ export const getValidStores = async () => {
   const results = stores.filter(isValidAddress).map((store: Store) => ({
     storeId: store.storeId,
     chainId: store.chainId,
+    storeName:store.storeName,
     address: store.address,
     city: store.city
   }));
-  
+
   const addressCoords =await limitConcurrency(results, async (s) => {
       const fullAddress = `${s.address}, ${s.city}`;
       const coords = await geocodeAddress(fullAddress);//שיחזיר קורדינטה geocodeAddress-שליחת הכתובת ל
@@ -98,6 +99,7 @@ export const getValidStores = async () => {
       return {
         storeId: s.storeId,
         chainId: s.chainId,
+        storeName: s.storeName,
         fullAddress:fullAddress?? null,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null
