@@ -1,45 +1,48 @@
-import { parseStringPromise } from 'xml2js';
-
-// טיפוס לפריט לאחר סינון
-export interface FilteredItem {
-  ItemCode: string;
-  UnitQty: string;
-  Quantity: string;
-  bIsWeighted: string;
-  ItemPrice: string;
-  UnitOfMeasurePrice: string;
-}
-
-// פונקציה שממירה XML למערך של FilteredItem
-export async function parseXML(xmlData: string): Promise<FilteredItem[]> {
+import * as fs from "fs/promises";
+import { parseStringPromise } from "xml2js";
+import { Item } from '@smartcart/shared/src/item'; // Make sure this import path is correct for your setup
+export async function convertXMLPriceFullStringToFilteredJson(xmlFilePath: string): Promise<Item[]> {
   try {
-    const result = await parseStringPromise(xmlData, { explicitArray: false, mergeAttrs: true });
-
-    const itemsRaw = result?.Root?.Items?.Item;
-    if (!itemsRaw) return [];
-
-    const items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
-
-    const filteredItems: FilteredItem[] = items
-      .filter((item: any) =>
-        item.ItemCode &&
-        item.UnitQty &&
-        item.Quantity &&
-        item.bIsWeighted &&
-        item.ItemPrice &&
-        item.UnitOfMeasurePrice
-      )
-      .map((item: any) => ({
-        ItemCode: item.ItemCode,
-        UnitQty: item.UnitQty,
-        Quantity: item.Quantity,
-        bIsWeighted: item.bIsWeighted,
-        ItemPrice: item.ItemPrice,
-        UnitOfMeasurePrice: item.UnitOfMeasurePrice
-      }));
-
-    return filteredItems;
-  } catch (error) {
-    throw new Error(`שגיאה בניתוח XML: ${(error as Error).message}`);
+    // Read the XML file as a string
+    const xmlData = await fs.readFile(xmlFilePath, "utf-8");
+    // Parse the XML string to a JS object
+    const jsonData = await parseStringPromise(xmlData, { explicitArray: false });
+    // Get the raw items array (or single object)
+    const itemsRaw = jsonData?.Root?.Items?.Item;
+    if (!itemsRaw) {
+      throw new Error("No items found in XML.");
+    }
+    // Ensure itemsRaw is always an array
+    const itemsArray = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
+    // Map each raw item to your Item interface
+    const items: Item[] = itemsArray.map((item: any) => ({
+      // PriceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : new Date(),
+      itemCode: item.itemCode !== undefined ? Number(item.itemCode) : 0,
+      itemType: item.itemType !== undefined ? Number(item.itemType) : 0,
+      itemName: item.itemName || "",
+      manufacturerName: item.manufacturerName || "",
+      manufactureCountry: item.manufactureCountry || "",
+      manufacturerItemDescription: item.ManufacturerItemDescription || "",
+      // UnitQty: item.UnitQty || "",
+      // Quantity: item.Quantity !== undefined ? Number(item.Quantity) : 0,
+      // UnitOfMeasure: item.UnitOfMeasure || "",
+      // bIsWeighted: item.bIsWeighted !== undefined ? Number(item.bIsWeighted) : 0,
+      // QtyInPackage: item.QtyInPackage || "",
+      // ItemPrice: item.ItemPrice !== undefined ? Number(item.ItemPrice) : 0,
+      // UnitOfMeasurePrice: item.UnitOfMeasurePrice !== undefined ? Number(item.UnitOfMeasurePrice) : 0,
+      // AllowDiscount: item.AllowDiscount !== undefined ? Number(item.AllowDiscount) : 0,
+      itemStatus: item.itemStatus === true,
+      itemId: item.itemId !== undefined ? Number(item.itemId) : 0, // Uncomment if you add ItemId to the interface
+      tagsId: item.tagsId
+        ? (Array.isArray(item.tagsId) ? item.tagsId.map(Number) : [Number(item.tagsId)])
+        : item.tagid
+          ? (Array.isArray(item.tagid) ? item.tagid.map(Number) : [Number(item.tagid)])
+          : [],
+      correctItemName: item.correctItemName || ""
+    }));
+    return items;
+  } catch (err) {
+    console.error("Error parsing XML to JSON array:", err);
+    throw err;
   }
 }

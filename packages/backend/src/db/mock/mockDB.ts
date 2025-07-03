@@ -1,4 +1,4 @@
-import { IDB } from "../db/IDB";
+import { IDB } from "../IDB";
 
 import userjson from "@smartcart/backend/mockData/users.json"
 import promotionjson from "@smartcart/backend/mockData/promotions.json"
@@ -6,11 +6,11 @@ import storejson from "@smartcart/backend/mockData/stores.json"
 import pricejson from "@smartcart/backend/mockData/items.json"
 import tagjson from "@smartcart/backend/mockData/tags.json"
 
-import { User } from "@smartcart/shared/src/users";
-import { Promotion } from "@smartcart/shared/src/promotions";
-import { Store } from "@smartcart/shared/src/stores";
-import { Price } from "@smartcart/shared/src/prices";
-import { Tag } from "@smartcart/shared/src/tags";
+import { User } from "@smartcart/shared/src/user";
+import { Promotion } from "@smartcart/shared/src/promotion";
+import { Store } from "@smartcart/shared/src/store";
+import { Price } from "@smartcart/shared/src/price";
+import { Tag } from "@smartcart/shared/src/tag";
 
 export const mockDb: IDB = {
     User:userjson as any as User [],
@@ -20,4 +20,7 @@ export const mockDb: IDB = {
     Item_Tag: [],
     Item: [],
     Tag: tagjson as any as Tag[],
+    save(obj:any):void {
+        console.log(obj)
+    },
 };

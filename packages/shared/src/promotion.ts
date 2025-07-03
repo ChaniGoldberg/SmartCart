@@ -1,9 +1,9 @@
+import { Item } from "./items";
 import { Price } from "./prices";
 export interface Promotion {
     // Core identification
     promotionId: number;//pk
     storeId: number;//fk
-    priceId: number;//fk
     // promo core info
     promotionDescription: string;
     // time
@@ -16,7 +16,7 @@ export interface Promotion {
     discountedPrice: number;
     discountAmount?: number; // Calculated: originalPrice - discountedPrice
     discountPercentage?: number; // Calculated percentage
-    promotionPricesOfItems?: Price[];//fk
+    promotionItemsCode: number[];//fk
     // conditions of promotions
     minQuantity?: number;
     maxQuantity?: number;
@@ -24,13 +24,13 @@ export interface Promotion {
     //aditional restrictions
     requiresCoupon: boolean;
     requiresClubMembership: boolean;
-    clubId?: string;
+    clubId?: number;
     additionalGiftCount?: number;
     minPurchaseAmount?: number;
     minNumberOfItemOfered?: number;
     // additional info
     remarks?: string;
 }
-interface Club {
-    clubId: number;
-}
+// interface Club {
+//     clubId: number;
+// }

@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import { Routing } from './routes/routing';
+import { Routing } from './routes/Routing';
+import { CartProvider } from './contexts/cartContext';
 
 
 
@@ -12,13 +13,13 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-
-<React.StrictMode>
-      <BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <CartProvider>
         <App />
         <Routing />
-      </BrowserRouter>
-
+      </CartProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
