@@ -1,5 +1,5 @@
-import { Item } from "./items";
-import { Price } from "./prices";
+import { Item } from "./item";
+import { Price } from "./price";
 export interface Promotion {
     // Core identification
     promotionId: number;//pk
