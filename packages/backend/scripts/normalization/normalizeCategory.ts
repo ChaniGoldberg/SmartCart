@@ -2,8 +2,9 @@ import { Tag } from "@smartcart/shared/src/tag";
 import "../../mockData/tags.json";
 import "../../mockData/items.json";
 import { Item } from "@smartcart/shared/src/item";
-import { IDB } from "../../src/db/IDB";
+import { mockDb } from "../../src/db/mock/mockDB";
 import path from 'path';
+import { db } from "../../src/db/dbProvider";
 
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
@@ -64,9 +65,7 @@ function addTag(tagName: string): Tag {
     return newTag;
 }
 
-const save: IDB['save'] = function (obj: object): void {
-    console.log("Saving object:", JSON.stringify(obj, null, 2));
-};
+
 
 export default async function tagProductByGPT(product: Item): Promise<number[]> {
     const tagOfProduct = await getTagFromGpt(product.correctItemName);
@@ -75,13 +74,13 @@ export default async function tagProductByGPT(product: Item): Promise<number[]> 
     const tagIds: number[] = [];
 
     existingTags.forEach(tag => {
-        save(tag);
+        db.save(tag);
         tagIds.push(tag.tagId);
     });
 
     missingTags.forEach(tagName => {
         const newTag = addTag(tagName);
-        save(newTag);
+        db.save(newTag);
         tagIds.push(newTag.tagId);
     });
 
