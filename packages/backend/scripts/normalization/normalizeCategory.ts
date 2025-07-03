@@ -1,41 +1,91 @@
-import { categories } from "@smartcart/shared/src/categories"
-import { Price } from "@smartcart/shared/src/prices"
-require('dotenv').config();
+import { Tag } from "@smartcart/shared/src/tag";
+import "../../mockData/tags.json";
+import "../../mockData/items.json";
+import { Item } from "@smartcart/shared/src/item";
+import { IDB } from "../../src/db/IDB";
+import path from 'path';
 
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
+const tagsData: Tag[] = require('../../mockData/tags.json') as Tag[];
 
-async function getTagFromGpt(product: string): Promise<string> {
+async function getTagFromGpt(productName: string): Promise<string[]> {
+    const encodedProductName = encodeURIComponent(productName);
+const url = `${process.env.OPEN_AI_URL}/${encodedProductName}`;
+    try {
+        const response = await fetch(url);
 
-    const tagUrl = `${process.env.OPEN_AI_URL}/${encodeURIComponent(product)}`;
-    const tagResponse = await fetch(tagUrl);
-
-    if (!tagResponse.ok) {
-        throw new Error(`Error fetching tag: ${tagResponse.statusText}`);
-    }
-
-    const tag = await tagResponse.text();
-    return tag;
-}
-
-function checkTagInDB(tagName: string): boolean {
-    for (const tag of categories) {
-        if (tag.name === tagName) {
-            return true;
+        if (!response.ok) {
+            throw new Error(`Error fetching tag: ${response.status} ${response.statusText}`);
         }
+
+        const responseText = await response.text();
+
+        try {
+            const tags = JSON.parse(responseText);
+
+            if (Array.isArray(tags)) {
+                return tags;
+            }
+
+            if (typeof tags === 'string') {
+                return [tags];
+            }
+
+            return [String(tags)];
+
+        } catch (parseError) {
+            if (responseText.includes(',')) {
+                return responseText.split(',').map(tag => tag.trim().replace(/"/g, ''));
+            }
+            return [responseText.trim().replace(/"/g, '')];
+        }
+
+    } catch (error) {
+        throw new Error(`Failed to fetch tag from GPT: ${error}`);
     }
-    return false;
 }
 
-function addCategory(tagName: string): void {
-    return;
+
+
+async function checkTagInDB(tagNames: string[]): Promise<{ existingTags: Tag[], missingTags: string[] }> {
+    const foundTags = tagsData.filter(tag => tagNames.includes(tag.tagName));
+    const foundTagNames = foundTags.map(tag => tag.tagName);
+    const missingTags = tagNames.filter(tagName => !foundTagNames.includes(tagName));
+
+    return {
+        existingTags: foundTags,
+        missingTags: missingTags
+    };
+}
+//צריך להדרס על ידי הפונקציה של חיה פרטיג
+function addTag(tagName: string): Tag {
+    const newTag: Tag = { tagId: tagsData.length + 1, tagName, dateAdded: new Date(), isAlreadyScanned: false };
+    return newTag;
 }
 
-export default async function tagProductByGPT(product: Price): Promise<string> {
+const save: IDB['save'] = function (obj: object): void {
+    console.log("Saving object:", JSON.stringify(obj, null, 2));
+};
 
-    const tagOfProduct = await getTagFromGpt(product.ItemName);
-    if (!checkTagInDB(tagOfProduct)) {
-        addCategory(tagOfProduct);
-    }
+export default async function tagProductByGPT(product: Item): Promise<number[]> {
+    const tagOfProduct = await getTagFromGpt(product.correctItemName);
+    const { existingTags, missingTags } = await checkTagInDB(tagOfProduct);
 
-    return tagOfProduct;
+    const tagIds: number[] = [];
+
+    existingTags.forEach(tag => {
+        save(tag);
+        tagIds.push(tag.tagId);
+    });
+
+    missingTags.forEach(tagName => {
+        const newTag = addTag(tagName);
+        save(newTag);
+        tagIds.push(newTag.tagId);
+    });
+
+    return tagIds;
 }
+
+
