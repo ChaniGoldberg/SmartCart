@@ -6,7 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/health';
 import itemsRoutes from './routes/items';
-import tagsRoutes from './routes/tags';
+import tagsRoutes from './routes/tagRoutes';
 import storeRoutes from './routes/storeRouter';
 import userRoutes from './routes/userRoutes'
 import { databaseService } from './services/database';
