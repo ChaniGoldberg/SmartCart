@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { tagService } from '../services/tagServices';
+import { tagService } from '../services/tagService';
 
 export const addTag = async (req: Request, res: Response) => {
     const { tagName } = req.body;
