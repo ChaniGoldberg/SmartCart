@@ -1,4 +1,4 @@
-import { Price } from "@smartcart/shared/src/prices";
+import { Price } from "@smartcart/shared/src/price";
 import React, { Dispatch, SetStateAction } from 'react';
 
 export type CartContextType = {
@@ -11,6 +11,6 @@ export type CartContextType = {
 export const cartContext = React.createContext<CartContextType>({
   cartItems: [],
   setCartItems: () => {},
-  addToCart: () => {},
+  addToCart: () => {},          
   removeFromCart: () => {}
 });
