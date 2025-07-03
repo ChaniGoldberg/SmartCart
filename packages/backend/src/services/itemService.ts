@@ -10,11 +10,11 @@ export class ItemService implements IItem {
     }
 
     async getAllItem(): Promise<Item[]> {
-        return this.db.Item;
+        return this.db.Item;;
     }
 
-async getItemById(itemCode: string): Promise<Item | null> {
-    const foundItem = this.db.Item.find((item: Item) => item.ItemCode === itemCode);
+async getItemById(itemCode: number): Promise<Item | null> {
+    const foundItem = this.db.Item.find((item: Item) => item.itemCode === itemCode);
     return foundItem ? foundItem : null;
 }
 
