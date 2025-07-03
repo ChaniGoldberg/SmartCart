@@ -1,4 +1,4 @@
-import {Price} from "@smartcart/shared/src/prices"
+import {Price} from "@smartcart/shared/src/price"
 import React, { createContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 
 type CartContextType = {
