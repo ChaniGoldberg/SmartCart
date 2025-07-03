@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/health';
 import itemsRoutes from './routes/items';
+import tagsRoutes from './routes/tags';
 import { databaseService } from './services/database';
 
 
@@ -23,6 +24,7 @@ app.use(express.json());
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
+app.use('/api/tags',tagsRoutes)
 
 
 app.listen(PORT, async () => {
