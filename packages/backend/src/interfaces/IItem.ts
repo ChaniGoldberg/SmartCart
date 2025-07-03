@@ -1,10 +1,10 @@
-import { Price } from "@smartcart/shared/src/prices"
+import { Item } from "@smartcart/shared/src/Item"
 
 export interface IItem {
 
-    getAllItem(): Promise<Price[]>
-    getItemById(itemCode: string): Promise<Price[] | null>
-    addItem(item: Price): Promise<void>
-    updateItem(item: Price): Promise<void>
+    getAllItem(): Promise<Item[]>
+    getItemById(itemCode: number): Promise<Item | null>
+    addItem(item: Item): Promise<void>
+    updateItem(item: Item): Promise<void>
     
 }
