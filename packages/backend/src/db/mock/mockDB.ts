@@ -6,7 +6,8 @@ import storejson from "@smartcart/backend/mockData/stores.json"
 import pricejson from "@smartcart/backend/mockData/items.json"
 import tagjson from "@smartcart/backend/mockData/tags.json"
 import itemjson from "@smartcart/backend/mockData/items.json"
-
+import pricejson from "@smartcart/backend/mockData/prices.json"
+import tagjson from "@smartcart/backend/mockData/tags.json"
 
 
 import { User } from "@smartcart/shared/src/user";
