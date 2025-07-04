@@ -1,6 +1,9 @@
-import {Tag} from "@smartcart/shared/src/tag";
+
+import { Tag } from "@smartcart/shared/src/tags"
 
 export interface ITag {
 
-    getAllTags():Promise<Tag[]> ;
+    getAllTags(): Promise<Tag[]>
+    addTag(tagName: string): Promise<Tag>
+
 }
