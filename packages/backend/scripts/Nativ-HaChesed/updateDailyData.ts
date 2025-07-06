@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { Item } from "@smartcart/shared/src/item";
 import { Store } from '@smartcart/shared/src/store';
 import cron from 'node-cron';
@@ -10,6 +10,7 @@ import { getMostUpdatePromoFile } from './promotions-netiv-hachesed';
 import { convertXMLPromotionStringToFilteredJson } from './parseXMLPromosFullToJson';
 import { getLatestUpdatePriceFullFile } from './latestPrices';
 import {convertXMLPriceFullStringToFilteredJson} from './parseXmlFullPrice';
+import quantityNormalization from '../normalization/quantityNormalization';
 
 
 async function getFileNamesFromSite(url: string): Promise<string[]> {
@@ -121,7 +122,14 @@ export async function updateDailyData(): Promise<void> {
                     const priceXmlUrl: string = new URL(priceFileName, GOV_URLS.natibHachesed).href;
                     console.log(`  מביא XML של מוצרים מ: ${priceXmlUrl}`);
                     const priceXmlContent: string = await fetchContentFromUrl(priceXmlUrl);
-                    const items: Item[] = await convertXMLPriceFullStringToFilteredJson(priceXmlContent); 
+                    let items: Item[] = await convertXMLPriceFullStringToFilteredJson(priceXmlContent); 
+                    items = items.map((item: Item) => {
+                    quantityNormalization([item]);
+                    return item;
+            });
+
+
+
                     allItemsData.push(...items); 
                     console.log(`  נוספו ${items.length} מוצרים עבור סניף }.`);
                 } catch (priceError: any) {
