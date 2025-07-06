@@ -4,10 +4,13 @@ import { itemService } from "../../injection.config";
 import { tagService } from "../../injection.config";
 
 export async function searchItemsByTag(tagName : string): Promise<Item[] | null> {
-    const tags = await tagService.getAllTags();
+    const tags:Tag[]|null= await tagService.getAllTags();
+    if (!tags || !Array.isArray(tags)) {
+        return null;
+    }
     const matchingTagIds: number[] = tags
-        .filter(tag => tag && typeof tag.tagName === "string" && tag.tagName.toLowerCase().includes(tagName.toLowerCase()))
-        .map(tag => tag.tagId);
+        .filter((tag: { tagName: string; }) => tag && typeof tag.tagName === "string" && tag.tagName.toLowerCase().includes(tagName.toLowerCase()))
+        .map((tag: { tagId: any; }) => tag.tagId);
     const items = await itemService.getAllItem();
     const filteredItems = items.filter(item =>
         Array.isArray(item.tagsId) &&

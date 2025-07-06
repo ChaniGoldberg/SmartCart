@@ -10,8 +10,10 @@ export class TagService implements ITag {
         this.db = db;
     }
 
-    async getAllTags(): Promise<Tag[]> {
-        throw new Error('getAllTags method not implemented yet');
+    async getAllTags(): Promise<Tag[]|null> {
+        if(!this.db.Tag)
+            return null;    
+        return this.db.Tag;
     }
 
     async addTag(tagName: string): Promise<Tag> {
