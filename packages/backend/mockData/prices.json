@@ -1,0 +1,47 @@
+[
+  {
+    "priceId": 1,
+    "storeId": 10,
+    "itemId": 101,
+    "itemCode": 1001,
+    "price": 4.5,
+    "priceUpdateDate": "2025-06-19T11:09:36.820Z",
+    "unitQuantity": "1",
+    "quantity": 150,
+    "unitOfMeasure": "יחידה",
+    "isWeighted": false,
+    "quantityInPackage": "1",
+    "unitOfMeasurePrice": 4.5,
+    "allowDiscount": true
+  },
+  {
+    "priceId": 2,
+    "storeId": 10,
+    "itemId": 102,
+    "itemCode": 1002,
+    "price": 3.8,
+    "priceUpdateDate": "2025-06-19T11:09:36.820Z",
+    "unitQuantity": "1",
+    "quantity": 200,
+    "unitOfMeasure": "יחידה",
+    "isWeighted": false,
+    "quantityInPackage": "1",
+    "unitOfMeasurePrice": 3.8,
+    "allowDiscount": true
+  },
+  {
+    "priceId": 3,
+    "storeId": 11,
+    "itemId": 103,
+    "itemCode": 1003,
+    "price": 5.5,
+    "priceUpdateDate": "2025-07-01T09:00:00.000Z",
+    "unitQuantity": "500ml",
+    "quantity": 75,
+    "unitOfMeasure": "ליטר",
+    "isWeighted": false,
+    "quantityInPackage": "6",
+    "unitOfMeasurePrice": 11.0,
+    "allowDiscount": false
+  }
+]

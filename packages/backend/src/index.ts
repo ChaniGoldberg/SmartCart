@@ -6,9 +6,8 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import healthRoutes from './routes/health';
 import itemsRoutes from './routes/items';
+import tagsRoutes from './routes/tagRoutes';
 import storeRoutes from './routes/storeRouter';
-import promotionRoutes from './routes/promotionRoutes';
-import { setupSwagger } from './swagger';
 import { databaseService } from './services/database';
 
 const app = express();
@@ -38,8 +37,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
-app.use('/api/promotions', promotionRoutes);
-app.use('/api/stores', storeRoutes);
+app.use("/api/stores", storeRoutes); 
+
 
 setupSwagger(app);
 
@@ -66,3 +65,5 @@ app.listen(PORT, async () => {
     console.log('📝 Using mock data - Supabase not configured');
   }
 });
+
+
