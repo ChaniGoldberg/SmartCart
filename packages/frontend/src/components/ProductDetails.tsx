@@ -86,6 +86,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     // { label: 'שם המוצר', value: item.itemName || 'לא זמין' },
   ]
  
+  
   return (
     <div className="w-full max-w-10xl mx-auto mt-3 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition group">
       <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{product.itemName}</h2>
