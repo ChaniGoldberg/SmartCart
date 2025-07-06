@@ -8,6 +8,7 @@ export async function searchItemsByTag(tagName : string): Promise<Item[] | null>
     if (!tags || !Array.isArray(tags)) {
         return null;
     }
+    
     const matchingTagIds: number[] = tags
         .filter((tag: { tagName: string; }) => tag && typeof tag.tagName === "string" && tag.tagName.toLowerCase().includes(tagName.toLowerCase()))
         .map((tag: { tagId: any; }) => tag.tagId);

@@ -9,6 +9,7 @@ jest.mock('../../../injection.config', () => ({
     tagService: {
         getAllTags: jest.fn(),
     },
+    
 }));
 
 describe('searchItemsByTag', () => {
