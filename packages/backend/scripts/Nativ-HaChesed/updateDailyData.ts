@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { Item } from "@smartcart/shared/src/item";
 import { Store } from '@smartcart/shared/src/store';
 import cron from 'node-cron';
