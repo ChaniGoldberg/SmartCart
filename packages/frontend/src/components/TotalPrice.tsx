@@ -7,7 +7,7 @@ const TotalPrice: React.FC = () => {
     
     return (
       <div>
-        {context && context.cartItems.length>0 && context.cartItems.reduce((total, item) => {
+        Total Price: {context && context.cartItems.length>0 && context.cartItems.reduce((total, item) => {
           return total + (item.ItemPrice * item.Quantity);  },0)}.toFixed(1)0   
      </div>
     );
