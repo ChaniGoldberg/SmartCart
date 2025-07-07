@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CartDTO } from "@smartcart/shared/DTO/Cart.dto";
 import { ProductDTO } from "@smartcart/shared/DTO/Product.dto";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 
 const carts: CartDTO[] = [];
 
