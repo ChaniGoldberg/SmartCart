@@ -1,128 +1,84 @@
-import * as fs from "fs";
 import * as xml2js from "xml2js";
-import * as path from "path";
-import * as zlib from "zlib";
+import { Promotion } from '@smartcart/shared/src/promotion';
 
-export async function convertXMLPromotionFileToJson(xmlContent: string): Promise<string | undefined> {
-    try {
-        if (!xmlContent) {
-            throw new Error("Invalid XML content");
-        }
-        const parser = new xml2js.Parser();
-        const result = await parser.parseStringPromise(xmlContent);
-        const FieldNamesArray = getFieldNamesAsArray();
+export async function parseXmlToJson(xmlContent: string): Promise<object> {
+  if (!xmlContent) {
+    throw new Error("Invalid XML content");
+  }
 
-        const filtered = await filterPromotions(JSON.stringify(result), FieldNamesArray);
-
-        if (filtered) {
-            const jsonFilePath = path.resolve(__dirname, "xmlContent.json");
-            fs.writeFileSync(jsonFilePath, JSON.stringify(filtered, null, 2), "utf-8");
-            return jsonFilePath;
-        }
-        return undefined; 
-    } catch (err) {
-        throw new Error(err instanceof Error ? err.message : String(err));
-    }
+  try {
+    const parser = new xml2js.Parser();
+    return await parser.parseStringPromise(xmlContent);
+  } catch (err) {
+    throw new Error(`Failed to parse XML to JSON: ${err}`);
+  }
 }
 
-export async function filterPromotions(jsonData: string, fields: string[]): Promise<any> {
-    try {
-        const data = JSON.parse(jsonData); 
-        const root = data.Root || data;
-
-        if (!root.Promotions || !Array.isArray(root.Promotions)) {
-            throw new Error("Promotions not found or not an array");
-        }
-
-        const filteredPromotions = root.Promotions.map((promotionObject: any) => {
-            const promotions = promotionObject.Promotion || []; 
-            return promotions.map((promotion: any) => {
-                const filtered: any = {};
-                fields.forEach(field => {
-                    switch (field) {
-                        case 'promotionId':
-                            filtered.promotionId = promotion.PromotionId ? promotion.PromotionId[0] : null;
-                            break;
-                        case 'promotionDescription':
-                            filtered.promotionDescription = promotion.PromotionDescription ? promotion.PromotionDescription[0] : null;
-                            break;
-                        case 'startDate':
-                            filtered.startDate = promotion.PromotionStartDate ? promotion.PromotionStartDate[0] : null;
-                            break;
-                        case 'endDate':
-                            filtered.endDate = promotion.PromotionEndDate ? promotion.PromotionEndDate[0] : null;
-                            break;
-                        case 'lastUpdated':
-                            filtered.lastUpdated = promotion.PromotionUpdateDate ? promotion.PromotionUpdateDate[0] : null;
-                            break;
-                        case 'minQty':
-                            filtered.minQty = promotion.MinQty ? promotion.MinQty[0] : null;
-                            break;
-                        case 'discountedPrice':
-                            filtered.discountedPrice = promotion.DiscountedPrice ? promotion.DiscountedPrice[0] : null;
-                            break;
-                        case 'additionalRestrictions':
-                            filtered.additionalRestrictions = promotion.AdditionalRestrictions ? promotion.AdditionalRestrictions.map((restriction: any) => ({
-                                AdditionalIsCoupon: restriction.AdditionalIsCoupon[0],
-                                AdditionalGiftCount: restriction.AdditionalGiftCount[0],
-                                AdditionalIsTotal: restriction.AdditionalIsTotal[0],
-                                AdditionalIsActive: restriction.AdditionalIsActive[0],
-                            })) : [];
-                            break;
-                    }
-                });
-                return filtered; 
-            });
-        }).flat(); 
-        return { Promotions: filteredPromotions };
-    } catch (error) {
-        throw new Error(`Error filtering promotions: ${error instanceof Error ? error.message : String(error)}`);
+export function normalizePromotions(rawData: any): Promotion[] {
+  try {
+    const promotionsRaw = rawData?.Root?.Promotions?.[0]?.Promotion;
+    if (!promotionsRaw) {
+      throw new Error("No promotions found in the parsed JSON.");
     }
+
+    const promotionsArray = Array.isArray(promotionsRaw) ? promotionsRaw : [promotionsRaw];
+    const chainId = rawData?.Root?.ChainId?.[0];
+    const subChainId = rawData?.Root?.SubChainId?.[0];
+    const storeId = rawData?.Root?.StoreId?.[0];
+
+    return promotionsArray.map((promo: any) =>
+      convertRawPromotionToPromotion(promo, chainId, subChainId, storeId)
+    );
+  } catch (error) {
+    console.error("Error normalizing promotions:", error);
+    throw error;
+  }
 }
 
-export function getFieldNamesAsArray(): string[] {
-    const promotionFields = [
-        "promotionId",
-        "promotionDescription",
-        "startDate",
-        "endDate",
-        "lastUpdated",
-        "isActive",
-        "originalPrice",
-        "discountedPrice",
-        "discountAmount",
-        "discountPercentage",
-        "promotionItems",
-        "conditionsOfPromo"
-    ];
+function convertRawPromotionToPromotion(
+  rawPromo: any,
+  chainId: string,
+  subChainId: string,
+  storeId: string
+): Promotion {
+  const promotionItemsCode = (rawPromo?.PromotionItems || []).map((item: any) => 
+    item?.Item?.[0]?.ItemCode?.[0] ?? "");
 
-    const conditionsFields = [
-        "minQty",
-        "maxQty",
-        "clubs",
-        "additionalRestrictions",
-        "minPurchaseAmnt",
-        "minNoOfItemOfered",
-        "remarks"
-    ];
+  console.log("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
+  console.log(promotionItemsCode);
 
-    const clubFields = [
-        "clubId"
-    ];
 
-    const additionalRestrictionsFields = [
-        "requiresCoupon",
-        "requiresClubMembership",
-        "clubId",
-        "additionalGiftCount",
-        "additionalIsTotal",
-        "additionalIsActive"
-    ];
+  return {
+    promotionId: parseInt(rawPromo?.PromotionId?.[0] ?? "0"),
+    storePK: `${chainId}-${subChainId}-${storeId}`,
+    promotionDescription: rawPromo?.PromotionDescription?.[0] ?? "",
+    startDate: new Date(`${rawPromo?.PromotionStartDate?.[0] || ''}T${rawPromo?.PromotionStartHour?.[0] || ''}`),
+    endDate: new Date(`${rawPromo?.PromotionEndDate?.[0] || ''}T${rawPromo?.PromotionEndHour?.[0] || ''}`),
+    lastUpdated: new Date(rawPromo?.PromotionUpdateDate?.[0] ?? ""),
+    isActive: true,
+    discountedPrice: parseFloat(rawPromo?.DiscountedPrice?.[0] ?? "0"),
+    promotionItemsCode,//fk
+    minQuantity: parseFloat(rawPromo?.MinQty?.[0] ?? "0"),
+    maxQuantity: rawPromo?.MaxQty?.[0] ? parseFloat(rawPromo.MaxQty[0]) : undefined,
+    requiresCoupon: rawPromo?.AdditionalRestrictions?.[0]?.AdditionalIsCoupon == "1",
+    requiresClubMembership: rawPromo?.Clubs?.[0]?.ClubId?.[0] != "0",
+    clubId: parseInt(rawPromo.Clubs[0].ClubId[0]),
+    additionalGiftCount: parseInt(rawPromo?.AdditionalRestrictions?.[0]?.AdditionalGiftCount?.[0] ?? "0"),
+    minNumberOfItemOfered: parseInt(rawPromo?.MinNoOfItemOfered?.[0] ?? "0"),
+    remarks: rawPromo?.Remarks?.[0] ?? "",
+  }
+};
 
-    return [
-        ...promotionFields,
-        ...conditionsFields,
-        ...clubFields,
-        ...additionalRestrictionsFields
-    ];
+//main
+export async function parseXmlPromotionsToJson(xmlData: string): Promise<Promotion[]> {
+  if (!xmlData) {
+    throw new Error("Invalid XML data");
+  }
+  try {
+    const jsonData = await parseXmlToJson(xmlData);
+    return normalizePromotions(jsonData);
+  } catch (err) {
+    console.error("Error parsing XML to Promotion array:", err);
+    throw err;
+  }
 }
