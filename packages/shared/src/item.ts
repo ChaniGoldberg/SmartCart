@@ -8,5 +8,5 @@ export interface Item {
   manufactureCountry: string;
   manufacturerItemDescription: string;
   itemStatus: boolean;
- // tagsId?: number[];//fk
+  tagsId?: number[];//fk
 }

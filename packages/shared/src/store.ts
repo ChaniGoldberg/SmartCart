@@ -1,7 +1,6 @@
 
 
 export interface Store {
-
   storePK: string; //pk `${chainId}-${subChainId}-${storeId}`
   storeId: number;
   chainName: string;

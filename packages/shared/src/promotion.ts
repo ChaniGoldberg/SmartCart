@@ -3,7 +3,7 @@ import { Price } from "./price";
 export interface Promotion {
     // Core identification
     promotionId: number;//pk
-    storeuid: string;   //fk   
+    storePK: string;   //fk   
     // promo core info
     promotionDescription: string;
     // time
@@ -16,7 +16,7 @@ export interface Promotion {
     discountedPrice: number;
     discountAmount?: number; // Calculated: originalPrice - discountedPrice
     discountPercentage?: number; // Calculated percentage
-  //  promotionItemsCode: number[];//fk
+    promotionItemsCode: number[];//fk
     // conditions of promotions
     minQuantity?: number;
     maxQuantity?: number;
