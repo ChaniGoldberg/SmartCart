@@ -1,16 +1,14 @@
 import dotenv from 'dotenv';
-// Load environment variables
 dotenv.config();
-
+const swaggerJsdoc = require('swagger-jsdoc');
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import healthRoutes from './routes/health';
 import itemsRoutes from './routes/items';
+import tagsRoutes from './routes/tagRoutes';
 import storeRoutes from './routes/storeRouter';
-import userRoutes from './routes/userRoutes'
 import { databaseService } from './services/database';
-import { setupSwagger } from './swagger';
-
 
 const app = express();
 const PORT = process.env.PORT;
@@ -23,27 +21,40 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Swagger setup
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'SmartCart API',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./src/routes/*.ts'],
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
 app.use("/api/stores", storeRoutes); 
-app.use('/api/users',userRoutes);
 
 
 setupSwagger(app);
+
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${CORS_ORIGIN}`);
-  
-  // Initialize database with sample data if using Supabase
+
+  // Initialize DB
   if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
     console.log('🗄️ Initializing database...');
     try {
       databaseService.canInitialize();
       try {
         await databaseService.initializeSampleData();
-        console.log('✅ Database initialized successfully');  
+        console.log('✅ Database initialized successfully');
       } catch (error) {
         console.error('❌ Database sample-data initialization failed');
       }
@@ -54,3 +65,5 @@ app.listen(PORT, async () => {
     console.log('📝 Using mock data - Supabase not configured');
   }
 });
+
+

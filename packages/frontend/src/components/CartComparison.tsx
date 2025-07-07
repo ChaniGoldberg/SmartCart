@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { CartComparisonDTO } from "@smartcart/shared/DTO/CartComparison.dto";
+import { CartDTO } from "@smartcart/shared/DTO/Cart.dto";
 import { ProductDTO } from "@smartcart/shared/DTO/Product.dto";
 import { Link } from "react-router-dom";
 
-const carts: CartComparisonDTO[] = [];
-
-const totals = carts.map(cart => cart.products.reduce((sum, p) => sum + p.price, 0));
-const maxTotal = Math.max(...totals);
+const carts: CartDTO[] = [];
 
 const CartComparison = () => {
   const [selectedProducts, setSelectedProducts] = useState<ProductDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  const totals = carts.map(cart => cart.products.reduce((sum, p) => sum + p.price, 0));
+  const maxTotal = totals.length > 0 ? Math.max(...totals) : 0;
 
   const openPopup = (products: ProductDTO[]) => {
     setSelectedProducts(products);
@@ -40,7 +40,7 @@ const CartComparison = () => {
           <Link to="/" className="hover:underline">Log in</Link>
         </nav>
       </header>
-      <h2 className="text-2xl font-bold mb-8 mt-8 text-gray-800">השוואת סלים</h2>
+      <h2 className="text-2xl font-bold mb-8 mt-8 text-gray-800 text-[#0db0a5]">השוואת סלים</h2>
       <div className="overflow-x-auto w-full max-w-4xl">
         <table className="min-w-full bg-white rounded-lg shadow border border-gray-200">
           <thead>
@@ -81,7 +81,7 @@ const CartComparison = () => {
             <ul>
               {selectedProducts.map((product, index) => (
                 <li key={index} className="flex justify-between">
-                  
+
                   <span>{product.price} ₪</span>
                   <span>{product.ProductName}</span>
                 </li>
