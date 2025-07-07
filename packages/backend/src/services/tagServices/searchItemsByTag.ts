@@ -3,21 +3,26 @@ import { Tag } from "@smartcart/shared/src/tag";
 import { itemService } from "../../injection.config";
 import { tagService } from "../../injection.config";
 
-export async function searchItemsByTag(tagName : string): Promise<Item[] | null> {
-    const tags:Tag[]|null= await tagService.getAllTags();
+export async function searchItemsByTag(tagName: string): Promise<Item[] | null> {
+    const tags: Tag[] | null = await tagService.getAllTags();
     if (!tags || !Array.isArray(tags)) {
         return null;
     }
-    
-    const matchingTagIds: number[] = tags
-        .filter((tag: { tagName: string; }) => tag && typeof tag.tagName === "string" && tag.tagName.toLowerCase().includes(tagName.toLowerCase()))
-        .map((tag: { tagId: any; }) => tag.tagId);
+
+    // Use Set for efficient lookup
+    const matchingTagIds = new Set(
+        tags
+            .filter(tag =>
+                typeof tag.tagName === "string" &&
+                tag.tagName.toLowerCase().includes(tagName.toLowerCase())
+            )
+            .map(tag => tag.tagId)
+    );
+
     const items = await itemService.getAllItem();
     const filteredItems = items.filter(item =>
         Array.isArray(item.tagsId) &&
-        item.tagsId.some((tagId: number) => matchingTagIds.includes(tagId))
+        item.tagsId.some(tagId => matchingTagIds.has(tagId))
     );
     return filteredItems;
 }
-
-
