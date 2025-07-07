@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import {cartContext} from '../context/cartContext';
+import {cartContext} from '../contexts/cartContext';
 
 
 const TotalPrice: React.FC = () => {
@@ -7,8 +7,8 @@ const TotalPrice: React.FC = () => {
     
     return (
       <div>
-        Total Price: {context && context.cartItems.length>0 && context.cartItems.reduce((total, item) => {
-          return total + (item.ItemPrice * item.Quantity);  },0)}.toFixed(1)0   
+         {context && context.cartItems.length>0 && context.cartItems.reduce((total, item) => {
+          return total + (item.price * item.quantity);  },0)}   
      </div>
     );
 };
