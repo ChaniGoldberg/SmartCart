@@ -3,7 +3,7 @@ import { Price } from "./price";
 export interface Promotion {
     // Core identification
     promotionId: number;//pk
-    storeId: number;//fk
+    storePK: string;   //fk   
     // promo core info
     promotionDescription: string;
     // time
