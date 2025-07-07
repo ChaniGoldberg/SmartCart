@@ -1,7 +1,8 @@
 
   
   export interface Store {
-    storeId: number;//pk
+    storeuid: string; //pk
+    superstoreId: number; 
     chainName: string;
     chainId: number; 
     subChainName: string;
