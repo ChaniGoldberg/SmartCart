@@ -1,5 +1,8 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
+import { StoreLocationDto } from "@smartcart/shared/DTO/store.dto";
+
+
 
 
 //זכרון זמני לכתובות
@@ -73,7 +76,7 @@ async function limitConcurrency<T,R>(
 }
 
 
-export const getValidStores = async () => {
+export const getValidStores = async ():Promise<StoreLocationDto[]> => {
   const stores: Store[] = db.Store;//שליפת כל הסניפים מהמסד נתונים
   //בדיקת תקינות של הכתובת
   const isValidAddress = (store: Store) => {
@@ -98,15 +101,15 @@ export const getValidStores = async () => {
       const fullAddress = `${s.address}, ${s.city}`;
       const coords = await geocodeAddress(fullAddress);//שיחזיר קורדינטה geocodeAddress-שליחת הכתובת ל
       //הנתונים שיחזרו מהפונקציה 
-      return {
-        storeId: s.storeId,
-        chainId: s.chainId,
-        chainName: s.chainName,
-        storeName: s.storeName,
-        fullAddress:fullAddress?? null,
-        latitude: coords?.lat ?? null,
-        longitude: coords?.lng ?? null
-      };
+      return new StoreLocationDto(
+         s.storeId,
+         s.chainId,
+         s.chainName,
+         s.storeName,
+        fullAddress?? null,
+        coords?.lat ?? null,
+        coords?.lng ?? null
+      )
     },10)//מגביל את מס הקריאות במקביל ל- 10
 return addressCoords;
 };
