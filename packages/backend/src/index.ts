@@ -38,7 +38,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
-app.use("/api/stores", storeRoutes); 
+app.use('/api/stores', storeRoutes); 
 
 
 setupSwagger(app);
