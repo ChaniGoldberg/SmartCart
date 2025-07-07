@@ -1,57 +1,3 @@
-// //מחולק לקבצים
-// import React, { useEffect, useState } from "react";
-// import { Item } from "@smartcart/shared/src/item";
-// import { Tag } from "@smartcart/shared/src/tag";
-// import { itemService } from "@smartcart/backend/src/injection.config";
-// import { tagService } from "@smartcart/backend/src/injection.config";
-// import ProductCard from "./ProductCard"; // הנתיב לקובץ שלך
-
-// const ProductSearchPage: React.FC = () => {
-//   const [products, setProducts] = useState<Item[]>([]);
-//   const [tags, setTags] = useState<Tag[]>([]);
-//   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const [items, tagList] = await Promise.all([
-//         itemService.getAllItem(),
-//         tagService.getAllTags(),
-//       ]);
-//       setProducts(items);
-//       setTags(tagList ?? []);
-//     };
-//     fetchData();
-//   }, []);
-
-//   const toggleSelect = (id: number) => {
-//     setSelectedIds((prev) =>
-//       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-//     );
-//   };
-
-//   return (
-//     <div className="space-y-3 p-4">
-//       {products.map((product) => (
-//         <ProductCard
-//           key={product.itemId}
-//           product={product}
-//           tags={tags}
-//           isSelected={selectedIds.includes(product.itemCode)}
-//           toggleSelect={toggleSelect}
-//         />
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default ProductSearchPage;
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { Item } from "@smartcart/shared/src/item";
 import { Tag } from "@smartcart/shared/src/tag";
@@ -129,8 +75,38 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
     });
   };
 
+  const selectAll = () => {
+    setSelectedItems(products);
+    if (onSelectionChange) {
+      onSelectionChange(products);
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedItems([]);
+    if (onSelectionChange) {
+      onSelectionChange([]);
+    }
+  };
+
   return (
+
     <div className="space-y-3 p-4">
+      <div className="flex gap-4 mb-4">
+        <button
+          onClick={selectAll}
+          className="bg-gray-200 text-gray-800 text-sm px-3 py-1.5 rounded hover:bg-gray-300"
+        >
+          בחר הכל
+        </button>
+        <button
+          onClick={clearSelection}
+          className="bg-gray-200 text-gray-800 text-sm px-3 py-1.5 rounded hover:bg-gray-300"
+        >
+          נקה בחירה
+        </button>
+      </div>
+
       {products.map((product) => (
         <ProductCard
           key={product.itemId}
