@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 import Home from "../pages/Home"
-import MapPage from "../components/MapPage"
+import MapPage from "../components/MapPage";
 
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },

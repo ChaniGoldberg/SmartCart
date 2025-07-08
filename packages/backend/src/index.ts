@@ -9,6 +9,7 @@ import itemsRoutes from './routes/items';
 import tagsRoutes from './routes/tagRoutes';
 import storeRoutes from './routes/storeRouter';
 import { databaseService } from './services/database';
+import { setupSwagger } from './swagger';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -37,7 +38,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
-app.use("/api/stores", storeRoutes); 
+app.use('/api/stores', storeRoutes); 
 
 
 setupSwagger(app);
