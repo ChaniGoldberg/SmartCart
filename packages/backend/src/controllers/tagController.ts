@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { tagService } from '../services/tagService';
-
+import { itemService } from '../injection.config';
+import { Item } from '@smartcart/shared/src/item';
 export const addTag = async (req: Request, res: Response) => {
     const { tagName } = req.body;
     try {
@@ -13,5 +14,32 @@ export const addTag = async (req: Request, res: Response) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Error adding tag', error });
+    }
+};
+
+export const addNewTagsToItems = async (req: Request, res: Response) => {
+    const { tags, items } = req.body;
+    const updatedItems: Item[] = [];
+    try {
+        for (const reqItem of items) {
+            const item = await itemService.getItemById(reqItem.itemCode);
+            if (item) {
+                for (const tag of tags) {
+                    if (!item.tagsId?.includes(tag.tagId)) {
+                        item.tagsId?.push(tag.tagId);
+                    }
+                }
+                await itemService.updateItem(item);
+                updatedItems.push(item);
+            }
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Tags added to items successfully!',
+            timestamp: new Date().toISOString(),
+            items: updatedItems
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding tags to items', error });
     }
 };
