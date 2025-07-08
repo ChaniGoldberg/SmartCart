@@ -49,14 +49,14 @@ export async function updateDailyForData() {
             let storeID2 = ""
             let storeID1 = ""
             for (let i of allChain) {
-                if (allChain[0].storeId < 10) {
-                    storeID2 = "00" + String(allChain[0].storeId)
+                if (i.storeId < 10) {
+                    storeID2 = "00" + String(i.storeId)
                 }
-                else if (allChain[0].storeId > 10 && allChain[0].storeId < 100) {
-                    storeID2 = "0" + String(allChain[0].storeId)
+                else if (i.storeId > 10 && i.storeId < 100) {
+                    storeID2 = "0" + String(i.storeId)
                 }
                 else {
-                    storeID2 = String(allChain[0].storeId)
+                    storeID2 = String(i.storeId)
                 }
                 const result = await getMostUpdate(fileNames, storeID2);
                 if (result) {
@@ -68,14 +68,14 @@ export async function updateDailyForData() {
                 await downloadFileWithZip(client, i, folderPathForPriceFIleXml)
             }
             for (let i of allChain) {
-                if (allChain[0].storeId < 10) {
-                    storeID1 = "00" + String(allChain[0].storeId)
+                if (i.storeId < 10) {
+                    storeID1 = "00" + String(i.storeId)
                 }
-                else if (allChain[0].storeId > 10 && allChain[0].storeId < 100) {
-                    storeID1 = "0" + String(allChain[0].storeId)
+                else if (i.storeId > 10 && i.storeId < 100) {
+                    storeID1 = "0" + String(i.storeId)
                 }
                 else {
-                    storeID1 = String(allChain[0].storeId)
+                    storeID1 = String(i.storeId)
                 }
                 const result2 = await ReturnsTheMostUpToDatePromotionsFile(fileNames, storeID1);
                 if (result2) {
