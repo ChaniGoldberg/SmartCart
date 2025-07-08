@@ -12,11 +12,5 @@ export interface IDB {
   Price:Price[],
   Item: Item[];
   Tag: Tag[];
-  Item_Tag:[];
-  save(obj:object):void
-
-
-
-
+  Item_Tag:[]
 }
-
