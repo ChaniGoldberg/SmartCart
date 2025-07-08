@@ -1,6 +1,6 @@
 import { ProductDTO } from "./Product.dto";
 
-export class CartComparisonDTO {
+export class CartDTO {
     storeName: string;
     address: string;
     products:ProductDTO[];
