@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import {cartContext} from '../contexts/cartContext';
+import {cartContext} from 'frontend/src/store/redux/cartRedux';
 
 
 const TotalPrice: React.FC = () => {
