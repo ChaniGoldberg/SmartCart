@@ -23,23 +23,6 @@ const CartComparison = () => {
 
   return (
     <div className="w-full flex flex-col items-center mt-8">
-      <div className="flex gap-2 absolute top-4 left-4 z-50">
-        <span className="w-3 h-3 rounded-full bg-red-400 border border-red-300 shadow-sm"></span>
-        <span className="w-3 h-3 rounded-full bg-yellow-300 border border-yellow-200 shadow-sm"></span>
-        <span className="w-3 h-3 rounded-full bg-green-400 border border-green-300 shadow-sm"></span>
-      </div>
-      <header className="w-full bg-gradient-to-br from-[#08857d] to-[#0db0a5] text-white py-4 px-6 mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold">🛒</span>
-          <span className="text-2xl font-bold">SmartShop</span>
-        </div>
-        <nav className="flex gap-6 text-base">
-          <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/map" className="hover:underline">Map</Link>
-          <Link to="/" className="hover:underline">Shopping Cart</Link>
-          <Link to="/" className="hover:underline">Log in</Link>
-        </nav>
-      </header>
       <h2 className="text-2xl font-bold mb-8 mt-8 text-gray-800 text-[#0db0a5]">השוואת סלים</h2>
       <div className="overflow-x-auto w-full max-w-4xl">
         <table className="min-w-full bg-white rounded-lg shadow border border-gray-200">
