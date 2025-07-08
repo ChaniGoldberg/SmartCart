@@ -6,7 +6,7 @@ describe("getRelevantPromotionsForCart", () => {
 
     const baseCartItem: Price = {
         priceId: 1,
-        storeId: 1,
+        storePK: "1",
         itemId: 1,
         itemCode: 1,
         price: 10,
@@ -15,13 +15,13 @@ describe("getRelevantPromotionsForCart", () => {
         quantity: 1,
         unitOfMeasure: "ml",
         isWeighted: false,
-        quantityInPackage: "1",
+        quantityInPackage: 1,
         unitOfMeasurePrice: 10,
         allowDiscount: true,
     };
     const basePromo: Promotion = {
         promotionId: 1,
-        storeId: 1,
+        storePK: "1",
         promotionDescription: "מבצע בסיסי",
         isActive: true,
         startDate: new Date("2025-01-01"),
