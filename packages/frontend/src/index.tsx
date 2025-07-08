@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import { Routing } from './routes/Routing';
 import { CartProvider } from './contexts/cartContext';
 
 
@@ -17,7 +16,6 @@ root.render(
     <BrowserRouter>
       <CartProvider>
         <App />
-        <Routing />
       </CartProvider>
     </BrowserRouter>
   </React.StrictMode>
