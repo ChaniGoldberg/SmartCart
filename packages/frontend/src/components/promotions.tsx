@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Promotion } from '@smartcart/shared/src/promotion';
 
 interface PromotionsProps {
-  storeId: number;
+  storePk: number;
 }
 
-export const Promotions: React.FC<PromotionsProps> = ({ storeId }) => {
+export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
 
   useEffect(() => {
     setPromotions([
       {
         promotionId: 1,
-        storeId: 101,
+        storePK: "101",
         promotionDescription: "מבצע קיץ על תפוחים",
         startDate: new Date("2025-06-01T00:00:00"),
         endDate: new Date("2025-06-30T23:59:59"),
@@ -35,7 +35,7 @@ export const Promotions: React.FC<PromotionsProps> = ({ storeId }) => {
       },
       {
         promotionId: 2,
-        storeId: 102,
+        storePK: "102",
         promotionDescription: "הנחה מיוחדת על מוצרי חלב",
         startDate: new Date("2025-07-01T00:00:00"),
         endDate: new Date("2025-07-15T23:59:59"),
@@ -52,7 +52,7 @@ export const Promotions: React.FC<PromotionsProps> = ({ storeId }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-md shadow-md mt-10">
-      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">מבצעים לחנות {storeId}</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">מבצעים לחנות {storePk}</h2>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded-lg shadow-md">
