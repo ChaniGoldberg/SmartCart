@@ -27,22 +27,12 @@ export async function downloadFile(client: Client, fileName: string, localDir: s
     await client.downloadTo(localPath, fileName);
 }
 export async function updateDailyForData() {
-    let supabase: any = ""
-    const supabaseUrl = process.env.SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_ANON_KEY;
-    if (supabaseUrl && supabaseKey) {
-        supabase = createClient(supabaseUrl, supabaseKey);
-    }
-
     let fileStoreName = ""
     try {
-
         let { client, fileNames } = await getFileNames()
-
         const success = await getMostUpdateStoresFile(fileNames)
         if (success) { fileStoreName = success }
         const localDir = "C:/Users/odaya/Desktop/New folder/פרקטיקום/Project Smartcard/smartcart/packages/backend/scripts/Rami-Levi/DownloadsStoreFile";
-
         await downloadFile(client, fileStoreName, localDir)
         const fileTParse = await fs.readdir(localDir);
         const parseAllChain = await parseStoresXmlFileToStores(localDir + '/' + fileTParse[0]);//שליחתת כל התוכן לפנוקמיה הממירה לאוביקט את קובץ החנויות לאובייקטים של סניפים
@@ -68,14 +58,12 @@ export async function updateDailyForData() {
                 else {
                     storeID2 = String(allChain[0].storeId)
                 }
-
                 const result = await getMostUpdate(fileNames, storeID2);
                 if (result) {
                     allPriceFullForChain.push(result)
                 }
 
             }
-
             for (let i of allPriceFullForChain) {
                 await downloadFileWithZip(client, i, folderPathForPriceFIleXml)
             }
@@ -89,10 +77,6 @@ export async function updateDailyForData() {
                 else {
                     storeID1 = String(allChain[0].storeId)
                 }
-
-
-
-
                 const result2 = await ReturnsTheMostUpToDatePromotionsFile(fileNames, storeID1);
                 if (result2) {
                     allPromotionForChain.push(result2)
@@ -112,17 +96,11 @@ export async function updateDailyForData() {
                 const filePath = path.join(folderPathForPromotionFIleXml, fileName);
                 const buffer = await fs.readFile(filePath);
                 const xmlText = buffer.toString('utf8');
-
                 dictionaryPromotion.set(fileName, await parseXmlPromotionsToJson(xmlText))
-
-
             }
             console.log(dictionaryPrices);
             console.log(dictionaryPromotion);
             console.log(dictionaryItem);
-
-
-
         } else {
             console.error(":x: לא התקבל אובייקט תקין מה־XML");
         }
