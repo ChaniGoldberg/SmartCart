@@ -1,6 +1,6 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
-import { StoreLocationDto } from "@smartcart/shared/DTO/store.dto";
+import { StoreLocationDto } from "@smartcart/shared";
 
 
 
