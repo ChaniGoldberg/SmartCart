@@ -1,15 +1,16 @@
 import { Price } from "@smartcart/shared/src/price"
 import { db } from "../db/dbProvider";
 
-export async function getPriceByStoreIDItemID(storeId: Number, itemId: Number): Promise<Price | null> {
-  const price = db.Price.find(p => p.storeId == storeId && p.itemId == itemId)
+export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): Promise<Price | null> {
+  const price = db.Price.find(p => p.storePK == storePK && p.itemId == itemId)
 
   if (!price) {
-    console.warn(`Price not found for storeId: ${storeId} and itemId: ${itemId}`);
+    console.warn(`Price not found for storeId: ${storePK} and itemId: ${itemId}`);
   }
 
   return price || null;
-};
+}
+
 
 // export async function getRelevantPromotionsForCart
 
@@ -72,3 +73,26 @@ export function getRelevantPromotionsForCart(
     return true;
   });
 };
+
+export async function shoppingCartTotalSummary(shoppingCart: ProductDTO[], promotions: Promotion[]): Promise<number> {
+
+  let totalPrice = 0
+
+  for (const item of shoppingCart) {
+    let promotion: Promotion | undefined = undefined
+    for (let i = promotions.length - 1; i >= 0; i--) {
+      const promo = promotions[i];
+      if (!promo.isActive) continue;
+      if (!promo.promotionItemsCode.includes(item.itemCode)) { 
+        promotion = promo;
+        break;
+      }
+    }
+    const itemPrice = promotion && promotion.discountedPrice
+      ? promotion.discountedPrice
+      : item.price;
+
+    totalPrice += itemPrice;
+  }
+  return totalPrice
+}

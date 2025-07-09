@@ -1,4 +1,5 @@
 export class ProductDTO {
+    itemCode: number;
     productId: string;
     ProductName: string;
     storeName: string;
@@ -13,6 +14,7 @@ export class ProductDTO {
     tagName: string;
 
     constructor(
+        itemCode: number,
         productId: string,
         ProductName: string,
         storeName: string,
@@ -26,6 +28,7 @@ export class ProductDTO {
         tagId: number,
         tagName: string
     ) {
+        this.itemCode = itemCode
         this.productId = productId;
         this.ProductName = ProductName;
         this.storeName = storeName;
