@@ -2,7 +2,7 @@ export class ProductDTO {
     itemCode: number;
     productId: string;
     ProductName: string;
-    storeName: string;
+    storePK: string;
     itemName: string;
     itemStatus: boolean;
     manufacturerItemDescription: string;
@@ -10,14 +10,12 @@ export class ProductDTO {
     price: number;
     unitOfMeasurePrice: number;
     quantityInPackage: string;
-    tagId: number;
-    tagName: string;
 
     constructor(
         itemCode: number,
         productId: string,
         ProductName: string,
-        storeName: string,
+        storePK: string,
         itemName: string,
         itemStatus: boolean,
         manufacturerItemDescription: string,
@@ -25,13 +23,12 @@ export class ProductDTO {
         price: number,
         unitOfMeasurePrice: number,
         quantityInPackage: string,
-        tagId: number,
-        tagName: string
+      
     ) {
         this.itemCode = itemCode
         this.productId = productId;
         this.ProductName = ProductName;
-        this.storeName = storeName;
+        this.storePK = storePK;
         this.itemName = itemName;
         this.itemStatus = itemStatus;
         this.manufacturerItemDescription = manufacturerItemDescription;
@@ -39,7 +36,5 @@ export class ProductDTO {
         this.price = price;
         this.unitOfMeasurePrice = unitOfMeasurePrice;
         this.quantityInPackage = quantityInPackage;
-        this.tagId = tagId;
-        this.tagName = tagName;
     }
-}
+ }
