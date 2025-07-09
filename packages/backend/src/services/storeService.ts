@@ -106,9 +106,9 @@ export const getValidStores = async ():Promise<StoreLocationDto[]> => {
          s.chainId,
          s.chainName,
          s.storeName,
-        fullAddress?? null,
-        coords?.lat ?? null,
-        coords?.lng ?? null
+        fullAddress,
+        coords?.lat || 0, // אם לא נמצאו קואורדינטות, נשתמש ב-0
+        coords?.lng || 0,   
       )
     },10)//מגביל את מס הקריאות במקביל ל- 10
 return addressCoords;
