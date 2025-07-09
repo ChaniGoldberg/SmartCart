@@ -1,6 +1,6 @@
 import { Price } from "@smartcart/shared/src/price"
 import { db } from "../db/dbProvider";
-
+import { ProductDTO } from "@smartcart/shared";
 export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): Promise<Price | null> {
   const price = db.Price.find(p => p.storePK == storePK && p.itemId == itemId)
 
