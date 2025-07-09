@@ -51,6 +51,16 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
+async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
+    // supabase = getClient();
+    if (this.supabase != null) {
+      const { data, error } = await this.supabase.rpc('fuzzy_search_items', { search_query: itemText });
+      if (error) throw error;
+      return data;
+    }
+    return []; // Return an empty array if supabase is null
+  }
+
   async linkTagToItem(itemCode: number, tagId: number): Promise<void> {
     try {
       console.log(`Linking tag ${tagId} to item ${itemCode} in ${this.itemTagsTableName}`);
