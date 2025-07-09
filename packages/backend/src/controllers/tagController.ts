@@ -3,6 +3,7 @@ import { tagService } from '../services/tagService';
 import { itemService } from '../injection.config';
 import { Item } from '@smartcart/shared/src/item';
 
+// שליפת כל הטאגים
 export async function getAllTags(req: Request, res: Response) {
   try {
     const tags = await tagService.getAllTags();
