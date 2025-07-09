@@ -1,9 +1,10 @@
 import express from "express"
-import { getAllItems, getAllTags, searchItemByTag, searchItemsByName, searchTagByText } from "../controllers/searchItemsController";
+import { getAllItems, getAllTags, search, searchItemByTag, searchItemsByName, searchTagByText } from "../controllers/searchItemsController";
 const routes =express.Router();
 routes.get("/name/:name",searchItemsByName)
 routes.get("/tag/:tag",searchItemByTag)
 routes.get("/textTag/:text",searchTagByText)
 routes.get('/items', getAllItems);
 routes.get('/tags', getAllTags);
+routes.get("/search/:name",search)
 export default routes
