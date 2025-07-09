@@ -2,6 +2,19 @@ import { Request, Response } from 'express';
 import { tagService } from '../services/tagService';
 import { itemService } from '../injection.config';
 import { Item } from '@smartcart/shared/src/item';
+
+export async function getAllTags(req: Request, res: Response) {
+  try {
+    const tags = await tagService.getAllTags();
+    if (!tags) {
+      return res.status(404).json({ message: "No tags found" });
+    }
+    res.json(tags);
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+}
+
 export const addTag = async (req: Request, res: Response) => {
     const { tagName } = req.body;
     try {
