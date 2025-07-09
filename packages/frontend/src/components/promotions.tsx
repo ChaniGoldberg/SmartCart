@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Promotion } from '@smartcart/shared/src/promotion';
 
 interface PromotionsProps {
-  storePk: number;
+  storePk: string;
 }
 
 export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
