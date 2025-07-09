@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '@smartcart/shared/src/user'
 import { db } from '../db/dbProvider';

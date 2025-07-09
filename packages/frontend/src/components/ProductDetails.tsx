@@ -60,7 +60,7 @@ import React from 'react'
 import { Item } from '@smartcart/shared/src/item'
 import { Price } from '@smartcart/shared/src/price'
 import { Tag } from '@smartcart/shared/src/tag'
-import { ProductDTO } from '../DTO/Product.dto'
+import { ProductDTO } from "@smartcart/shared/DTO/Product.dto";
 interface ProductDetailsProps {
   product:ProductDTO
 }
