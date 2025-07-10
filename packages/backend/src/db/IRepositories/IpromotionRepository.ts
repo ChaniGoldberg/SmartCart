@@ -7,7 +7,7 @@ export interface IPromotionRepository {
   updateManyPromotions(promotions: Promotion[]): Promise<Promotion[]>;
   getAllPromotions(): Promise<Promotion[]>;
   getPromotionById(promotionId: number): Promise<Promotion | null>;
-  getPromotionsByStoreId(storeId: number): Promise<Promotion[]>;
+  getPromotionsByStoreId(storePK: string): Promise<Promotion[]>;
   deletePromotionById(promotionId: number): Promise<void>;
 
   // --- חדש: פונקציות לניהול קישורי Promotion-Item ---

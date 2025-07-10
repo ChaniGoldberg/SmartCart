@@ -379,15 +379,15 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async getPromotionsByStoreId(storeId: number): Promise<Promotion[]> {
+  async getPromotionsByStoreId(storePK: string): Promise<Promotion[]> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('*')
-        .eq('store_id', storeId);
+        .eq('store_pk', storePK);
 
       if (error) {
-        console.error(`Error fetching promotions for store ${storeId}:`, error);
+        console.error(`Error fetching promotions for store ${storePK}:`, error);
         throw new Error(`Failed to fetch promotions by store ID: ${error.message}`);
       }
 

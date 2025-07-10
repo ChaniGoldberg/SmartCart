@@ -81,11 +81,11 @@ export class StoreRepository implements IStoreRepository {
 
     async updateStore(store: Store): Promise<Store> {
         try {
-            console.log(`Updating store: ${store.storeName} (id: ${store.storeId}) in Supabase`);
+            console.log(`Updating store: ${store.storeName} (id: ${store.storePK}) in Supabase`);
             const { data, error } = await this.supabase
                 .from(this.tableName)
                 .update(this.toDbStore(store))
-                .eq('super_store_id', store.storeId)
+                .eq('store_pk', store.storePK)
                 .select('*');
 
             if (error) {
@@ -118,16 +118,16 @@ export class StoreRepository implements IStoreRepository {
                 const { data, error } = await this.supabase
                     .from(this.tableName)
                     .update(this.toDbStore(store))
-                    .eq('super_store_id', store.storeId)
+                    .eq('store_pk', store.storePK)
                     .select('*');
 
                 if (error) {
-                    console.error(`Error updating store with id ${store.storeId}:`, error);
-                    throw new Error(`Failed to update store with id ${store.storeId}: ${error.message}`);
+                    console.error(`Error updating store with id ${store.storePK}:`, error);
+                    throw new Error(`Failed to update store with id ${store.storePK}: ${error.message}`);
                 }
 
                 if (!data || data.length === 0) {
-                    throw new Error(`No data returned after updating store with id ${store.storeId}.`);
+                    throw new Error(`No data returned after updating store with id ${store.storePK}.`);
                 }
 
                 updatedStores.push(store);
@@ -158,12 +158,12 @@ export class StoreRepository implements IStoreRepository {
         }
     }
 
-    async getStoreById(storeId: number): Promise<Store | null> {
+    async getStoreById(storePK: string): Promise<Store | null> {
         try {
             const { data, error } = await this.supabase
                 .from(this.tableName)
                 .select('*')
-                .eq('super_store_id', storeId)
+                .eq('store_pk', storePK)
                 .single();
 
             if (error) {
@@ -181,18 +181,18 @@ export class StoreRepository implements IStoreRepository {
         }
     }
 
-    async deleteStoreById(storeId: number): Promise<void> {
+    async deleteStoreById(storePK: string): Promise<void> {
         try {
             const { error } = await this.supabase
                 .from(this.tableName)
                 .delete()
-                .eq('super_store_id', storeId);
+                .eq('store_pk', storePK);
 
             if (error) {
                 console.error('Error deleting store:', error);
                 throw new Error(`Failed to delete store: ${error.message}`);
             }
-            console.log(`Store with id ${storeId} deleted successfully.`);
+            console.log(`Store with id ${storePK} deleted successfully.`);
         } catch (error: any) {
             console.error(`Error in deleteStoreById: ${error.message}`);
             throw error;
