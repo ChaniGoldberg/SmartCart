@@ -4,12 +4,12 @@ interface SearchProductProps {
   onSearch: (query: string) => void;
 }
 
-const SearchProduct: React.FC<SearchProductProps> = ({ onSearch }) => {
+const SearchProduct: React.FC = () => {
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSearch(query);
+    
   };
 
   return (
