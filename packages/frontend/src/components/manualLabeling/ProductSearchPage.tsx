@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Item } from "@smartcart/shared/src/item";
 import { Tag } from "@smartcart/shared/src/tag";
 import ProductCard from "./ProductCard";
+import TagFilter from "./ProductTags";
+
 
 // הנתונים הקבועים שלך
 const products: Item[] = [
@@ -15,7 +17,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "תפוח אדום טרי",
     itemStatus: true,
-    tagsId: [1, 2],
+    tagsId: [1, 2], // פירות וירקות, פירות טריים
   },
   {
     itemCode: 1002,
@@ -27,7 +29,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "בננות מתוקות",
     itemStatus: true,
-    tagsId: [2],
+    tagsId: [2], // פירות טריים
   },
   {
     itemCode: 1003,
@@ -39,7 +41,31 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "מלפפונים טריים",
     itemStatus: true,
-    tagsId: [2],
+    tagsId: [3], // ירקות טריים
+  },
+  {
+    itemCode: 1004,
+    itemId: 104,
+    itemType: 1,
+    itemName: "חלב",
+    correctItemName: "חלב",
+    manufacturerName: "תנובה",
+    manufactureCountry: "ישראל",
+    manufacturerItemDescription: "חלב טרי 3%",
+    itemStatus: true,
+    tagsId: [4, 5], // מוצרי חלב, חלב
+  },
+  {
+    itemCode: 1005,
+    itemId: 105,
+    itemType: 1,
+    itemName: "לחם",
+    correctItemName: "לחם",
+    manufacturerName: "אנג'ל",
+    manufactureCountry: "ישראל",
+    manufacturerItemDescription: "לחם שחור",
+    itemStatus: true,
+    tagsId: [], // ללא תיוג
   },
 ];
 
@@ -58,6 +84,7 @@ interface ProductSearchPageProps {
 
 const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange }) => {
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Item[]>(products); // state למוצרים מסוננים
 
   const toggleSelect = (product: Item) => {
     setSelectedItems((prev) => {
@@ -66,7 +93,6 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
         ? prev.filter((p) => p.itemId !== product.itemId)
         : [...prev, product];
 
-      // כאן את מודיעה החוצה
       if (onSelectionChange) {
         onSelectionChange(newSelected);
       }
@@ -76,9 +102,9 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
   };
 
   const selectAll = () => {
-    setSelectedItems(products);
+    setSelectedItems(filteredProducts); // בחר רק מהמוצרים המסוננים
     if (onSelectionChange) {
-      onSelectionChange(products);
+      onSelectionChange(filteredProducts);
     }
   };
 
@@ -89,15 +115,48 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
     }
   };
 
-  return (
+  // פונקציית סינון לפי תג
+  const handleTagFilter = (tagName: string) => {
+    let filtered: Item[] = [];
 
+    if (tagName === 'הכל') {
+      // הצג את כל המוצרים
+      filtered = products;
+    } else if (tagName === 'ללא תיוג') {
+      // הצג רק מוצרים ללא תיוג (מערך tagsId ריק)
+      filtered = products.filter(product => 
+        !product.tagsId || product.tagsId.length === 0
+      );
+    } else {
+      // מצא את ה-tagId של התג הנבחר
+      const selectedTag = tags.find(tag => tag.tagName === tagName);
+      if (selectedTag) {
+        // הצג רק מוצרים שיש להם את התג הזה
+        filtered = products.filter(product => 
+          product.tagsId && product.tagsId.includes(selectedTag.tagId)
+        );
+      }
+    }
+
+    setFilteredProducts(filtered);
+    // נקה את הבחירה כי המוצרים השתנו
+    setSelectedItems([]);
+    if (onSelectionChange) {
+      onSelectionChange([]);
+    }
+  };
+
+  return (
     <div className="space-y-3 p-4">
+
+      <TagFilter onTagSelect={handleTagFilter} />
+
       <div className="flex gap-4 mb-4">
         <button
           onClick={selectAll}
           className="bg-gray-200 text-gray-800 text-sm px-3 py-1.5 rounded hover:bg-gray-300"
         >
-          בחר הכל
+          בחר הכל ({filteredProducts.length})
         </button>
         <button
           onClick={clearSelection}
@@ -105,9 +164,13 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
         >
           נקה בחירה
         </button>
+        <div className="text-sm text-gray-600 flex items-center">
+          מציג {filteredProducts.length} מתוך {products.length} מוצרים
+        </div>
       </div>
 
-      {products.map((product) => (
+      {/* הצג את המוצרים המסוננים */}
+      {filteredProducts.map((product) => (
         <ProductCard
           key={product.itemId}
           product={product}
@@ -116,6 +179,12 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
           toggleSelect={() => toggleSelect(product)}
         />
       ))}
+
+      {filteredProducts.length === 0 && (
+        <div className="text-center text-gray-500 py-8">
+          לא נמצאו מוצרים עבור התג הנבחר
+        </div>
+      )}
     </div>
   );
 };
