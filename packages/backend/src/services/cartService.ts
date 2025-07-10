@@ -78,21 +78,16 @@ export async function shoppingCartTotalSummary(shoppingCart: ProductDTO[], promo
 
   let totalPrice = 0
 
-  for (const item of shoppingCart) {
-    let promotion: Promotion | undefined = undefined
-    for (let i = promotions.length - 1; i >= 0; i--) {
-      const promo = promotions[i];
-      if (!promo.isActive) continue;
-      if (!promo.promotionItemsCode.includes(item.itemCode)) { 
-        promotion = promo;
-        break;
-      }
-    }
-    const itemPrice = promotion && promotion.discountedPrice
-      ? promotion.discountedPrice
-      : item.price;
+  const activePromotions = promotions.filter(promo => promo.isActive);
 
+  for (const item of shoppingCart) {
+     // חיפוש המבצע האחרון (כלומר, הכי עדכני) שמתאים לפריט הזה
+    const promotion = [...activePromotions].reverse().find(p =>
+      p.promotionItemsCode.includes(item.itemCode)
+      )
+    const itemPrice =promotion?.discountedPrice ?? item.price;
     totalPrice += itemPrice;
   }
+  
   return totalPrice
 }
