@@ -67,6 +67,33 @@ export async function getAllTags(req: Request, res: Response) {
     }
     res.json(tags);
   } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
+      res.status(500).json({ error: 'Something went wrong' });
+    }
   }
-}
+  
+  export async function search(req: Request, res: Response) {
+    const { name } = req.params;
+    try {
+      // מבצע חיפוש לפי שם מוצר
+      const itemsByName = await SearchForProductByName(name) || [];
+  
+      // מבצע חיפוש לפי תג
+      const itemsByTag = await searchItemsByTag(name) || [];
+  
+      // מאחד את כל התוצאות
+      const results = [
+        ...itemsByName,
+        ...itemsByTag
+      ];
+  
+      res.status(200).json({
+        success: true,
+        message: `Search results for ${name} retrieved successfully!`,
+        timestamp: new Date().toISOString(),
+        results
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Search failed', error });
+    }
+  }
+
