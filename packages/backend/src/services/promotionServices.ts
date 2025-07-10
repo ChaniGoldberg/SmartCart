@@ -2,8 +2,8 @@ import { IPromotions } from "../interfaces/Ipromotions";
 import { db } from "../db/dbProvider"; // שימוש ב-db הכללי עם שם קובץ מתוקן
 
 export const promotionsService: IPromotions = {
-    async getPromotionsByStoreId(storeId: number): Promise<typeof db.Promotion> {
-        if (!storeId || typeof storeId !== "number") {
+    async getPromotionsByStoreId(storePK: string): Promise<typeof db.Promotion> {
+        if (!storePK || typeof storePK !== "number") {
             throw { status: 400, message: "Invalid or missing storeId" };
         }
 
@@ -14,7 +14,7 @@ export const promotionsService: IPromotions = {
             const end = new Date(promotion.endDate);
 
             return (
-                promotion.storeId === storeId &&
+                promotion.storePK === storePK &&
                 start <= today &&
                 end >= today
             );

@@ -5,7 +5,7 @@ import { Promotion } from "../../../../shared/src/promotion";
 
 
 export class PromotionRepository implements IPromotionRepository {
-  private readonly tableName = 'promotions';
+  private readonly tableName = 'promotion';
   private readonly promotionItemsTableName = 'promotion_items'; // <--- שם טבלת הקישור
 
   constructor(private supabase: SupabaseClient) { }
@@ -15,6 +15,7 @@ export class PromotionRepository implements IPromotionRepository {
   private toDbPromotion(promo: Omit<Promotion, 'promotionItemsCode'>) {
     return {
       promotion_id: promo.promotionId,
+      store_pk: promo.storePK, // Assuming storePK is a unique identifier for the store
       // store_uid: promo.storeId, // חדש: storeId
       promotion_description: promo.promotionDescription,
       start_date: promo.startDate.toISOString(), // Required now

@@ -3,14 +3,15 @@ import { IStoreRepository } from "../IRepositories/IStoreRepository";
 import { Store } from "../../../../shared/src/store";
 
 export class StoreRepository implements IStoreRepository {
-    private readonly tableName = 'stores';
+    private readonly tableName = 'store';
 
     constructor(private supabase: SupabaseClient) { }
 
     // פונקציה להמרה ל-snake_case
     private toDbStore(store: Store) {
         return {
-            super_store_id: store.storeId,
+            store_pk: store.storePK, // Assuming storePK is a unique identifier for the store
+            store_id: store.storeId,
             chain_name: store.chainName,
             chain_id: store.chainId,
             sub_chain_name: store.subChainName,

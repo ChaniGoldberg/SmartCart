@@ -6,7 +6,7 @@ import { Tag } from "../../../../shared/src/tag";
 
 
 export class TagRepository implements ITagRepository {
-    private readonly tableName = 'tags';
+    private readonly tableName = 'tag';
     private readonly itemTagsTableName = 'item_tags'; // <--- חדש: שם טבלת הקישור
 
     constructor(private supabase: SupabaseClient) { }

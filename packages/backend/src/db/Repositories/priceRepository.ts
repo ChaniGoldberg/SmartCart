@@ -3,7 +3,7 @@ import { Price } from "../../../../shared/src/price";
 import { IPriceRepository } from "../IRepositories/IPriceRepository";
 
 export class PriceRepository implements IPriceRepository {
-    private readonly tableName = 'prices';
+    private readonly tableName = 'price';
 
     constructor(private supabase: SupabaseClient) { }
 
@@ -11,7 +11,7 @@ export class PriceRepository implements IPriceRepository {
     private toDbPrice(price: Price) {
         return {
             price_id: price.priceId,
-            // store_uid: price.storeId,
+            store_pk: price.storePK, // Assuming storePK is a unique identifier for the store
             item_code: price.itemCode,
             item_id: price.itemId,
             price: price.price,
