@@ -17,7 +17,7 @@ export async function getAllTags(req: Request, res: Response) {
 }
 
 export const addTag = async (req: Request, res: Response) => {
-    const { tagName } = req.body;
+    const { tagName } = req.params;
     try {
         const newTag = await tagService.addTag(tagName);
         res.status(201).json({
