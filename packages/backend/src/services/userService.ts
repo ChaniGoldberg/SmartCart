@@ -3,64 +3,58 @@ import jwt from 'jsonwebtoken';
 import { User } from '@smartcart/shared/src/user'
 import { db } from '../db/dbProvider';
 
- const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
 
 export function createUserTokenByJWT(user: User): string {
-        return jwt.sign(user, SECRET_KEY);
+    return jwt.sign(user, SECRET_KEY);
+}
+
+
+export function hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return bcrypt.hash(password, saltRounds);
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+    return db.User.find(user => user.email === email) || null;
+}
+
+export async function registerUser(
+    userId: number, email: string, password: string, userName: string
+
+): Promise<{ token: string; user: User }> {
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+        throw new Error('User already exists');
     }
 
+    const hashedPassword = await hashPassword(password);
+    const newUser: User = {
+        userId,
+        email,
+        password: hashedPassword,
+        userName
+    };
+    console.log(newUser)
+    db.save(newUser)
+    const token = createUserTokenByJWT(newUser);
+    return { token, user: newUser };
 
- export function   hashPassword(password: string): Promise<string> {
-        const saltRounds = 10;
-        return bcrypt.hash(password, saltRounds);
+}
+export async function loginUser(email: string, password: string): Promise<{ token: string; user: User }> {
+    const user = await getUserByEmail(email);
+    if (!user) {
+        throw new Error('User not found');
     }
 
-    export async function getUserByEmail(email: string): Promise<User | null> {
-        return db.User.find(user => user.email === email) || null;
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+        throw new Error('Invalid password');
     }
 
-   export async function  registerUser(
-        userId: number, email: string, password: string, userName: string
+    const token = createUserTokenByJWT(user);
+    return { token, user };
+}
 
-    ): Promise<User | null> {
-        const existingUser = await getUserByEmail(email);
-        if (existingUser) {
-            throw new Error('User already exists');
-        }
 
-        const hashedPassword = await hashPassword(password);
-        const newUser: User = {
-            userId,
-            email,
-            password: hashedPassword,
-            userName
-        };
-        console.log(newUser)
-        db.save(newUser)
-        return newUser;
-
-    }
-    export async function  updateUser(
-        userId: number, email: string, password: string, userName: string
-
-    ): Promise<User | null> {
-        const existingUser = await getUserByEmail(email);
-        if (!existingUser) {
-            throw new Error('User until not exists');
-        }
-
-        const hashedPassword = await hashPassword(password);
-        const updateUser: User = {
-            userId,
-            email,
-            password: hashedPassword,
-            userName
-        };
-        console.log(updateUser)
-        db.save(updateUser)
-        return updateUser;
-
-    }
-
-    
