@@ -3,7 +3,7 @@ import { db } from "../db/dbProvider"; // שימוש ב-db הכללי עם שם 
 
 export const promotionsService: IPromotions = {
     async getPromotionsByStoreId(storePK: string): Promise<typeof db.Promotion> {
-        if (!storePK || typeof storePK !== "number") {
+        if (!storePK || typeof storePK !== "string") {
             throw { status: 400, message: "Invalid or missing storeId" };
         }
 

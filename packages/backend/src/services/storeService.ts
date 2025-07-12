@@ -1,9 +1,24 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
-import { StoreLocationDto } from "@smartcart/shared/src";
+
+import { StoreLocationDto } from "@smartcart/shared/src/dto/store.dto";
+import { StoreRepository } from '../db/Repositories/storeRepository';
+import { databaseService } from '../services/database';
+import { createClient } from "@supabase/supabase-js";
 
 
 
+
+
+
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_ANON_KEY
+// בדיקה שהמשתנים קיימים
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
 
 //זכרון זמני לכתובות
 const addressCache = new Map<string, { lat: number; lng: number } | null>();
@@ -76,40 +91,45 @@ async function limitConcurrency<T,R>(
 }
 
 
-export const getValidStores = async ():Promise<StoreLocationDto[]> => {
-  const stores: Store[] = db.Store;//שליפת כל הסניפים מהמסד נתונים
-  //בדיקת תקינות של הכתובת
-  const isValidAddress = (store: Store) => {
-    return (
-      typeof store.address === 'string' &&
-      store.address.trim() !== '' &&
-      typeof store.city === 'string' &&
-      store.city.trim() !== ''
-    );
-  };
-  //סינון הסניפים עם כתובת תקינה
-  const results = stores.filter(isValidAddress).map((store: Store) => ({
-    storeId: store.storeId,
-    chainId: store.chainId,
-    chainName: store.chainName,
-    storeName:store.storeName,
-    address: store.address,
-    city: store.city
-  }));
+const storeRepository = new StoreRepository(supabase);
 
-  const addressCoords =await limitConcurrency(results, async (s) => {
+export const getValidStores = async (): Promise<StoreLocationDto[]> => {
+  try {
+    const stores: Store[] = await storeRepository.getAllStores();
+
+    const isValidAddress = (store: Store) => {
+      return (
+        typeof store.address === 'string' &&
+        store.address.trim() !== '' &&
+        typeof store.city === 'string' &&
+        store.city.trim() !== ''
+      );
+    };
+
+    const validStores = stores.filter(isValidAddress);
+
+    const addressCoords = await limitConcurrency(validStores, async (s) => {
       const fullAddress = `${s.address}, ${s.city}`;
-      const coords = await geocodeAddress(fullAddress);//שיחזיר קורדינטה geocodeAddress-שליחת הכתובת ל
-      //הנתונים שיחזרו מהפונקציה 
+      const coords = await geocodeAddress(fullAddress);
+
       return new StoreLocationDto(
-         s.storeId,
-         s.chainId,
-         s.chainName,
-         s.storeName,
+        s.storePK,
+        s.chainId,
+        s.chainName,
+        s.storeName,
         fullAddress,
-        coords?.lat || 0, // אם לא נמצאו קואורדינטות, נשתמש ב-0
-        coords?.lng || 0,   
-      )
-    },10)//מגביל את מס הקריאות במקביל ל- 10
-return addressCoords;
+        coords?.lat || 0,
+        coords?.lng || 0
+      );
+    }, 10);
+console.log(addressCoords)
+    return addressCoords;
+  } catch (error) {
+    console.error('❌ Failed to load valid stores:', error);
+    throw error;
+  }
+};
+
+export const addStoreService = async (store: Store): Promise<Store> => {
+  return await storeRepository.addStore(store);
 };
