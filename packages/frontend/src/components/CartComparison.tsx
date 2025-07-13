@@ -70,7 +70,7 @@ const CartComparison = () => {
                       onClick={() => openPopup(cart.products, idx)}
                       className="text-[#08857D] hover:underline"
                     >
-                      הצג מוצרים
+                      הצג מוצרים 
                     </button>
                   </td>
                   <td className="py-2 px-4 border-t text-center text-green-500 font-semibold">
