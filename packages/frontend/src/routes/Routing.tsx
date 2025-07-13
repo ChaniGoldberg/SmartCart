@@ -8,7 +8,7 @@ import AuthForm from "../components/authForm";
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },
     { path: "/map", element: <MapPage />, label: "מפה" },
-     { path: "/login", element: <AuthForm onClose={() => {true}}/>, label: "התחברות" },
+     { path: "/login", element: <AuthForm onClose={() => {false}}/>, label: "התחברות" },
      { path: "/cart", element: <Cart />, label: "סל" },
 
 ];
