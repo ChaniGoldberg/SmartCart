@@ -29,6 +29,33 @@ app.get('/Category/:category', (req, res) => {
     }
     res.send("אחר");
 });
+app.post('/categorize-products', (req, res) => {
+  const products = req.body.products; // [{ name: "גבינת תנובה 5%" }, ...]
+  const categoryNames = req.body.tags; // ["מוצרי חלב", "חטיפים", ...]
+
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^\w\s\u0590-\u05FF]/g, "");
+
+  // בחרתי מתוך subcategories רק את אלו ששמם נמצא ברשימת השמות שהתקבלה
+  const filteredSubcategories = subcategories.filter(subC =>
+    categoryNames.includes(subC.name)
+  );
+
+  const result = products.map(product => {
+    const normalizedName = normalize(product);
+
+    // עבור כל קטגוריה מסוננת, בדוק אם לפחות מילת מפתח תואמת
+    const matchedCategories = filteredSubcategories
+      .filter(subC =>
+        subC.keywords.some(kw => normalizedName.includes(normalize(kw)))
+      )
+      .map(subC => subC.name);
+
+    return `${product}: ${matchedCategories.join(", ") || ""}`;
+  });
+
+  res.send(result.join(" ; "));
+});
 
 app.listen(8080, () => {
     console.log('Server running on port 8080');
