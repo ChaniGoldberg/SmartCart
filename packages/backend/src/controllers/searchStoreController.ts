@@ -28,14 +28,14 @@ export const searchStoreController = async (req: Request, res: Response) => {
     }
 
     try {
-        const authors = await searchStoresService(name);
+        const stores = await searchStoresService(name);
         res.status(200).json({
             success: true,
             message: `The search by store name ${name} is successfully!`,
-            authors
+            stores
         });
     } catch (error) {
-        console.error('Error searching for authors:', error);
+        console.error('Error searching for stores:', error);
         res.status(500).json({ error: "שגיאה בשרת" });
     }
 };
