@@ -54,7 +54,8 @@ app.post('/categorize-products', (req, res) => {
     return `${product}: ${matchedCategories.join(", ") || ""}`;
   });
 
-  res.send(result.join(" ; "));
+  res.send(result.join(" ; ")); 
+  
 });
 
 app.listen(8080, () => {
