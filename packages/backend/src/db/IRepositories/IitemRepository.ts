@@ -9,15 +9,15 @@ export interface IItemRepository {
   getItemByItemCode(itemCode: number): Promise<Item | null>;
   deleteItemByItemCode(itemCode: number): Promise<void>;
   fuzzySearchItemsByText(itemText: string): Promise<Item[]>; // Change to return a Promise
+  
+// --- קשרי תגיות (ללא שינוי בפונקציות הקישור עצמן) ---
+linkTagToItem(itemCode: number, tagId: number): Promise<void>;
+unlinkTagFromItem(itemCode: number, tagId: number): Promise<void>;
+getTagsByItemCode(itemCode: number): Promise<number[]>;
+setTagsForItem(itemCode: number, tagIds: number[]): Promise<void>;
 
-  // --- קשרי תגיות (ללא שינוי בפונקציות הקישור עצמן) ---
-  linkTagToItem(itemCode: number, tagId: number): Promise<void>;
-  unlinkTagFromItem(itemCode: number, tagId: number): Promise<void>;
-  getTagsByItemCode(itemCode: number): Promise<number[]>;
-  setTagsForItem(itemCode: number, tagIds: number[]): Promise<void>;
-
-  // --- חדש: פונקציות לשליפת מבצעים המשויכים לפריט (אין יותר set/link/unlink ישירות דרך item repo) ---
-  // הפריט לא מנהל את המבצעים שהוא חלק מהם, המבצעים מנהלים את הפריטים שהם מכילים.
-  // לכן, נשאיר רק פונקציית שליפה, שתשמש לקבלת הנתונים המלאים של פריט.
-  getPromotionsByItemCode(itemCode: number): Promise<number[]>;
+// --- חדש: פונקציות לשליפת מבצעים המשויכים לפריט (אין יותר set/link/unlink ישירות דרך item repo) ---
+// הפריט לא מנהל את המבצעים שהוא חלק מהם, המבצעים מנהלים את הפריטים שהם מכילים.
+// לכן, נשאיר רק פונקציית שליפה, שתשמש לקבלת הנתונים המלאים של פריט.
+getPromotionsByItemCode(itemCode: number): Promise<number[]>;
 }

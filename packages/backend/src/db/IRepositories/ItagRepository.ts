@@ -8,4 +8,5 @@ export interface ITagRepository {
     getAllTags(): Promise<Tag[]>;
     getTagById(tagId: number): Promise<Tag | null>;
     deleteTagById(tagId: number): Promise<void>;
+    fuzzySearchTagsByName(tagName: string): Promise<Tag[]> ;
 }

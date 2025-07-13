@@ -20,6 +20,16 @@ export class TagRepository implements ITagRepository {
         };
     }
 
+    async fuzzySearchTagsByName(tagName: string): Promise<any[]> {
+        if (this.supabase != null) {
+            const { data, error } = await this.supabase.rpc('fuzzy_search_tags', { search_query: tagName });
+            if (error) throw error;
+            console.log('dataReturnd: ', data);
+            return data;
+        }
+        return []; // Return an empty array if supabase is null
+    }
+
     async addTag(tag: Tag): Promise<Tag> {
         try {
             console.log(`Adding tag: ${tag.tagName} (id: ${tag.tagId}) to Supabase`);
