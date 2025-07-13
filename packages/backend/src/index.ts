@@ -12,6 +12,7 @@ import { databaseService } from './services/database';
 import { setupSwagger } from './swagger';
 import searchItemsRoutes from './routes/searchItemsRoutes';
 import tagRoutes from './routes/tagRoutes';
+import searchStoreRoutes from './routes/searchStoreRoutes';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -43,6 +44,7 @@ app.use('/api/items', itemsRoutes);
 app.use("/api/stores", storeRoutes); 
 app.use("/api/search", searchItemsRoutes); 
 app.use("/api/tag", tagRoutes); 
+app.use('/api/search', searchStoreRoutes);
 
 
 setupSwagger(app);
