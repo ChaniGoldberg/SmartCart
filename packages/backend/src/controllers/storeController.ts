@@ -26,13 +26,3 @@ res.status(200).json(coordinates);
     }
 }
 
-export const addStoreController = async (req: Request, res: Response) => {
-    try {
-      const storeData = req.body; // הנתונים ששלחת בפוסטמן
-      const newStore = await addStoreService(storeData); // יצירת סניף חדש
-      res.status(201).json(newStore);
-    } catch (error) {
-      console.error("Error creating store:", error);
-      res.status(500).json({ error: "Failed to create store" });
-    }
-  };
