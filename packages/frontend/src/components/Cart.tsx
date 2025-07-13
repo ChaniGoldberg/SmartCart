@@ -3,7 +3,7 @@ import { cartContext } from '../store/redux/cartRedux';
 import ProductDetails from './ProductDetails';
 import '../index.css';
 import '../App.css';
-
+import CheapProductAlternatives from './Cart/AlternativeItemsList';
 const Cart: React.FC = () => {
   const context = useContext(cartContext);
   if (!context) {
@@ -23,7 +23,31 @@ const Cart: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
             {cartItems.map((item) => (
-              <ProductDetails key={item.product.itemCode} product={item.product} />
+              <ProductDetails
+                key={item.itemId}                
+                itemId={item.itemId}
+                // itemImage={item.itemImage}  
+                itemName="מוצר דמה"
+                correctItemName="שם מתוקן"
+                manufacturerName="יצרן דמה"
+                manufactureCountry="ישראל"
+                manufacturerItemDescription="תיאור דמה"
+                itemStatus={true}
+                tagsId={[]}
+                priceId={1}
+                storeId={1}
+                price={10}
+                priceUpdateDate={new Date()}
+                unitQuantity="1"
+                quantity={100}
+                unitOfMeasure="יחידה"
+                isWeighted={false}
+                quantityInPackage="6"
+                unitOfMeasurePrice={10}              
+                allowDiscount={true}
+                        
+                
+              />
             ))}
           </div>
         )}

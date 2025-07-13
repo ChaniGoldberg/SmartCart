@@ -14,3 +14,6 @@ export const cartContext = React.createContext<CartContextType>({
   addToCart: () => { },
   removeFromCart: () => { }
 });
+
+
+

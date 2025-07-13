@@ -1,5 +1,6 @@
 import React from 'react';
 import { Item } from '@smartcart/shared';
+import AlternativeItemsList from './Cart/AlternativeItemsList';
 
 interface ItemCardProps {
   item: Item;
@@ -43,7 +44,25 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onClick }) => {
         <strong>Amount:</strong> ${item.amount}
       </p>
       <p style={{ margin: '4px 0', fontSize: '12px', color: '#999' }}>
-        ID: {item.id}
+        {item.id}
+        <button
+          style={{
+            marginLeft: '12px',
+            padding: '4px 10px',
+            borderRadius: '4px',
+            border: 'none',
+            background: '#1976d2',
+            color: '#fff',
+            cursor: 'pointer',
+            fontSize: '12px'
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            
+          }}
+        >
+          חלופה
+        </button>
       </p>
     </div>
   );
