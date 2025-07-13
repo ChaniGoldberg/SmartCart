@@ -41,5 +41,26 @@ export function createUserTokenByJWT(user: User): string {
         return newUser;
 
     }
+    export async function  updateUser(
+        userId: number, email: string, password: string, userName: string
+
+    ): Promise<User | null> {
+        const existingUser = await getUserByEmail(email);
+        if (!existingUser) {
+            throw new Error('User until not exists');
+        }
+
+        const hashedPassword = await hashPassword(password);
+        const updateUser: User = {
+            userId,
+            email,
+            password: hashedPassword,
+            userName
+        };
+        console.log(updateUser)
+        db.save(updateUser)
+        return updateUser;
+
+    }
 
     
