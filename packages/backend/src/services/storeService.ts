@@ -130,6 +130,3 @@ console.log(addressCoords)
   }
 };
 
-export const addStoreService = async (store: Store): Promise<Store> => {
-  return await storeRepository.addStore(store);
-};
