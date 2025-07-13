@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { CartProvider } from './store/redux/cartProvider';
+import { Provider } from 'react-redux';
+import { store } from './store/redux/store';
 
 
 
@@ -14,9 +16,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <App />
-      </CartProvider>
+      <Provider store={store}>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>
 );
