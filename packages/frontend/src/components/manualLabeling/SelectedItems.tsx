@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Item } from "@smartcart/shared/src/item";
 
 interface SelectedItemsProps {
@@ -7,7 +7,9 @@ interface SelectedItemsProps {
 
 const SelectedItems: React.FC<SelectedItemsProps> = ({ initialItems }) => {
     const [items, setItems] = useState<Item[]>(initialItems);
-
+    useEffect(() => {
+        setItems(initialItems);
+    }, [initialItems]);
     const handleRemove = (itemCode: number): void => {
         setItems(prev => prev.filter(item => item.itemCode !== itemCode));
     };
@@ -46,7 +48,7 @@ const SelectedItems: React.FC<SelectedItemsProps> = ({ initialItems }) => {
                                 onClick={() => handleRemove(product.itemCode)} // תיקון כאן
                                 aria-label="Remove item"
                                 className="absolute bottom-6 left-5 text-gray-400 hover:text-red-600 transition-colors duration-200">
-                                 <div className=" inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-lg font-bold">×</div>
+                                <div className=" inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-lg font-bold">×</div>
                             </button>
                         </div>
                     </React.Fragment>

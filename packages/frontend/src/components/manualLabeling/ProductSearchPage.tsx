@@ -158,7 +158,7 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({
     <div className="space-y-3 p-4">
       <TagFilter
         onTagSelect={handleTagFilter}
-        tags={tagsFromServer}
+        tags={tags}
         setSelectedTagsTypeTags={setSelectedTagsTypeTags}
       />
 

@@ -22,6 +22,11 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
     }, [tags]);
 
     const handleTagClick = (tag: string) => {
+        tags.forEach(t => {
+            if (t.tagName === tag) {
+                setSelectedTagsTypeTags([...tags, t])
+            }
+        });
         setSelectedTag(tag);
 
         if (onTagSelect) {
@@ -41,12 +46,12 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
                 {tagNames.map((tag, index) => (
                     <button
                         key={index}
-                        onClick={() => handleTagClick(tag.tagName)}
+                        onClick={() => handleTagClick(tag)}
                         style={{
                             padding: '8px 16px',
 
-                            backgroundColor: selectedTag === tag.tagName ? '#007bff' : '#f8f9fa',
-                            color: selectedTag === tag.tagName ? 'white' : 'black',
+                            backgroundColor: selectedTag === tag ? '#007bff' : '#f8f9fa',
+                            color: selectedTag === tag ? 'white' : 'black',
                             border: '1px solid #dee2e6',
                             borderRadius: '20px',
                             cursor: 'pointer',
@@ -55,19 +60,19 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
                             fontWeight: selectedTag === tag ? 'bold' : 'normal'
                         }}
                         onMouseOver={(e) => {
-                            if (selectedTag !== tag.tagName) {
+                            if (selectedTag !== tag) {
                                 e.currentTarget.style.backgroundColor = '#e9ecef';
                             }
                         }}
                         onMouseOut={(e) => {
-                            if (selectedTag !== tag.tagName) {
+                            if (selectedTag !== tag) {
 
                                 e.currentTarget.style.backgroundColor = '#f8f9fa';
 
                             }
                         }}
                     >
-                        {tag.tagName}
+                        {tag}
                     </button>
                 ))}
             </div>
