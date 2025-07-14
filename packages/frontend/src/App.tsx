@@ -1,11 +1,19 @@
 import './App.css';
+
+import TagSearchPage from './components/manualLabeling/TagSearchPage';
+import MainLayout from './layout/MainLayout';
+
 import { Routing } from './routes/Routing';
 
 function App() {
 
   return (
-  <Routing/>
-)
+        <MainLayout>
+      <Routing />
+    </MainLayout>
+
+  );
+
 }
 
 export default App;

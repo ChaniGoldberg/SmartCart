@@ -1,15 +1,15 @@
+
 import React, { useState } from "react";
 
 interface SearchProductProps {
-  onSearch: (query: string) => void;
+  setSearch: (query: string) => void;
 }
 
-const SearchProduct: React.FC = () => {
+const SearchProduct: React.FC<SearchProductProps> = ( {setSearch}) => {
   const [query, setQuery] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
+    setSearch(query);
   };
 
   return (
@@ -42,5 +42,4 @@ const SearchProduct: React.FC = () => {
     </div>
   );
 };
-
 export default SearchProduct;

@@ -4,7 +4,6 @@ import { Tag } from "@smartcart/shared/src/tag";
 import ProductCard from "./ProductCard";
 import TagFilter from "./ProductTags";
 
-
 // הנתונים הקבועים שלך
 const products: Item[] = [
   {
@@ -80,9 +79,11 @@ const tags: Tag[] = [
 
 interface ProductSearchPageProps {
   onSelectionChange?: (selectedItems: Item[]) => void;
+  tagsFromServer: Tag[]; // אפשרות לקבל תגיות מהשרת
+  search:string; // מילת חיפוש
 }
 
-const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange }) => {
+const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange , tagsFromServer, search}) => {
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Item[]>(products); // state למוצרים מסוננים
 
@@ -149,7 +150,7 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
   return (
     <div className="space-y-3 p-4">
 
-      <TagFilter onTagSelect={handleTagFilter} />
+      <TagFilter onTagSelect={handleTagFilter} tags={tagsFromServer} />
 
       <div className="flex gap-4 mb-4">
         <button

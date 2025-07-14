@@ -17,7 +17,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
         const updatedTags = [ ...tNames, 'ללא תיוג', 'הכל' ];
         setTagNames(updatedTags);
     };
-
     useEffect(() => {
         loadTags(tags);
     }, [tags]);
@@ -42,11 +41,12 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
                 {tagNames.map((tag, index) => (
                     <button
                         key={index}
-                        onClick={() => handleTagClick(tag)}
+                        onClick={() => handleTagClick(tag.tagName)}
                         style={{
                             padding: '8px 16px',
-                            backgroundColor: selectedTag === tag ? '#007bff' : '#f8f9fa',
-                            color: selectedTag === tag ? 'white' : 'black',
+
+                            backgroundColor: selectedTag === tag.tagName ? '#007bff' : '#f8f9fa',
+                            color: selectedTag === tag.tagName ? 'white' : 'black',
                             border: '1px solid #dee2e6',
                             borderRadius: '20px',
                             cursor: 'pointer',
@@ -55,21 +55,22 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
                             fontWeight: selectedTag === tag ? 'bold' : 'normal'
                         }}
                         onMouseOver={(e) => {
-                            if (selectedTag !== tag) {
+                            if (selectedTag !== tag.tagName) {
                                 e.currentTarget.style.backgroundColor = '#e9ecef';
                             }
                         }}
                         onMouseOut={(e) => {
-                            if (selectedTag !== tag) {
+                            if (selectedTag !== tag.tagName) {
+
                                 e.currentTarget.style.backgroundColor = '#f8f9fa';
+
                             }
                         }}
                     >
-                        {tag}
+                        {tag.tagName}
                     </button>
                 ))}
             </div>
-
             {/* הודעה אם אין תגים */}
             {tagNames.length === 0 && (
                 <div style={{
@@ -84,5 +85,4 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
         </div>
     );
 };
-
 export default TagFilter;
