@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Item } from "@smartcart/shared/src/item";
 import { Tag } from "@smartcart/shared/src/tag";
 import ProductCard from "./ProductCard";
@@ -16,7 +16,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "תפוח אדום טרי",
     itemStatus: true,
-    tagsId: [1, 2], // פירות וירקות, פירות טריים
+    tagsId: [1, 2],
   },
   {
     itemCode: 1002,
@@ -28,7 +28,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "בננות מתוקות",
     itemStatus: true,
-    tagsId: [2], // פירות טריים
+    tagsId: [2],
   },
   {
     itemCode: 1003,
@@ -40,7 +40,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "מלפפונים טריים",
     itemStatus: true,
-    tagsId: [3], // ירקות טריים
+    tagsId: [3],
   },
   {
     itemCode: 1004,
@@ -52,7 +52,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "חלב טרי 3%",
     itemStatus: true,
-    tagsId: [4, 5], // מוצרי חלב, חלב
+    tagsId: [4, 5],
   },
   {
     itemCode: 1005,
@@ -64,7 +64,7 @@ const products: Item[] = [
     manufactureCountry: "ישראל",
     manufacturerItemDescription: "לחם שחור",
     itemStatus: true,
-    tagsId: [], // ללא תיוג
+    tagsId: [],
   },
 ];
 
@@ -78,14 +78,26 @@ const tags: Tag[] = [
 ];
 
 interface ProductSearchPageProps {
+  setSelectdItemsGlobal: (items: Item[]) => void;
+  setSelectedTagsTypeTags: (tag: Tag[]) => void;
   onSelectionChange?: (selectedItems: Item[]) => void;
-  tagsFromServer: Tag[]; // אפשרות לקבל תגיות מהשרת
-  search:string; // מילת חיפוש
+  tagsFromServer: Tag[];
+  search: string;
 }
 
-const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange , tagsFromServer, search}) => {
+const ProductSearchPage: React.FC<ProductSearchPageProps> = ({
+  onSelectionChange,
+  tagsFromServer,
+  search,
+  setSelectedTagsTypeTags,
+  setSelectdItemsGlobal,
+}) => {
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Item[]>(products); // state למוצרים מסוננים
+  const [filteredProducts, setFilteredProducts] = useState<Item[]>(products);
+
+  useEffect(() => {
+    setSelectdItemsGlobal(selectedItems);
+  }, [selectedItems, setSelectdItemsGlobal]);
 
   const toggleSelect = (product: Item) => {
     setSelectedItems((prev) => {
@@ -103,7 +115,7 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
   };
 
   const selectAll = () => {
-    setSelectedItems(filteredProducts); // בחר רק מהמוצרים המסוננים
+    setSelectedItems(filteredProducts);
     if (onSelectionChange) {
       onSelectionChange(filteredProducts);
     }
@@ -116,31 +128,26 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
     }
   };
 
-  // פונקציית סינון לפי תג
   const handleTagFilter = (tagName: string) => {
     let filtered: Item[] = [];
 
-    if (tagName === 'הכל') {
-      // הצג את כל המוצרים
+    if (tagName === "הכל") {
       filtered = products;
-    } else if (tagName === 'ללא תיוג') {
-      // הצג רק מוצרים ללא תיוג (מערך tagsId ריק)
-      filtered = products.filter(product => 
-        !product.tagsId || product.tagsId.length === 0
+    } else if (tagName === "ללא תיוג") {
+      filtered = products.filter(
+        (product) => !product.tagsId || product.tagsId.length === 0
       );
     } else {
-      // מצא את ה-tagId של התג הנבחר
-      const selectedTag = tags.find(tag => tag.tagName === tagName);
+      const selectedTag = tags.find((tag) => tag.tagName === tagName);
       if (selectedTag) {
-        // הצג רק מוצרים שיש להם את התג הזה
-        filtered = products.filter(product => 
-          product.tagsId && product.tagsId.includes(selectedTag.tagId)
+        filtered = products.filter(
+          (product) =>
+            product.tagsId && product.tagsId.includes(selectedTag.tagId)
         );
       }
     }
 
     setFilteredProducts(filtered);
-    // נקה את הבחירה כי המוצרים השתנו
     setSelectedItems([]);
     if (onSelectionChange) {
       onSelectionChange([]);
@@ -149,8 +156,11 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
 
   return (
     <div className="space-y-3 p-4">
-
-      <TagFilter onTagSelect={handleTagFilter} tags={tagsFromServer} />
+      <TagFilter
+        onTagSelect={handleTagFilter}
+        tags={tagsFromServer}
+        setSelectedTagsTypeTags={setSelectedTagsTypeTags}
+      />
 
       <div className="flex gap-4 mb-4">
         <button
@@ -170,22 +180,24 @@ const ProductSearchPage: React.FC<ProductSearchPageProps> = ({ onSelectionChange
         </div>
       </div>
 
-      {/* הצג את המוצרים המסוננים */}
-      {filteredProducts.map((product) => (
-        <ProductCard
-          key={product.itemId}
-          product={product}
-          tags={tags}
-          isSelected={selectedItems.some((p) => p.itemId === product.itemId)}
-          toggleSelect={() => toggleSelect(product)}
-        />
-      ))}
+      {/* רשימת המוצרים בתוך תיבה עם גלילה */}
+      <div className="max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400">
+        {filteredProducts.map((product) => (
+          <ProductCard
+            key={product.itemId}
+            product={product}
+            tags={tags}
+            isSelected={selectedItems.some((p) => p.itemId === product.itemId)}
+            toggleSelect={() => toggleSelect(product)}
+          />
+        ))}
 
-      {filteredProducts.length === 0 && (
-        <div className="text-center text-gray-500 py-8">
-          לא נמצאו מוצרים עבור התג הנבחר
-        </div>
-      )}
+        {filteredProducts.length === 0 && (
+          <div className="text-center text-gray-500 py-8">
+            לא נמצאו מוצרים עבור התג הנבחר
+          </div>
+        )}
+      </div>
     </div>
   );
 };
