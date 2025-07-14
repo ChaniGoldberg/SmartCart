@@ -3,7 +3,7 @@ import { cartContext } from '../store/redux/cartRedux';
 import ProductDetails from './ProductDetails';
 import '../index.css';
 import '../App.css';
-import CheapProductAlternatives from './Cart/AlternativeItemsList';
+import CheapProductAlternatives from './AlternativeItemsList';
 const Cart: React.FC = () => {
   const context = useContext(cartContext);
   if (!context) {

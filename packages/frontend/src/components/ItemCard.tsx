@@ -1,6 +1,6 @@
 import React from 'react';
 import { Item } from '@smartcart/shared';
-import AlternativeItemsList from './Cart/AlternativeItemsList';
+import AlternativeItemsList from './AlternativeItemsList';
 
 interface ItemCardProps {
   item: Item;
@@ -57,8 +57,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onClick }) => {
             fontSize: '12px'
           }}
           onClick={(e) => {
-            e.stopPropagation();
-            
+            AlternativeItemsList            
           }}
         >
           חלופה
