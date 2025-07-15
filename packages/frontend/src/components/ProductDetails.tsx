@@ -56,23 +56,27 @@
 
 
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Item } from '@smartcart/shared/src/item'
 import { Price } from '@smartcart/shared/src/price'
 import { Tag } from '@smartcart/shared/src/tag'
 import { ProductDTO } from "@smartcart/shared";
 interface ProductDetailsProps {
-  product:ProductDTO
+  product: ProductDTO;
+  quantity?: number;
+  onQuantityChange?: (newQty: number) => void;
+  onSuggestClick?: () => void;
 }
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product, quantity = 1, onQuantityChange, onSuggestClick }) => {
+  const [currentQty, setCurrentQty] = useState<number>(quantity);
   const fields: { label: string; value: React.ReactNode }[] = [
     { label: 'תיאור', value: product.manufacturerItemDescription || 'אין מידע זמין' },
     { label: 'מחיר', value: isFinite(product.price) ? `₪${product.price.toFixed(2)}` : 'לא עודכן' },
     { label: 'כמות באריזה', value: product.quantityInPackage || 'לא צוין' },
     { label: 'מחיר ליחידה', value: isFinite(product.unitOfMeasurePrice) ? `₪${product.unitOfMeasurePrice.toFixed(2)}` : 'לא זמין' },
-    // { label: 'יצרן', value: product.manufacturerName && product.manufactureCountry ? `${product.manufacturerName} (${product.manufactureCountry})` : 'לא זמין' },
     {
-      label: 'סטטוס מוצר', value: (
+      label: 'סטטוס מוצר',
+      value: (
         <span
           className="font-bold"
           style={{
@@ -82,11 +86,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           {product.itemStatus === true ? 'במלאי' : product.itemStatus === false ? 'אזל מהמלאי' : 'לא זמין'}
         </span>
       )
-    },
-    // { label: 'שם המוצר', value: item.itemName || 'לא זמין' },
-  ]
- 
-  
+    }
+  ];
+  const changeQuantity = (delta: number) => {
+    const newQty = Math.max(1, currentQty + delta);
+    setCurrentQty(newQty);
+    if (onQuantityChange) onQuantityChange(newQty);
+  };
   return (
     <div className="w-full max-w-10xl mx-auto mt-3 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition group">
       <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{product.itemName}</h2>
@@ -97,25 +103,32 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             {index < fields.length - 1 && <span className="mx-2 text-gray-400">|</span>}
           </div>
         ))}
-        {/* {productTags.length > 0 && (
-          <div className="absolute left-0 top-0 mt-2 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {productTags.map((tag) => (
-              <span
-                key={tag.tagId}
-                className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full shadow-sm mb-1"
-                title={
-                  tag.dateAdded
-                    ? `נוסף ב־${new Date(tag.dateAdded).toLocaleDateString()}`
-                    : ''
-                }
-              >
-                {tag.tagName}
-              </span>
-            ))}
+        {product.hasPromotion === 1 && product.promotionText && (
+          <div className="text-green-700 font-bold mt-2">
+            :tada: מבצע: {product.promotionText}
           </div>
-        )} */}
+        )}
+      </div>
+      <div className="flex items-center mt-4 gap-2">
+        <button onClick={() => changeQuantity(-1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
+        <span>{currentQty}</span>
+        <button onClick={() => changeQuantity(1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+        {onSuggestClick && (
+          <button onClick={onSuggestClick} className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded">
+            הצג מוצר חלופי
+          </button>
+        )}
       </div>
     </div>
-  )
-}
-export default ProductDetails
+  );
+};
+export default ProductDetails;
+
+
+
+
+
+
+
+
+

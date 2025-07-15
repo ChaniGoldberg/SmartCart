@@ -1,6 +1,6 @@
 export class ProductDTO {
     itemCode: number;
-    productId: string;
+    priceId: number;
     ProductName: string;
     storePK: string;
     itemName: string;
@@ -9,11 +9,13 @@ export class ProductDTO {
     manufacturerName: string;
     price: number;
     unitOfMeasurePrice: number;
-    quantityInPackage: string;
+    quantityInPackage: number;
+    hasPromotion?: number;
+    promotionText?: string;
 
-    constructor(
+ constructor(
         itemCode: number,
-        productId: string,
+        priceId: number,
         ProductName: string,
         storePK: string,
         itemName: string,
@@ -22,11 +24,12 @@ export class ProductDTO {
         manufacturerName: string,
         price: number,
         unitOfMeasurePrice: number,
-        quantityInPackage: string,
-      
+        quantityInPackage: number,
+        hasPromotion?: number,
+        promotionText?: string
     ) {
-        this.itemCode = itemCode
-        this.productId = productId;
+        this.itemCode = itemCode;
+        this.priceId = priceId;
         this.ProductName = ProductName;
         this.storePK = storePK;
         this.itemName = itemName;
@@ -36,5 +39,9 @@ export class ProductDTO {
         this.price = price;
         this.unitOfMeasurePrice = unitOfMeasurePrice;
         this.quantityInPackage = quantityInPackage;
+        this.hasPromotion = hasPromotion;
+        this.promotionText = promotionText;
     }
- }
+}
+
+
