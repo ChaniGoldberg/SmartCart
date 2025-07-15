@@ -2,7 +2,10 @@
 import { ITag } from '../interfaces/ITag';
 import { Tag } from '../../../shared/src/tag';
 import { db } from "../db/dbProvider";
+import { ItemRepository } from '../db/Repositories/itemRepository';
+import { supabase } from './supabase';
 
+const itemService = new ItemRepository(supabase);
 export class TagService implements ITag {
     private db: typeof db;
 
@@ -42,6 +45,15 @@ export class TagService implements ITag {
             console.error('Error adding tag:', error);
             throw error;
         }
+    }
+
+
+    
+    async getItemsWithoutTags(): Promise<any[]> {
+       let  items=await itemService.getAllItems();
+        if (!items) return [];
+        // מחזיר את כל המוצרים שמערך התגים שלהם לא קיים או ריק
+        return items.filter(item => !item.tagsId || item.tagsId.length === 0);
     }
 }
 
