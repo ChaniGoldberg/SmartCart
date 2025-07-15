@@ -14,6 +14,7 @@ import { setupSwagger } from './swagger';
 import searchItemsRoutes from './routes/searchItemsRoutes';
 import tagRoutes from './routes/tagRoutes';
 import searchStoreRoutes from './routes/searchStoreRoutes';
+import fuzzySearchRoutes from './routes/fuzzySearchRoutes';
 
 import searchRouter from './routes/searchRoute';
 
@@ -50,6 +51,9 @@ app.use("/api/tag", tagRoutes);
 app.use('/api/search', searchStoreRoutes);
 app.use('/api/searchProduct', searchRouter);
 app.use('/api/users', userRoutes)
+app.use("/api/fuzzySearch", fuzzySearchRoutes); 
+
+
 setupSwagger(app);
 
 app.listen(PORT, async () => {
