@@ -11,7 +11,7 @@ interface Location {
 export async function findStoresWithinRadius(userlocation: Location, radius: number): Promise<{ store: StoreLocationDto; distance: number }[]>  {
 
     const storeLocation = await getValidStores();
-    const distances = [];
+    const distances: { store: StoreLocationDto; distance: number }[] = []; // טיפוס מפורש
 
     for (const store of storeLocation) {
         if (userlocation.latitude !== null && userlocation.longitude !== null && store.latitude !== null && store.longitude !== null) {
@@ -25,7 +25,6 @@ export async function findStoresWithinRadius(userlocation: Location, radius: num
         else {
         }
     }
-
 
     return distances;
 
