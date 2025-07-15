@@ -1,4 +1,4 @@
-import { Store } from "@smartcart/shared";
+ import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider"; 
 
 export const searchStoresService = async (name: string): Promise<Store[]> => {

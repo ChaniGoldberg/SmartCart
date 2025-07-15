@@ -5,6 +5,7 @@ import MapPage from "../components/MapPage";
 import Cart from "../components/Cart"
 import AuthForm from "../components/authForm";
 import Login from "../pages/Login";
+import ProductSearchComponent from "../components/product-search-component";
 
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },
@@ -12,6 +13,7 @@ export const routes = [
      { path: "/login", element: <AuthForm onClose={() => {}}/>, label: "התחברות" },
     //  { path: "/login", element: <Login />, label: "התחברות" },
      { path: "/cart", element: <Cart />, label: "סל" },
+    { path: "/search", element: <ProductSearchComponent />, label: "סל" },
 
 ];
 
