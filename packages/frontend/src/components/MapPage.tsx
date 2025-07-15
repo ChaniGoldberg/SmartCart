@@ -155,7 +155,7 @@ export default function MapPage() {
           }}>
             ❌
           </button>
-          <Promotions storeId={selectedStoreId} />
+          <Promotions storePk={selectedStoreId} />
 
         </div>
       )}
