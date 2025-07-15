@@ -379,7 +379,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async getPromotionsByStoreId(storePK: string): Promise<Promotion[]> {
+  async getPromotionsByStorePK(storePK: string): Promise<Promotion[]> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
@@ -430,7 +430,7 @@ export class PromotionRepository implements IPromotionRepository {
 
       return promotionsWithItems;
     } catch (error: any) {
-      console.error(`Error in getPromotionsByStoreId: ${error.message}`);
+      console.error(`Error in getPromotionsByStorePK: ${error.message}`);
       throw error;
     }
   }
