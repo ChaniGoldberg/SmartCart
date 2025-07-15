@@ -1,37 +1,3 @@
-// import { IPromotions } from "../interfaces/Ipromotions";
-// import { db } from "../db/dbProvider"; // שימוש ב-db הכללי עם שם קובץ מתוקן
-
-// export const promotionsService: IPromotions = {
-//     async getPromotionsByStorePK(storePK: string): Promise<typeof db.Promotion> {
-//         if (!storePK || typeof storePK !== "string") {
-//             throw { status: 400, message: "Invalid or missing storePK" };
-//         }
-
-//         const today = new Date();
-
-//         const promotions = db.Promotion.filter((promotion) => {
-//             const start = new Date(promotion.startDate);
-//             const end = new Date(promotion.endDate);
-
-//             return (
-//                 promotion.storePK === storePK &&
-//                 start <= today &&
-//                 end >= today
-//             );
-//         }).map((promotion) => ({
-//             ...promotion,
-//             startDate: new Date(promotion.startDate),
-//             endDate: new Date(promotion.endDate),
-//             lastUpdated: new Date(promotion.lastUpdated),
-//         }));
-
-//         return promotions;
-//     },
-// };
-
-// export default promotionsService;
-
-
 
 import { IPromotions } from "../interfaces/Ipromotions";
 import { supabase } from "../services/supabase"; // נשאר כמו שהוא
