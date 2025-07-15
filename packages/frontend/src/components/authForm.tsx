@@ -35,10 +35,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        // DEBUG בלבד — בדקי בקונסול ולא תציגי למשתמש
         console.log("🔥 error message from server:", data);
 
-        // תאחסני תמיד את ההודעה בצורה נשלטת
         let errorMessage = '';
 
         if (typeof data.error === 'string') {
