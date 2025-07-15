@@ -29,34 +29,42 @@ app.get('/Category/:category', (req, res) => {
     }
     res.send("אחר");
 });
+
 app.post('/categorize-products', (req, res) => {
-  const products = req.body.products; // [{ name: "גבינת תנובה 5%" }, ...]
-  const categoryNames = req.body.tags; // ["מוצרי חלב", "חטיפים", ...]
+  const products = req.body.products;
+  const categoryNames = req.body.tags;
 
   const normalize = (str) =>
     str.toLowerCase().replace(/[^\w\s\u0590-\u05FF]/g, "");
 
-  // בחרתי מתוך subcategories רק את אלו ששמם נמצא ברשימת השמות שהתקבלה
   const filteredSubcategories = subcategories.filter(subC =>
     categoryNames.includes(subC.name)
   );
 
-  const result = products.map(product => {
-    const normalizedName = normalize(product);
+  const result = products.map((product, index) => {
+    const productName = typeof product === "string" ? product : product.name;
+    const normalizedName = normalize(productName);
 
-    // עבור כל קטגוריה מסוננת, בדוק אם לפחות מילת מפתח תואמת
     const matchedCategories = filteredSubcategories
       .filter(subC =>
-        subC.keywords.some(kw => normalizedName.includes(normalize(kw)))
+        subC.keywords.some(kw =>
+          normalizedName.includes(normalize(kw))
+        )
       )
       .map(subC => subC.name);
 
-    return `${product}: ${matchedCategories.join(", ") || ""}`;
+    // אם זה מוצר שלישי – נוסיף "מבצע" כעוד קטגוריה
+    if ((index + 1) % 3 === 0) {
+      matchedCategories.push("מבצע");
+    }
+
+    return `${productName}: ${matchedCategories.join(",")}`;
   });
 
-  res.send(result.join(" ; ")); 
-  
+  res.send(result.join(" ; "));
 });
+
+
 
 app.listen(8080, () => {
     console.log('Server running on port 8080');
