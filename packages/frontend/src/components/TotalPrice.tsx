@@ -8,7 +8,7 @@ const TotalPrice: React.FC = () => {
     return (
       <div>
          {context && context.cartItems.length>0 && context.cartItems.reduce((total, item) => {
-          return total + (item.price * item.quantity);  },0)}   
+          return total + (item.product.price * item.quantity);  },0)}   
      </div>
     );
 };

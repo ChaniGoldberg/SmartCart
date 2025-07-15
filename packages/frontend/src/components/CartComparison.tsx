@@ -2,19 +2,20 @@ import React, { useState, useMemo } from "react";
 import { CartDTO } from "@smartcart/shared/src/dto/Cart.dto";
 import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
 import MainLayout from '../layout/MainLayout';
+import { ProductCartDTO } from "@smartcart/shared/src/dto/ProductCart.dto";
 
 // מערך הסלים לדוגמה
 const carts: CartDTO[] = [];
 
 const CartComparison = () => {
-  const [selectedProducts, setSelectedProducts] = useState<ProductDTO[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<ProductCartDTO[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCartIndex, setSelectedCartIndex] = useState<number | null>(null);
 
   // 💡 חישוב סכום של כל סל רק פעם אחת אלא אם carts משתנה
   const totals = useMemo(() => {
     return carts.map(cart =>
-      cart.products.reduce((sum, p) => sum + p.price, 0)
+      cart.products.reduce((sum, p) => sum + p.product.price, 0)
     );
   }, [carts]);
 
@@ -23,7 +24,7 @@ const CartComparison = () => {
     return totals.length > 0 ? Math.max(...totals) : 0;
   }, [totals]);
 
-  const openPopup = (products: ProductDTO[], index: number) => {
+  const openPopup = (products: ProductCartDTO[], index: number) => {
     setSelectedProducts(products);
     setSelectedCartIndex(index);
     setIsOpen(true);
@@ -122,9 +123,9 @@ const CartComparison = () => {
                 {selectedProducts.map((product, index) => (
                   <li key={index} className="flex justify-between border-b pb-1 text-sm text-gray-700">
                     <span className="text-green-500 font-semibold">
-                      {product.price.toFixed(2)} ₪
+                      {product.product.price.toFixed(2)} ₪
                     </span>
-                    <span>{product.ProductName}</span>
+                    <span>{product.product.ProductName}</span>
                   </li>
                 ))}
               </ul>
