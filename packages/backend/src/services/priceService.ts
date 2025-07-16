@@ -1,19 +1,13 @@
-import { db } from "../db/dbProvider";
 import { Price } from "@smartcart/shared/src/price";
 import { IPrice } from "../interfaces/IPrice";
-export class PriceService implements IPrice {
-    private db: typeof db;
+import { IPriceRepository } from "../db/IRepositories/IPriceRepository";
 
-    constructor() {
-        this.db = db;
-    }
+export class PriceService implements IPrice {
+    constructor(private priceRepository: IPriceRepository) {}
 
     async getAllPrices(): Promise<Price[]> {
-        return this.db.Price;;
+        return this.priceRepository.getAllPrices();
     }
 }
 
 export default PriceService;
-
-
-
