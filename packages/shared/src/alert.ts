@@ -5,5 +5,5 @@ export interface Alert {
     active: boolean; // האם ההתראה פעילה (1=כן, 0=לא)
     lastTriggered: Date | null; //null: date ?התאריך האחרון שבו ההתראה הופעלה
     minDiscount: number; // אחוז ההנחה המינימלי להפעלת ההתראה
-    type:'email' | 'sms' | 'whatsApp'; // סוג ההתראה (דוא"ל, SMS, התראה וואטסאפ)
+    type: string; // סוג ההתראה (למשל: "price drop", "new product", etc.)
 }
