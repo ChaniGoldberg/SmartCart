@@ -55,6 +55,7 @@ const mockDb: { Store: SupermarketLocation[] } = {
     }
   ]
 };
+import { StoreLocationDto } from "@smartcart/shared";
 
 export default function MapPage() {
   const [supermarkets, setSupermarkets] = useState<SupermarketLocation[]>([]);
