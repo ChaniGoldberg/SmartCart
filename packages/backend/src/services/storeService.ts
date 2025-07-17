@@ -1,15 +1,10 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
 
-import { StoreLocationDto } from "@smartcart/shared/src/dto/store.dto";
+import { StoreLocationDto } from "@smartcart/shared";
 import { StoreRepository } from '../db/Repositories/storeRepository';
 import { databaseService } from '../services/database';
 import { createClient } from "@supabase/supabase-js";
-
-
-
-
-
 
 const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_ANON_KEY
@@ -27,26 +22,26 @@ const OPENCAGE_API_KEY = process.env.OPENCAGE_API_KEY;//מפתח ה־API של Op
 // פונקציה להמרת כתובת לקואורדינטות
 //באמצעות שימוש ב- penCage API,
 //הפונקציה מקבלת כתובת ומחזירה את הקואורדינטות שלה
-export const geocodeAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
+const geocodeAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
   if (!OPENCAGE_API_KEY) {
-  throw new Error("OPENCAGE_API_KEY is not defined. Please set it in your environment.");
-}
+    throw new Error("OPENCAGE_API_KEY is not defined. Please set it in your environment.");
+  }
   // בדיקה אם הכתובת כבר בזיכרון
   if (addressCache.has(address)) {
     return addressCache.get(address)!;
   }
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${OPENCAGE_API_KEY}&language=he&limit=1`;
 
-try {
+  try {
     const response = await fetch(url);
     if (!response.ok) {
-    throw new Error(`Geocoding API returned status ${response.status}`);
+      throw new Error(`Geocoding API returned status ${response.status}`);
     }
-    const data:any = await response.json();
-//בדיקה האם התוצאה שחזרה מכילה את הנתונים
+    const data: any = await response.json();
+    //בדיקה האם התוצאה שחזרה מכילה את הנתונים
     if (data && data.results && data.results.length > 0) {
-      const lat=data.results[0].geometry.lat;
-      const lng  = data.results[0].geometry.lng;
+      const lat = data.results[0].geometry.lat;
+      const lng = data.results[0].geometry.lng;
       // בדיקה אם הקואורדינטות תקינות
       if (typeof lat === 'number' && typeof lng === 'number'
         && lat >= -90 && lat <= 90
@@ -59,19 +54,17 @@ try {
         console.log("קואורדינטות לא תקינות:", lat, lng);
         return null;
     }
-  }
-    else {
-      return null;
     }
+    return null;
   }
-catch (error) {//טיפול בשגיאה במרת הכתובת
+  catch (error) {//טיפול בשגיאה במרת הכתובת
     console.error('שגיאה בהמרת כתובת:', error);
     return null;
   }
 };
 
 //מנגנון Limit
-async function limitConcurrency<T,R>(
+async function limitConcurrency<T, R>(
   items: T[],
   handler: (item: T) => Promise<R>,
   limit: number
@@ -91,6 +84,7 @@ async function limitConcurrency<T,R>(
 }
 
 
+
 const storeRepository = new StoreRepository(supabase);
 
 export const getValidStores = async (): Promise<StoreLocationDto[]> => {
@@ -106,11 +100,15 @@ export const getValidStores = async (): Promise<StoreLocationDto[]> => {
       );
     };
 
+
     const validStores = stores.filter(isValidAddress);
 
     const addressCoords = await limitConcurrency(validStores, async (s) => {
       const fullAddress = `${s.address}, ${s.city}`;
-      const coords = await geocodeAddress(fullAddress);
+
+      const coords = await geocodeAddress(fullAddress);//שיחזיר קורדינטה geocodeAddress-שליחת הכתובת ל
+      //הנתונים שיחזרו מהפונקציה 
+      if (!coords) throw new Error(`אין קואורדינטות לכתובת: ${fullAddress}`);
 
       return new StoreLocationDto(
         s.storePK,
@@ -125,8 +123,35 @@ export const getValidStores = async (): Promise<StoreLocationDto[]> => {
 console.log(addressCoords)
     return addressCoords;
   } catch (error) {
-    console.error('❌ Failed to load valid stores:', error);
+    
+console.error('❌ Failed to load valid stores:', error);
     throw error;
   }
 };
 
+export async function addManyStoresToDb(stores: Store[]): Promise<void> {
+  if (!stores || stores.length === 0) {
+    console.warn("📭 לא התקבלו חנויות להוספה");
+    return;
+  }
+
+  try {
+    await storeRepository.addManyStores(stores); // שימוש בפונקציה שמוסיפה מערך
+    console.log("✅ חנויות הוזנו בהצלחה");
+  } catch (error) {
+    console.error("❌ שגיאה בהוספת חנויות:", error);
+    throw error;
+  }
+}
+
+
+
+export async function addSOneStoreToDb(store: Store): Promise<void> {
+  try {
+    await storeRepository.addStore(store);
+    console.log(`✅ חנות "${store.storeName}" הוזנה בהצלחה`);
+  } catch (error) {
+    console.error(`❌ שגיאה בהוספת חנות "${store.storeName}":`, error);
+    throw error;
+  }
+}
