@@ -56,5 +56,26 @@ export async function loginUser(email: string, password: string): Promise<{ toke
     const token = createUserTokenByJWT(user);
     return { token, user };
 }
+export async function updateUser(
+    userId: number,
+    email: string,
+    password: string,
+    userName: string
+): Promise<User> {
+    const existingUser = await getUserByEmail(email);
+    if (!existingUser) {
+        throw new Error('User not exists');
+    }
 
+    const hashedPassword = await hashPassword(password);
+    const updatedUser: User = {
+        userId,
+        email,
+        password: hashedPassword,
+        userName
+    };
+    console.log(updatedUser);
+    db.save(updatedUser);
+    return updatedUser;
+}
 

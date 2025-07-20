@@ -1,23 +1,14 @@
-
 import { IPromotions } from "../interfaces/Ipromotions";
 import { supabase } from "../services/supabase"; // נשאר כמו שהוא
-
-export const promotionsService: IPromotions = {
-  async getPromotionsByStoreId(storePK: string): Promise<typeof db.Promotion> {
-    if (!storePK || typeof storePK !== "string") {
-      throw { status: 400, message: "Invalid or missing storeId" };
-//C:\Users\hp326\Documents\תכנות\Smart-cart\smartcart\packages\backend\src\services\promotionServices.ts
-
-import { IPromotions } from "../interfaces/Ipromotions";
-import { db } from "../db/dbProvider";
 import { Promotion } from "@smartcart/shared/src/promotion";
 
- export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
+export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
 
 export const promotionsService: IPromotions = {
-    async getPromotionsByStoreId(storePK: string): Promise<Promotion[]> {
-        if (!storePK || typeof storePK !== "string") {
-            throw { status: 400, message: "Invalid or missing storePK" };
+  // פונקציה לקבלת פרומושנים לפי מזהה סניף
+  async getPromotionsByStoreId(storePK: string): Promise<Promotion[]> {
+    if (!storePK || typeof storePK !== "string") {
+      throw { status: 400, message: "Invalid or missing storePK" };
     }
 
     const today = new Date().toISOString();
@@ -35,26 +26,8 @@ export const promotionsService: IPromotions = {
 
     return data || [];
   },
-  const promotions = db.Promotion.filter((promotion: Promotion) => {
-    const start = new Date(promotion.startDate);
-    const end = new Date(promotion.endDate);
 
-    return (
-      promotion.storePK === storePK &&
-      promotion.isActive &&
-      start <= today &&
-      end >= today
-    );
-  }).map((promotion: Promotion) => ({
-    ...promotion,
-    startDate: new Date(promotion.startDate),
-    endDate: new Date(promotion.endDate),
-    lastUpdated: new Date(promotion.lastUpdated),
-  }));
-
-  return promotions;
-},
-
+  // פונקציה לקבלת פרומושנים לפי מזהה סניף ומזהה מוצר
   async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: number): Promise<PromotionSummary[]> {
     if (!storePK || typeof storePK !== "string") {
       throw { status: 400, message: "Invalid or missing storePK" };
@@ -63,20 +36,22 @@ export const promotionsService: IPromotions = {
       throw { status: 400, message: "Invalid or missing itemCode. Expected a number." };
     }
 
-    const today = new Date();
+    const today = new Date().toISOString();
 
-    const promotions = db.Promotion.filter((promotion: Promotion) => {
-      const start = new Date(promotion.startDate);
-      const end = new Date(promotion.endDate);
+    const { data, error } = await supabase
+      .from("promotion")
+      .select("*")
+      .eq("store_pk", storePK)
+      .eq("promotion_items_code", itemCode)
+      .lte("start_date", today)
+      .gte("end_date", today);
 
-      return (
-        promotion.storePK === storePK &&
-        promotion.isActive &&
-        promotion.promotionItemsCode.includes(itemCode) &&
-        start <= today &&
-        end >= today
-      );
-    }).map((promotion: Promotion) => ({
+    if (error) {
+      console.error("Supabase error:", error.message);
+      throw { status: 500, message: "Failed to fetch promotions" };
+    }
+
+    const promotions = data.map((promotion: Promotion) => ({
       promotionId: promotion.promotionId,
       promotionDescription: promotion.promotionDescription,
       isActive: promotion.isActive,
@@ -86,5 +61,5 @@ export const promotionsService: IPromotions = {
     return promotions;
   },
 };
-
+  
 export default promotionsService;

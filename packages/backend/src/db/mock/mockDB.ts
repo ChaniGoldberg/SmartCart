@@ -22,6 +22,7 @@ export const mockDb: IDB = {
     Item_Tag: [],
     Item: itemjson as any as Item[],
     Tag: tagjson as any as Tag[],
+    Alert: [],
     save(obj:any):void {
         console.log(obj)
     }

@@ -1,93 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { Tag } from '@smartcart/shared/src/tag';
+// import React, { useState, useEffect } from 'react';
+// import { Tag } from '@smartcart/shared/src/tag';
 
-interface TagFilterProps {
-    tags?: Tag[];
-    onTagSelect?: (tagName: string) => void;
-}
+// interface TagFilterProps {
+//     tags?: Tag[];
+//     onTagSelect?: (tagName: string) => void;
+// }
 
 
-const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
-    const [tagNames, setTagNames] = useState<string[]>([]);
-    const [selectedTag, setSelectedTag] = useState<string>('הכל');
+// const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
+//     const [tagNames, setTagNames] = useState<string[]>([]);
+//     const [selectedTag, setSelectedTag] = useState<string>('הכל');
 
-    const loadTags = (providedTags: Tag[] = []) => {
-        const tNames = providedTags.map(tag => tag.tagName);
+//     const loadTags = (providedTags: Tag[] = []) => {
+//         const tNames = providedTags.map(tag => tag.tagName);
 
-        const updatedTags = [ ...tNames, 'ללא תיוג', 'הכל' ];
-        setTagNames(updatedTags);
-    };
-    useEffect(() => {
-        loadTags(tags);
-    }, [tags]);
+//         const updatedTags = [ ...tNames, 'ללא תיוג', 'הכל' ];
+//         setTagNames(updatedTags);
+//     };
+//     useEffect(() => {
+//         loadTags(tags);
+//     }, [tags]);
 
-    const handleTagClick = (tag: string) => {
-        tags.forEach(t => {
-            if (t.tagName === tag) {
-                setSelectedTagsTypeTags([...tags, t])
-            }
-        });
-        setSelectedTag(tag);
+//     const handleTagClick = (tag: string) => {
+//         tags.forEach(t => {
+//             if (t.tagName === tag) {
+//                 setSelectedTagsTypeTags([...tags, t])
+//             }
+//         });
+//         setSelectedTag(tag);
 
-        if (onTagSelect) {
-            onTagSelect(tag);
-        }
-    };
+//         if (onTagSelect) {
+//             onTagSelect(tag);
+//         }
+//     };
 
-    return (
-        <div>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-                gap: '10px',
-                marginBottom: '20px'
-            }}>
-                {tagNames.map((tag, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handleTagClick(tag)}
-                        style={{
-                            padding: '8px 16px',
+//     return (
+//         <div>
+//             <div style={{
+//                 display: 'flex',
+//                 justifyContent: 'center',
+//                 flexWrap: 'wrap',
+//                 gap: '10px',
+//                 marginBottom: '20px'
+//             }}>
+//                 {tagNames.map((tag, index) => (
+//                     <button
+//                         key={index}
+//                         onClick={() => handleTagClick(tag)}
+//                         style={{
+//                             padding: '8px 16px',
 
-                            backgroundColor: selectedTag === tag ? '#007bff' : '#f8f9fa',
-                            color: selectedTag === tag ? 'white' : 'black',
-                            border: '1px solid #dee2e6',
-                            borderRadius: '20px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            fontSize: '14px',
-                            fontWeight: selectedTag === tag ? 'bold' : 'normal'
-                        }}
-                        onMouseOver={(e) => {
-                            if (selectedTag !== tag) {
-                                e.currentTarget.style.backgroundColor = '#e9ecef';
-                            }
-                        }}
-                        onMouseOut={(e) => {
-                            if (selectedTag !== tag) {
+//                             backgroundColor: selectedTag === tag ? '#007bff' : '#f8f9fa',
+//                             color: selectedTag === tag ? 'white' : 'black',
+//                             border: '1px solid #dee2e6',
+//                             borderRadius: '20px',
+//                             cursor: 'pointer',
+//                             transition: 'all 0.2s',
+//                             fontSize: '14px',
+//                             fontWeight: selectedTag === tag ? 'bold' : 'normal'
+//                         }}
+//                         onMouseOver={(e) => {
+//                             if (selectedTag !== tag) {
+//                                 e.currentTarget.style.backgroundColor = '#e9ecef';
+//                             }
+//                         }}
+//                         onMouseOut={(e) => {
+//                             if (selectedTag !== tag) {
 
-                                e.currentTarget.style.backgroundColor = '#f8f9fa';
+//                                 e.currentTarget.style.backgroundColor = '#f8f9fa';
 
-                            }
-                        }}
-                    >
-                        {tag}
-                    </button>
-                ))}
-            </div>
-            {/* הודעה אם אין תגים */}
-            {tagNames.length === 0 && (
-                <div style={{
-                    textAlign: 'center',
-                    color: '#6c757d',
-                    padding: '20px',
-                    fontStyle: 'italic'
-                }}>
-                    אין תגים להצגה
-                </div>
-            )}
-        </div>
-    );
-};
-export default TagFilter;
+//                             }
+//                         }}
+//                     >
+//                         {tag}
+//                     </button>
+//                 ))}
+//             </div>
+//             {/* הודעה אם אין תגים */}
+//             {tagNames.length === 0 && (
+//                 <div style={{
+//                     textAlign: 'center',
+//                     color: '#6c757d',
+//                     padding: '20px',
+//                     fontStyle: 'italic'
+//                 }}>
+//                     אין תגים להצגה
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
+// export default TagFilter;
+
+export {}
