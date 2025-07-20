@@ -8,6 +8,7 @@ export interface IItemRepository {
   getAllItems(): Promise<Item[]>;
   getItemByItemCode(itemCode: number): Promise<Item | null>;
   deleteItemByItemCode(itemCode: number): Promise<void>;
+  getItemsWithoutTags():Promise<Item[]>;
   fuzzySearchItemsByText(itemText: string): Promise<Item[]>; // Change to return a Promise
   
 // --- קשרי תגיות (ללא שינוי בפונקציות הקישור עצמן) ---

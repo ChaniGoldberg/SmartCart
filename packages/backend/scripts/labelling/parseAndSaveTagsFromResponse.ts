@@ -2,35 +2,45 @@ import 'dotenv/config';
 import { ItemRepository } from "../../src/db/Repositories/itemRepository";
 import { TagRepository } from "../../src/db/Repositories/tagRepository";
 import { supabase } from "../../src/services/supabase";
-import { Tag } from "@smartcart/shared/src/tag";
-
+import { logToFile } from './logger';
 
 export async function parseAndSaveTagsFromResponse(response: string): Promise<void> {
-  console.log("🚀 התחלת עיבוד תגיות מהמחרוזת");
+  if (response === ''){
+    logToFile("the response that was accept is empty💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛");
+    return;
+  }
+  logToFile("🚀 [parseAndSaveTagsFromResponse] התחלת עיבוד תגיות מהמחרוזת💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛");
 
   const lines = response
     .split(";")
     .map(line => line.trim())
     .filter(line => line.length > 0);
 
-  console.log(`🔍 נמצאו ${lines.length} שורות לעיבוד`);
+  logToFile(`🔍 [parseAndSaveTagsFromResponse] נמצאו ${lines.length} שורות לעיבוד💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
 
   const itemRepository = new ItemRepository(supabase);
   const tagRepository = new TagRepository(supabase);
 
+  logToFile("[parseAndSaveTagsFromResponse] קורא את כל התגיות מהמאגר💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛");
   const allTags = await tagRepository.getAllTags() || [];
+  logToFile(`[parseAndSaveTagsFromResponse] סך התגיות: ${allTags.length}💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
+
+  logToFile("[parseAndSaveTagsFromResponse] קורא את כל המוצרים מהמאגר💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛");
   const allItems = await itemRepository.getAllItems() || [];
+  logToFile(`[parseAndSaveTagsFromResponse] סך המוצרים: ${allItems.length}💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
 
   const tagNameToIdMap = new Map(allTags.map(tag => [tag.tagName, tag.tagId]));
 
-  for (const line of lines) {
-    console.log(`\n📦 מטפל בשורה: "${line}"`);
+  for (const [index, line] of lines.entries()) {
+    logToFile(`📦 [parseAndSaveTagsFromResponse] טיפול בשורה #${index + 1}: "${line}"💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
     const [product, tagsStr] = line.split(":").map(part => part.trim());
     const tags = tagsStr ? tagsStr.split(",").map(tag => tag.trim()) : [];
 
+    logToFile(`  -> [parseAndSaveTagsFromResponse] מוצר: "${product}", תגיות שמגיעות: [${tags.join(", ")}]💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
+
     const item = allItems.find(i => i.itemName === product);
     if (!item) {
-      console.warn(`⚠️ מוצר לא נמצא: ${product}`);
+      logToFile(`⚠️ [parseAndSaveTagsFromResponse] מוצר לא נמצא במאגר: "${product}" - מדלגים לשורה הבאה💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
       continue;
     }
 
@@ -40,18 +50,13 @@ export async function parseAndSaveTagsFromResponse(response: string): Promise<vo
       const isNew = tag.endsWith("*");
       const cleanTag = isNew ? tag.slice(0, -1).trim() : tag;
 
+      logToFile(`   ↪️ [parseAndSaveTagsFromResponse] טיפול בתג: "${tag}" (נקה ל-"${cleanTag}"), תג חדש? ${isNew}💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
+
       let tagId = tagNameToIdMap.get(cleanTag);
 
       if (!tagId) {
-        console.log(`🆕 מוסיף תג חדש: "${cleanTag}"`);
-        // const addTag: Tag = {
-        //   tagId: 0,
-        //   tagName: cleanTag,
-        //   dateAdded: new Date(),
-        //   isAlreadyScanned: false
-        // };
-        // const newTag = await tagRepository.addTag(addTag);
-///////////////////////////////////////////////////////////////////////////
+        logToFile(`   🆕 [parseAndSaveTagsFromResponse] מוסיף תג חדש למסד: "${cleanTag}"💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
+
         const addTagData = {
           tag_name: cleanTag,
           date_added: new Date(),
@@ -65,44 +70,34 @@ export async function parseAndSaveTagsFromResponse(response: string): Promise<vo
           .single();
 
         if (error) {
-          console.error("❌ שגיאה בהוספת תגית חדשה:", error.message);
+          logToFile(`   ❌ [parseAndSaveTagsFromResponse] שגיאה בהוספת תגית חדשה "${cleanTag}": ${error.message} - מדלגים לתג הבא💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
           continue;
         }
 
         tagId = newTag.tag_id;
         tagNameToIdMap.set(cleanTag, Number(tagId));
 
-        /////////////////////////////////////////////
+        logToFile(`   ✅ [parseAndSaveTagsFromResponse] תג חדש נוסף עם ID: ${tagId}💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
       } else {
-        console.log(`✅ תג קיים: "${cleanTag}" (ID: ${tagId})`);
+        logToFile(`   ✅ [parseAndSaveTagsFromResponse] תג קיים: "${cleanTag}" עם ID: ${tagId}💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
       }
-///////////////////////////////////////////////////////
+
       tagIds.push(Number(tagId));
     }
 
     item.tagsId = tagIds;
+    logToFile(`  💾 [parseAndSaveTagsFromResponse] מעדכן מוצר "${item.itemName}" עם תגיות: [${tagIds.join(", ")}]💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
     await itemRepository.updateItem(item);
-    console.log(`✅ עודכן תיוג למוצר: ${item.itemName}`);
+    logToFile(`  ✅ [parseAndSaveTagsFromResponse] מוצר "${item.itemName}" עודכן בהצלחה💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
   }
 
-  console.log("\n🎯 כל המוצרים תויגו בהצלחה.");
+  logToFile(`🎯 [parseAndSaveTagsFromResponse] סיום עיבוד כל השורות💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
 
-  // הדפסת כל המוצרים עם התיוגים לאחר העדכון
   const updatedItems = await itemRepository.getAllItems();
-  console.log("\n--- מצב מוצרים לאחר עדכון ---");
+  logToFile(`--- [parseAndSaveTagsFromResponse] מצב מוצרים לאחר עדכון ---💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
   updatedItems.forEach(item => {
-    console.log(`${item.itemName}: tagsId = [${item.tagsId?.join(", ")}]`);
+    logToFile(`    📄 ${item.itemName}: tagsId = [${item.tagsId?.join(", ")}]💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
   });
+
+  logToFile(`✅ [parseAndSaveTagsFromResponse] סיום תהליך עיבוד תגיות בהצלחה💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛💛`);
 }
-
-// // --------------------------------------------------
-// // 📌 קריאה לדוגמה לפונקציה עם טקסט תגיות לדוגמה
-// const sampleResponse = `
-// וופלים עם קרם בטעם מ: ממתקים, חטיפים, וופלים*;
-// חמאת בוטנים סקיפי לל: ממרחים, מזון יבש, חמאת בוטנים*;
-// מעדן פרי סיינט אמור: מוצרי חלב, פירות טריים, מעדני פרי*;
-// `;
-
-// parseAndSaveTagsFromResponse(sampleResponse)
-//   .then(() => console.log("\n✅ סיום תהליך עיבוד התגיות"))
-//   .catch(err => console.error("❌ שגיאה במהלך עיבוד התגיות:", err));

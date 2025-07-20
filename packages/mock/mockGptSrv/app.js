@@ -54,9 +54,9 @@ app.post('/categorize-products', (req, res) => {
       .map(subC => subC.name);
 
     // אם זה מוצר שלישי – נוסיף "מבצע" כעוד קטגוריה
-    if ((index + 1) % 3 === 0) {
-      matchedCategories.push("מבצע");
-    }
+    // if ((index + 1) % 3 === 0) {
+    //   matchedCategories.push("מבצע");
+    // }
 
     return `${productName}: ${matchedCategories.join(",")}`;
   });
