@@ -1,3 +1,4 @@
+import { StoreRepository } from "../db/Repositories/storeRepository";
 import { getValidStores } from "../services/storeService";
 import { Request, Response } from "express";
 
@@ -12,6 +13,8 @@ import { Request, Response } from "express";
  *       500:
  *         description: שגיאה בשרת
  */
+
+
 export const storeController = async (req: Request, res: Response) => {
     try{
 const coordinates= await getValidStores();//מחכה לתוצאה של הפונקציה getValidStores
@@ -22,3 +25,4 @@ res.status(200).json(coordinates);
         res.status(500).json({ error: "שגיאה בשרת" });
     }
 }
+

@@ -1,5 +1,5 @@
 import express from "express";
-import { getPromotionsByStoreId } from "../controllers/promotionsController";
+import { getPromotionsByStorePK } from "../controllers/promotionsController";
 
 const router = express.Router();
 
@@ -25,5 +25,5 @@ const router = express.Router();
  *         description: Server error
  */
 
-router.get("/by-id/:storeId", getPromotionsByStoreId);
+router.get("/by-id/:storePK", getPromotionsByStorePK);
 export default router;

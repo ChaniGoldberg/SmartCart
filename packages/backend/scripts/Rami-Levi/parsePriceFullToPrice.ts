@@ -16,7 +16,7 @@ export async function readAndParseXmlFile(xmlFilePath: string): Promise<any> {
 
 export async function extractItemsFromXmlToPrice(jsonData: any): Promise<Price[]> {
   // Extract StoreId from the root of the XML
-  const storeId = jsonData?.Root?.StoreId !== undefined ? Number(jsonData.Root.StoreId) : 0;
+  const storeId = jsonData?.Root?.StoreId !== undefined ? String(jsonData.Root.StoreId) : "";
 
   // Get the raw items array (or single object)
   const itemsRaw = jsonData?.Root?.Items?.Item;
@@ -27,9 +27,9 @@ export async function extractItemsFromXmlToPrice(jsonData: any): Promise<Price[]
   const itemsArray = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
 
   // Map each raw item to your Price interface, using storeId from the root
-  return itemsArray.map((item: any) => ({
+  return itemsArray.map((item: any, idx: number) => ({
     priceId: 0,
-    storeId: storeId,
+    storePK: storeId,
     itemId: item.ItemId !== undefined ? Number(item.ItemId) : 0,
     itemCode: item.ItemCode !== undefined ? Number(item.ItemCode) : 0,
     price: item.ItemPrice !== undefined ? Number(item.ItemPrice) : 0,

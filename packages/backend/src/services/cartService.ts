@@ -1,15 +1,16 @@
 import { Price } from "@smartcart/shared/src/price"
 import { db } from "../db/dbProvider";
-
-export async function getPriceByStoreIDItemID(storeId: Number, itemId: Number): Promise<Price | null> {
-  const price = db.Price.find(p => p.storeId == storeId && p.itemId == itemId)
+import { ProductDTO } from "@smartcart/shared";
+export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): Promise<Price | null> {
+  const price = db.Price.find(p => p.storePK == storePK && p.itemId == itemId)
 
   if (!price) {
-    console.warn(`Price not found for storeId: ${storeId} and itemId: ${itemId}`);
+    console.warn(`Price not found for storeId: ${storePK} and itemId: ${itemId}`);
   }
 
   return price || null;
-};
+}
+
 
 // export async function getRelevantPromotionsForCart
 
@@ -72,3 +73,21 @@ export function getRelevantPromotionsForCart(
     return true;
   });
 };
+
+export async function shoppingCartTotalSummary(shoppingCart: ProductDTO[], promotions: Promotion[]): Promise<number> {
+
+  let totalPrice = 0
+
+  const activePromotions = promotions.filter(promo => promo.isActive);
+
+  for (const item of shoppingCart) {
+     // חיפוש המבצע האחרון (כלומר, הכי עדכני) שמתאים לפריט הזה
+    const promotion = [...activePromotions].reverse().find(p =>
+      p.promotionItemsCode.includes(item.itemCode)
+      )
+    const itemPrice =promotion?.discountedPrice ?? item.price;
+    totalPrice += itemPrice;
+  }
+  
+  return totalPrice
+}

@@ -1,50 +1,48 @@
 import React, { useState, ReactNode } from 'react';
 import { cartContext } from './cartRedux';
 import { Price } from '@smartcart/shared/src/price';
-
+import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartItems, setCartItems] = useState<Price[]>([]);
-
-  const addToCart = (item: Price, quantity: number = 1): void =>{
-
+  const [cartItems, setCartItems] = useState<ProductCartDTO[]>([]);
+  const addToCart = (item: ProductCartDTO, qtyToAdd: number = 1): void => {
     setCartItems(prevItems => {
-      const existing = prevItems.find(cartItem => cartItem.itemId === item.itemId);
+      const existing = prevItems.find(cartItem => cartItem.product.itemCode === item.product.itemCode);
       if (existing) {
-        // אם קיים, עדכן את הכמות
         return prevItems.map(cartItem =>
-          cartItem.itemId === item.itemId
-            ? { ...cartItem, quantity: (cartItem.quantity || 0) + quantity }
+          cartItem.product.itemCode === item.product.itemCode
+            ? { ...cartItem, quantity: (cartItem.quantity || 0) + qtyToAdd }
             : cartItem
         );
       } else {
         // אם לא קיים, הוסף עותק חדש עם הכמות המבוקשת
-        return [...prevItems, { ...item, quantity }];
+        return [...prevItems, { ...item, quantity: qtyToAdd }];
       }
     });
-  }
-
-
-const removeFromCart = (item: Price, quantity: number = 1): void => {
-  setCartItems(prevItems => {
-    return prevItems.flatMap(cartItem => {
-      if (cartItem.itemId === item.itemId) {
-        const newQuantity = (cartItem.quantity || 0) - quantity;
-        if (newQuantity > 0) {
-          // עדכן כמות
-          return [{ ...cartItem, quantity: newQuantity }];
-        } else {
-          // הסר מהסל
-          return [];
+  };
+  const removeFromCart = (item: ProductCartDTO, qtyToRemove: number = 1): void => {
+    setCartItems(prevItems => {
+      return prevItems.flatMap(cartItem => {
+        if (cartItem.product.itemCode === item.product.itemCode) {
+          const newQuantity = (cartItem.quantity || 0) - qtyToRemove;
+          if (newQuantity > 0) {
+            // עדכן כמות
+            return [{ ...cartItem, quantity: newQuantity }];
+          } else {
+            // הסר מהסל
+            return [];
+          }
         }
-      }
-      return [cartItem];
+        return [cartItem];
+      });
     });
-  });
+  };
+  return (
+    <cartContext.Provider value={{
+      cartItems, setCartItems, addToCart, removeFromCart, removeToAllternative(item) {
+      },
+    }}>
+      {children}
+    </cartContext.Provider>
+  );
 };
 
-return (
-  <cartContext.Provider value={{ cartItems, setCartItems, addToCart, removeFromCart }}>
-    {children}
-  </cartContext.Provider>
-);
-};

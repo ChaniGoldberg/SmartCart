@@ -6,6 +6,6 @@ export interface IStoreRepository {
   updateStore(store: Store): Promise<Store>;
   updateManyStores(stores: Store[]): Promise<Store[]>;
   getAllStores(): Promise<Store[]>;
-  getStoreById(storeId: number): Promise<Store | null>;
-  deleteStoreById(storeId: number): Promise<void>;
+  getStoreById(storePK: string): Promise<Store | null>;
+  deleteStoreById(storePK: string): Promise<void>;
 }

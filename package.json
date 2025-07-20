@@ -28,11 +28,8 @@
     "ts-jest": "^29.4.0"
   },
   "dependencies": {
-    "adm-zip": "^0.5.16",
-    "basic-ftp": "^5.0.5",
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
-    "node-cron": "^4.2.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "xml2js": "^0.6.2"

@@ -6,6 +6,7 @@ import { IItemRepository } from "../IRepositories/IitemRepository"; // ודא ש
 
 export class ItemRepository implements IItemRepository {
   private readonly tableName = 'item';
+  private readonly tableName = 'item';
   private readonly itemTagsTableName = 'item_tags';
   private readonly promotionItemsTableName = 'promotion_items';
 
@@ -49,6 +50,16 @@ export class ItemRepository implements IItemRepository {
       itemStatus: dbItem.item_status,
       // tagsId יתווסף בנפרד במתודות השליפה,promotionIds אינו חלק מ-Item ישירות.
     };
+  }
+
+async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
+    // supabase = getClient();
+    if (this.supabase != null) {
+      const { data, error } = await this.supabase.rpc('fuzzy_search_items', { search_query: itemText });
+      if (error) throw error;
+      return data;
+    }
+    return []; // Return an empty array if supabase is null
   }
 
   async linkTagToItem(itemCode: string, tagId: number): Promise<void> {

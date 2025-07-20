@@ -1,16 +1,16 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { Tag } from "@smartcart/shared/src/tag";
 import { tagService } from "../../injection.config";
-
+import { TagRepository } from "../../db/Repositories/tagRepository";
+import { supabase } from "../supabase";
 
 export async function searchTagsByText(tagName: string): Promise<Tag[] | null> {
-    const tags:Tag[]|null= await tagService.getAllTags();
-    if (!tags || !Array.isArray(tags)) {
+    const tagRepository: TagRepository = new TagRepository(supabase);
+    if (!tagName || typeof tagName !== "string" || tagName.trim() === "") {
         return null;
     }
-    const matchingTags: Tag[] = tags
-        .filter(tag => tag && typeof tag.tagName === "string" && tag.tagName.toLowerCase().includes(tagName.toLowerCase()));
-    if (matchingTags.length === 0) {
-        return null;
-    }
-    return matchingTags;
+    const tags: Tag[] | null = await tagRepository.fuzzySearchTagsByName(tagName);    
+    return tags;
 }

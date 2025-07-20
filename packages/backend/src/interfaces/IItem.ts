@@ -6,5 +6,5 @@ export interface IItem {
     getItemById(itemCode: number): Promise<Item | null>
     addItem(item: Item): Promise<void>
     updateItem(item: Item): Promise<void>
-    
+    deleteTagIdFromItemAndUpdate(item: Item, tagIdToDelete: number): Promise<void>     
 }

@@ -3,7 +3,7 @@ import { Item, ItemsResponse, ItemResponse } from '@smartcart/shared';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: API_URL,
   timeout: 10000,
   headers: {
@@ -43,6 +43,5 @@ export const apiService = {
       return response.data.data;
     }
     throw new Error(response.data.error || 'Failed to fetch item');
-  },
-  
+  }
 };

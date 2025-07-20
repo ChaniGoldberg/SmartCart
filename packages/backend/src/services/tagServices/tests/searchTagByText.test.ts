@@ -1,51 +1,49 @@
-import { searchTagsByText } from '../searchTagByText'; // Adjust the import path accordingly
-import { tagService } from "../../../injection.config";
+import { searchTagsByText } from '../searchTagByText';
+import { TagRepository } from "../../../db/Repositories/tagRepository";
+import { supabase } from "../../supabase";
 
-jest.mock('../../../injection.config', () => ({
-    tagService: {
-        getAllTags: jest.fn(),
-    },
+jest.mock("../../../db/Repositories/tagRepository");
+jest.mock("../../supabase", () => ({
+    __esModule: true,
+    supabase: {},
 }));
 
 describe('searchTagsByText', () => {
-    it('should return matching tags based on tag name', async () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should return matching tags from fuzzySearchTagsByName', async () => {
         const mockTags = [
             { tagId: 1, tagName: 'Electronics' },
             { tagId: 2, tagName: 'Books' },
         ];
-
-        (tagService.getAllTags as jest.Mock).mockResolvedValue(mockTags);
+        // Mock the TagRepository instance method
+        (TagRepository as jest.Mock).mockImplementation(() => ({
+            fuzzySearchTagsByName: jest.fn().mockResolvedValue(mockTags),
+        }));
 
         const result = await searchTagsByText('Electro');
-
-        expect(result).toEqual([{ tagId: 1, tagName: 'Electronics' }]);
+        expect(result).toEqual(mockTags);
     });
 
-    it('should return null if no tags match the search text', async () => {
-        const mockTags = [
-            { tagId: 1, tagName: 'Electronics' },
-        ];
-
-        (tagService.getAllTags as jest.Mock).mockResolvedValue(mockTags);
-
-        const result = await searchTagsByText('Toys');
-
+    it('should return null if tagName is empty', async () => {
+        const result = await searchTagsByText('');
         expect(result).toBeNull();
     });
 
-    it('should return null if no tags are found', async () => {
-        (tagService.getAllTags as jest.Mock).mockResolvedValue([]);
-
-        const result = await searchTagsByText('AnyTag');
-
+    it('should return null if tagName is not a string', async () => {
+        // @ts-expect-error
+        const result = await searchTagsByText(null);
         expect(result).toBeNull();
     });
 
-    it('should return null if tags are not an array', async () => {
-        (tagService.getAllTags as jest.Mock).mockResolvedValue(null);
+    it('should return null if fuzzySearchTagsByName returns null', async () => {
+        (TagRepository as jest.Mock).mockImplementation(() => ({
+            fuzzySearchTagsByName: jest.fn().mockResolvedValue(null),
+        }));
 
         const result = await searchTagsByText('AnyTag');
-
         expect(result).toBeNull();
     });
 });
