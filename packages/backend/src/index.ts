@@ -15,7 +15,7 @@ import searchItemsRoutes from './routes/searchItemsRoutes';
 import tagRoutes from './routes/tagRoutes';
 import searchStoreRoutes from './routes/searchStoreRoutes';
 import fuzzySearchRoutes from './routes/fuzzySearchRoutes';
-
+import cartRoutes from './routes/cartRoutes';
 import searchRouter from './routes/searchRoute';
 import promotionRoutes from './routes/promotionRoutes';
 
@@ -54,7 +54,7 @@ app.use('/api/search', searchStoreRoutes);
 app.use('/api/searchProduct', searchRouter);
 app.use('/api/users', userRoutes)
 app.use("/api/fuzzySearch", fuzzySearchRoutes); 
-
+app.use("/api/cart",cartRoutes);
 
 setupSwagger(app);
 

@@ -1,6 +1,11 @@
 import { Price } from "@smartcart/shared/src/price"
 import { db } from "../db/dbProvider";
-import { ProductDTO } from "@smartcart/shared";
+import { ProductCartDTO } from "@smartcart/shared";
+import { Promotion } from "@smartcart/shared/src/promotion";
+import { Item } from "@smartcart/shared/src/item";
+
+
+
 export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): Promise<Price | null> {
   const price = db.Price.find(p => p.storePK == storePK && p.itemId == itemId)
 
@@ -10,16 +15,6 @@ export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): 
 
   return price || null;
 }
-
-
-// export async function getRelevantPromotionsForCart
-
-
-import { Promotion } from "@smartcart/shared/src/promotion";
-import { Item } from "@smartcart/shared/src/item";
-// import { Price } from "@smartcart/shared/src/price";
-
-
 interface PromotionFilterOptions {
   isClubMember?: boolean;
   clubId?: number;
@@ -27,11 +22,11 @@ interface PromotionFilterOptions {
   // אפשר להוסיף עוד תנאים בעתיד
 }
 
-export function getRelevantPromotionsForCart(
+export async function getRelevantPromotionsForCart(
   cartItems: Price[],
   promotions: Promotion[],
   options: undefined | PromotionFilterOptions = {}
-): Promotion[] {
+): Promise<Promotion[]> {
   return promotions.filter(promo => {
     // בדיקת תוקף
     const now = new Date();
@@ -74,20 +69,58 @@ export function getRelevantPromotionsForCart(
   });
 };
 
-export async function shoppingCartTotalSummary(shoppingCart: ProductDTO[], promotions: Promotion[]): Promise<number> {
+export async function shoppingCartTotalSummary(shoppingCart: ProductCartDTO[]): Promise<number> {
 
   let totalPrice = 0
-
-  const activePromotions = promotions.filter(promo => promo.isActive);
-
   for (const item of shoppingCart) {
-     // חיפוש המבצע האחרון (כלומר, הכי עדכני) שמתאים לפריט הזה
-    const promotion = [...activePromotions].reverse().find(p =>
-      p.promotionItemsCode.includes(item.itemCode)
-      )
-    const itemPrice =promotion?.discountedPrice ?? item.price;
-    totalPrice += itemPrice;
+    totalPrice += item.product.price* item.quantity;
   }
-  
   return totalPrice
+}
+
+export async function getItemByItemCode(itemCode: number): Promise<Item | null> {
+  const item = db.Item.find(i => i.itemCode === itemCode);
+  if (!item) {
+    console.warn(`Item not found for itemCode: ${itemCode}`);
+    return null;
+  }
+  return item;
+}
+
+
+export async function getProductwithPomotionPrice(shoppingCart: Price[], promotions: Promotion[]): Promise<ProductCartDTO[]> {
+
+  const productList: ProductCartDTO[] = []
+  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart, promotions);
+  for (const item of shoppingCart) {
+    const promotion = [...relevantPromotions].find(p =>
+      p.promotionItemsCode.includes(item.itemCode)
+    )
+
+    const itemPrice = promotion?.discountedPrice ?? item.price;
+    const itemDetails = await getItemByItemCode(item.itemCode);
+
+
+    productList.push({
+     product : {
+        itemCode: item.itemCode,
+        priceId:item.priceId,
+        ProductName:itemDetails?.itemName ?? "",
+        storePK: item.storePK,
+        itemName:itemDetails?.itemName ?? "",
+        itemStatus: itemDetails?.itemStatus ?? false,
+        manufacturerItemDescription:itemDetails?.manufacturerItemDescription ?? "",
+        manufacturerName: itemDetails?.manufacturerName ?? "",  
+        price: itemPrice,
+        unitOfMeasurePrice: item.unitOfMeasurePrice ,
+        quantityInPackage: item?.quantityInPackage,
+      },
+      quantity: item.quantity,
+
+    })
+
+  }
+
+  return productList;
+
 }
