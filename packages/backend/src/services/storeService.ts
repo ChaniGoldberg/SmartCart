@@ -1,6 +1,7 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
-import { StoreLocationDto } from "@smartcart/shared/src/dto/store.dto";
+
+import { StoreLocationDto } from "@smartcart/shared/src/dto/StoreLocation.dto";
 import { StoreRepository } from '../db/Repositories/storeRepository';
 import { databaseService } from '../services/database';
 import { createClient } from "@supabase/supabase-js";
@@ -111,7 +112,7 @@ export const getValidStores = async (): Promise<StoreLocationDto[]> => {
       }
 
       return new StoreLocationDto(
-        s.storeId,
+        s.storePK,
         s.chainId,
         s.chainName,
         s.storeName,
