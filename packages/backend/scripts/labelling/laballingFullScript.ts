@@ -8,6 +8,7 @@ import { parseAndSaveTagsFromResponse } from './parseAndSaveTagsFromResponse';
 import { TagRepository } from "../../src/db/Repositories/tagRepository";
 import { supabase } from '../../src/services/supabase';
 const tagRepository = new TagRepository(supabase);
+import {autoTagNewTags} from './autoTagging'
 /**
  * פונקציה שמביאה מוצרים ללא תיוגים, את כל התיוגים, ומעבירה אותם ל־GPT לתיוג
  */
@@ -37,6 +38,8 @@ export async function labelItemsWithAI() {
 `;
 
     const result: string = await tagProductsByGPT(items, tags, instructions);
+    await parseAndSaveTagsFromResponse(result);
+    await autoTagNewTags();
+    console.log("🚀 תהליך התיוג הושלם בהצלחה");
     return result;
-    // await parseAndSaveTagsFromResponse(result);
 }
