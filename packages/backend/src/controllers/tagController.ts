@@ -58,17 +58,17 @@ export const addNewTagsToItems = async (req: Request, res: Response) => {
     }
 };
 
-export const getItemsWithoutTags = async (req: Request, res: Response) => {
-    try {
-        // שליפת מוצרים מהשירות שמחזיר רק מוצרים ללא תיוג
-        const items = await tagService.getItemsWithoutTags();
-        res.status(200).json({
-            success: true,
-            message: "Items without tags fetched successfully",
-            timestamp: new Date().toISOString(),
-            items
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching items without tags', error });
-    }
-};
+// export const getItemsWithoutTags = async (req: Request, res: Response) => {
+//     try {
+//         // שליפת מוצרים מהשירות שמחזיר רק מוצרים ללא תיוג
+//         const items = await tagService.getItemsWithoutTags();
+//         res.status(200).json({
+//             success: true,
+//             message: "Items without tags fetched successfully",
+//             timestamp: new Date().toISOString(),
+//             items
+//         });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching items without tags', error });
+//     }
+// };
