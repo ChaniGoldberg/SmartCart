@@ -7,6 +7,7 @@ export interface IPromotionRepository {
   updateManyPromotions(promotions: Promotion[]): Promise<Promotion[]>;
   getAllPromotions(): Promise<Promotion[]>;
   getPromotionById(promotionId: number): Promise<Promotion | null>;
+  SelectPromotionsByStorePK(storePK: string): Promise<Promotion[]>;
   getPromotionsByStorePK(storePK: string): Promise<Promotion[]>;
   deletePromotionById(promotionId: number): Promise<void>;
 

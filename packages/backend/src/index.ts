@@ -17,6 +17,7 @@ import searchStoreRoutes from './routes/searchStoreRoutes';
 import fuzzySearchRoutes from './routes/fuzzySearchRoutes';
 
 import searchRouter from './routes/searchRoute';
+import promotionRoutes from './routes/promotionRoutes';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -46,6 +47,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/health', healthRoutes);
 app.use('/api/items', itemsRoutes);
 app.use("/api/stores", storeRoutes); 
+app.use('/api/promotions', promotionRoutes);
 app.use("/api/search", searchItemsRoutes); 
 app.use("/api/tag", tagRoutes); 
 app.use('/api/search', searchStoreRoutes);
