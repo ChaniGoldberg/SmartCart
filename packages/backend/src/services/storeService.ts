@@ -100,15 +100,16 @@ export const getValidStores = async (): Promise<StoreLocationDto[]> => {
       );
     };
 
-
     const validStores = stores.filter(isValidAddress);
 
     const addressCoords = await limitConcurrency(validStores, async (s) => {
       const fullAddress = `${s.address}, ${s.city}`;
 
-      const coords = await geocodeAddress(fullAddress);//שיחזיר קורדינטה geocodeAddress-שליחת הכתובת ל
-      //הנתונים שיחזרו מהפונקציה 
-      if (!coords) throw new Error(`אין קואורדינטות לכתובת: ${fullAddress}`);
+      const coords = await geocodeAddress(fullAddress);
+      if (!coords) {
+        console.warn(`⚠️ מדלג: לא נמצאו קואורדינטות לכתובת "${fullAddress}"`);
+        return null;
+      }
 
       return new StoreLocationDto(
         s.storePK,
@@ -116,15 +117,18 @@ export const getValidStores = async (): Promise<StoreLocationDto[]> => {
         s.chainName,
         s.storeName,
         fullAddress,
-        coords?.lat || 0,
-        coords?.lng || 0
+        coords.lat,
+        coords.lng
       );
     }, 10);
-console.log(addressCoords)
-    return addressCoords;
+
+    // סינון של null
+    const filtered = addressCoords.filter((r): r is StoreLocationDto => r !== null);
+
+    console.log(`✅ ${filtered.length} חנויות תקינות נטענו`);
+    return filtered;
   } catch (error) {
-    
-console.error('❌ Failed to load valid stores:', error);
+    console.error('❌ Failed to load valid stores:', error);
     throw error;
   }
 };
