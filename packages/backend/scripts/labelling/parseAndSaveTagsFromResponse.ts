@@ -1,18 +1,30 @@
-import ItemService from "../../src/services/itemService";
-import { tagService } from "../../src/services/tagService";
+import 'dotenv/config';
+import { ItemRepository } from "../../src/db/Repositories/itemRepository";
+import { TagRepository } from "../../src/db/Repositories/tagRepository";
+import { supabase } from "../../src/services/supabase";
+import { Tag } from "@smartcart/shared/src/tag";
+
 
 export async function parseAndSaveTagsFromResponse(response: string): Promise<void> {
-  const itemService = new ItemService();
+  console.log("🚀 התחלת עיבוד תגיות מהמחרוזת");
+
   const lines = response
     .split(";")
     .map(line => line.trim())
     .filter(line => line.length > 0);
 
-  const allTags = await tagService.getAllTags() || [];
-  const allItems = await itemService.getAllItem() || [];
+  console.log(`🔍 נמצאו ${lines.length} שורות לעיבוד`);
+
+  const itemRepository = new ItemRepository(supabase);
+  const tagRepository = new TagRepository(supabase);
+
+  const allTags = await tagRepository.getAllTags() || [];
+  const allItems = await itemRepository.getAllItems() || [];
+
   const tagNameToIdMap = new Map(allTags.map(tag => [tag.tagName, tag.tagId]));
 
   for (const line of lines) {
+    console.log(`\n📦 מטפל בשורה: "${line}"`);
     const [product, tagsStr] = line.split(":").map(part => part.trim());
     const tags = tagsStr ? tagsStr.split(",").map(tag => tag.trim()) : [];
 
@@ -24,41 +36,53 @@ export async function parseAndSaveTagsFromResponse(response: string): Promise<vo
 
     const tagIds: number[] = [];
 
-    for (const tagRaw of tags) {
-      const isNew = tagRaw.endsWith("*");
-      const cleanTag = isNew ? tagRaw.slice(0, -1).trim() : tagRaw;
+    for (const tag of tags) {
+      const isNew = tag.endsWith("*");
+      const cleanTag = isNew ? tag.slice(0, -1).trim() : tag;
 
       let tagId = tagNameToIdMap.get(cleanTag);
 
       if (!tagId) {
-        const newTag = await tagService.addTag(cleanTag);
+        console.log(`🆕 מוסיף תג חדש: "${cleanTag}"`);
+        const addTag: Tag = {
+          tagId: 0,
+          tagName: cleanTag,
+          dateAdded: new Date(),
+          isAlreadyScanned: false
+        };
+        const newTag = await tagRepository.addTag(addTag);
         tagId = newTag.tagId;
         tagNameToIdMap.set(cleanTag, tagId);
+      } else {
+        console.log(`✅ תג קיים: "${cleanTag}" (ID: ${tagId})`);
       }
 
       tagIds.push(tagId);
     }
 
     item.tagsId = tagIds;
-    await itemService.updateItem(item);
+    await itemRepository.updateItem(item);
     console.log(`✅ עודכן תיוג למוצר: ${item.itemName}`);
   }
 
-  console.log("🎯 כל המוצרים תויגו בהצלחה.");
+  console.log("\n🎯 כל המוצרים תויגו בהצלחה.");
 
   // הדפסת כל המוצרים עם התיוגים לאחר העדכון
-  const updatedItems = await itemService.getAllItem();
+  const updatedItems = await itemRepository.getAllItems();
   console.log("\n--- מצב מוצרים לאחר עדכון ---");
   updatedItems.forEach(item => {
     console.log(`${item.itemName}: tagsId = [${item.tagsId?.join(", ")}]`);
   });
 }
-const response = `
-תפוח עץ: פירות, אדום;
-בננה: פירות, צהוב*;
-מלפפון: ירקות, ירוק*;
+
+// --------------------------------------------------
+// 📌 קריאה לדוגמה לפונקציה עם טקסט תגיות לדוגמה
+const sampleResponse = `
+וופלים עם קרם בטעם מ: ממתקים, חטיפים, וופלים*;
+חמאת בוטנים סקיפי לל: ממרחים, מזון יבש, חמאת בוטנים*;
+מעדן פרי סיינט אמור: מוצרי חלב, פירות טריים, מעדני פרי*;
 `;
-// קריאה לפונקציה
-parseAndSaveTagsFromResponse(response).then(() => {
-  console.log("הפונקציה הסתיימה");
-});
+
+parseAndSaveTagsFromResponse(sampleResponse)
+  .then(() => console.log("\n✅ סיום תהליך עיבוד התגיות"))
+  .catch(err => console.error("❌ שגיאה במהלך עיבוד התגיות:", err));
