@@ -11,11 +11,12 @@ const Header: React.FC = () => (
       <span className="w-3 h-3 bg-green-500 rounded-full"></span>
     </div>
 
-    {/* פס הטורקיז עם הלוגו והניווט */}
+     {/* פס הטורקיז עם הלוגו והניווט */}
     <div className="bg-gradient-to-r from-teal-600 to-green-400 text-white px-8 py-3 flex items-center justify-between">
       {/* לוגו בצד ימין */}
       <div className="flex items-center gap-2 font-bold text-lg">
-        <span className="text-xl">🛒</span>
+        <span className="text-xl">
+          <Link to="/cart" className="no-underline">🛒</Link></span>
         <span>SmartShop</span>
       </div>
 
@@ -23,7 +24,6 @@ const Header: React.FC = () => (
       <nav className="flex gap-6 text-sm font-medium">
         <Link to="/" className="hover:underline">Home</Link>
         <Link to="/map" className="hover:underline">Map</Link>
-        <Link to="/cart" className="hover:underline">Shopping Cart</Link>
         <Link to="/search" className="hover:underline">search items</Link>
         <Link to="/login" className="hover:underline">Log in</Link>
       </nav>
