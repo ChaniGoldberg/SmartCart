@@ -5,5 +5,5 @@ import { PromotionSummary } from "../services/promotionServices";
 
 export interface IPromotions {
   selectPromotionsByStorePK(storePK: string): Promise<Promotion[]>;
-  getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: number): Promise<PromotionSummary[]>;
+  getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: string): Promise<PromotionSummary[]>;
 }
