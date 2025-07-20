@@ -47,13 +47,20 @@ export async function autoTagNewTags(): Promise<string> {
     for (const tag of unscannedTags) {
         let similarByName: any[] = [];
         const taggedItem = allItems.find(item => item.tagsId.includes(tag.tagId));
-        if (taggedItem) {
+        if (taggedItem && typeof taggedItem.itemName === 'string' && taggedItem.itemName.trim() !== '') {
             similarByName = await itemRepository.fuzzySearchItemsByText(taggedItem.itemName);
             similarByName = similarByName.map(normalizeItem);
+        } else {
+            similarByName = [];
+        }
+        let similarByTagName
+        if (typeof tag.tagName === 'string' && tag.tagName.trim() !== '') {
+            similarByTagName = await itemRepository.fuzzySearchItemsByText(tag.tagName);
+            similarByTagName = similarByTagName.map(normalizeItem);
+        } else {
+            similarByTagName = [];
         }
 
-        let similarByTagName = await itemRepository.fuzzySearchItemsByText(tag.tagName);
-        similarByTagName = similarByTagName.map(normalizeItem);
 
         const combinedItems = [...similarByName, ...similarByTagName];
         const similarItems = [...new Map(
