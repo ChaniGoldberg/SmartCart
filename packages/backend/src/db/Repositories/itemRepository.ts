@@ -6,7 +6,6 @@ import { IItemRepository } from "../IRepositories/IitemRepository"; // ודא ש
 
 export class ItemRepository implements IItemRepository {
   private readonly tableName = 'item';
-  private readonly tableName = 'item';
   private readonly itemTagsTableName = 'item_tags';
   private readonly promotionItemsTableName = 'promotion_items';
 
