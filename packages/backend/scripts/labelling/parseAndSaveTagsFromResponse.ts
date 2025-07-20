@@ -44,20 +44,40 @@ export async function parseAndSaveTagsFromResponse(response: string): Promise<vo
 
       if (!tagId) {
         console.log(`🆕 מוסיף תג חדש: "${cleanTag}"`);
-        const addTag: Tag = {
-          tagId: 0,
-          tagName: cleanTag,
-          dateAdded: new Date(),
-          isAlreadyScanned: false
+        // const addTag: Tag = {
+        //   tagId: 0,
+        //   tagName: cleanTag,
+        //   dateAdded: new Date(),
+        //   isAlreadyScanned: false
+        // };
+        // const newTag = await tagRepository.addTag(addTag);
+///////////////////////////////////////////////////////////////////////////
+        const addTagData = {
+          tag_name: cleanTag,
+          date_added: new Date(),
+          is_already_scanned: false
         };
-        const newTag = await tagRepository.addTag(addTag);
-        tagId = newTag.tagId;
-        tagNameToIdMap.set(cleanTag, tagId);
+
+        const { data: newTag, error } = await supabase
+          .from('tag')
+          .insert([addTagData])
+          .select()
+          .single();
+
+        if (error) {
+          console.error("❌ שגיאה בהוספת תגית חדשה:", error.message);
+          continue;
+        }
+
+        tagId = newTag.tag_id;
+        tagNameToIdMap.set(cleanTag, Number(tagId));
+
+        /////////////////////////////////////////////
       } else {
         console.log(`✅ תג קיים: "${cleanTag}" (ID: ${tagId})`);
       }
-
-      tagIds.push(tagId);
+///////////////////////////////////////////////////////
+      tagIds.push(Number(tagId));
     }
 
     item.tagsId = tagIds;
