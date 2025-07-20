@@ -52,7 +52,7 @@ export async function getRelevantPromotionsForCart(
     if (promo.minQuantity) {
       // סך הכמות של כל הפריטים הרלוונטיים למבצע
       const promoItemsInCart = cartItems.filter(item =>
-        promo.promotionItemsCode.includes(item.itemId)
+        promo.promotionItemsCode.includes(item.itemCode)
       );
       const totalPromoQty = promoItemsInCart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -78,7 +78,7 @@ export async function shoppingCartTotalSummary(shoppingCart: ProductCartDTO[]): 
   return totalPrice
 }
 
-export async function getItemByItemCode(itemCode: number): Promise<Item | null> {
+export async function getItemByItemCode(itemCode: string): Promise<Item | null> {
   const item = db.Item.find(i => i.itemCode === itemCode);
   if (!item) {
     console.warn(`Item not found for itemCode: ${itemCode}`);
