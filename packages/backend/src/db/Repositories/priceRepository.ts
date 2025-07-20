@@ -3,17 +3,16 @@ import { Price } from "../../../../shared/src/price";
 import { IPriceRepository } from "../IRepositories/IPriceRepository";
 
 export class PriceRepository implements IPriceRepository {
-    private readonly tableName = 'prices';
+    private readonly tableName = 'price';
 
     constructor(private supabase: SupabaseClient) { }
 
     // פונקציה להמרה ל-snake_case
     private toDbPrice(price: Price) {
         return {
-            price_id: price.priceId,
-            // store_uid: price.storeId,
+            store_pk: price.storePK,
+             item_id: price.itemId,
             item_code: price.itemCode,
-            item_id: price.itemId,
             price: price.price,
             price_update_date: price.priceUpdateDate,
             unit_quantity: price.unitQuantity,

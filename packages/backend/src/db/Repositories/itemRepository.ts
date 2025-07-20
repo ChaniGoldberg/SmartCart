@@ -5,7 +5,7 @@ import { IItemRepository } from "../IRepositories/IitemRepository"; // ודא ש
 
 
 export class ItemRepository implements IItemRepository {
-  private readonly tableName = 'items';
+  private readonly tableName = 'item';
   private readonly itemTagsTableName = 'item_tags';
   private readonly promotionItemsTableName = 'promotion_items';
 
@@ -51,7 +51,7 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
-  async linkTagToItem(itemCode: number, tagId: number): Promise<void> {
+  async linkTagToItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Linking tag ${tagId} to item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -73,7 +73,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async unlinkTagFromItem(itemCode: number, tagId: number): Promise<void> {
+  async unlinkTagFromItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Unlinking tag ${tagId} from item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -93,7 +93,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async getTagsByItemCode(itemCode: number): Promise<number[]> {
+  async getTagsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching tags for item ${itemCode} from ${this.itemTagsTableName}`);
       const { data, error } = await this.supabase
@@ -112,7 +112,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async setTagsForItem(itemCode: number, tagIds: number[]): Promise<void> {
+  async setTagsForItem(itemCode: string, tagIds: number[]): Promise<void> {
     try {
       console.log(`Setting tags for item ${itemCode}: ${tagIds.join(', ')}`);
       // מוחק קישורים קיימים עבור הפריט
@@ -145,7 +145,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async getPromotionsByItemCode(itemCode: number): Promise<number[]> {
+  async getPromotionsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching promotions for item ${itemCode} from ${this.promotionItemsTableName}`);
       const { data, error } = await this.supabase
@@ -218,10 +218,21 @@ export class ItemRepository implements IItemRepository {
         .insert(dbItemsToInsert)
         .select('*');
 
-      if (error) {
-        console.error('Error inserting multiple items:', error);
-        throw new Error(`Failed to add multiple items: ${error.message}`);
-      }
+if (error) {
+  console.error('❌ Error inserting multiple items:', error);
+  try {
+    console.error('Error JSON:', JSON.stringify(error, null, 2));
+  } catch (jsonError) {
+    // אם לא ניתן להמיר ל־JSON, פשוט נמשיך
+  }
+  const message =
+    typeof error === 'object' && error !== null
+      ? error.message || JSON.stringify(error)
+      : String(error);
+
+  throw new Error(`Failed to add multiple items: ${message}`);
+}
+
 
       if (!data) {
         throw new Error('No data returned after adding multiple items.');
@@ -353,7 +364,7 @@ export class ItemRepository implements IItemRepository {
         throw new Error(`Failed to fetch item-tags relationships: ${itemTagsError.message}`);
       }
 
-      const itemTagsMap = new Map<number, number[]>();
+      const itemTagsMap = new Map<string, number[]>();
       if (itemTagsData) {
         itemTagsData.forEach(row => {
           const itemCode = row.item_code;
@@ -379,7 +390,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async getItemByItemCode(itemCode: number): Promise<Item | null> {
+  async getItemByItemCode(itemCode: string): Promise<Item | null> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
@@ -410,7 +421,7 @@ export class ItemRepository implements IItemRepository {
     }
   }
 
-  async deleteItemByItemCode(itemCode: number): Promise<void> {
+  async deleteItemByItemCode(itemCode: string): Promise<void> {
     try {
       // לפני מחיקת הפריט, מחק את כל הקישורים שלו מטבלת הקישור של תגיות
       console.log(`Deleting all tags linked to item ${itemCode} from ${this.itemTagsTableName}`);
