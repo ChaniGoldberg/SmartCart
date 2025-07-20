@@ -13,12 +13,12 @@ export const promotionsService: IPromotions = {
 
   
   // פונקציה לקבלת פרומושנים לפי מזהה סניף ומזהה מוצר
-  async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: number): Promise<PromotionSummary[]> {
+  async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: string): Promise<PromotionSummary[]> {
     if (!storePK || typeof storePK !== "string") {
       throw { status: 400, message: "Invalid or missing storePK" };
     }
-    if (typeof itemCode !== "number") {
-      throw { status: 400, message: "Invalid or missing itemCode. Expected a number." };
+    if (typeof itemCode !== "string" ) {
+      throw { status: 400, message: "Invalid or missing itemCode. Expected a string." };
     }
 
     const today = new Date().toISOString();

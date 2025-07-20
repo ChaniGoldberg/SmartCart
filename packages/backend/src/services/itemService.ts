@@ -1,32 +1,23 @@
-import { IItem } from "../interfaces/IItem";
 import { Item } from "@smartcart/shared/src/item";
-import { db } from "../db/dbProvider";
 import { ItemRepository } from "../db/Repositories/itemRepository";
 import { supabase } from "./supabase";
-const itemRepository=new ItemRepository(supabase);
-export class ItemService implements IItem {
-    private db: typeof db;
-
-    constructor() {
-        this.db = db;
+export class ItemService {
+    private itemRepository: ItemRepository;
+    constructor() {     
+        this.itemRepository = new ItemRepository(supabase);
     }
-
     async getAllItem(): Promise<Item[]> {
-        return this.db.Item;;
+        return await this.itemRepository.getAllItems();
     }
-
-async getItemById(itemCode: number): Promise<Item | null> {
-    const foundItem = this.db.Item.find((item: Item) => item.itemCode === itemCode);
-    return foundItem ? foundItem : null;
-}
-
+    async getItemById(itemCode: string): Promise<Item | null> {
+        return await this.itemRepository.getItemByItemCode(itemCode);
+    }
     async addItem(item: Item): Promise<void> {
+        await this.itemRepository.addItem(item);
     }
-
     async updateItem(item: Item): Promise<void> {
-       await itemRepository.updateItem(item)
+        await this.itemRepository.updateItem(item);
     }
-
     async deleteTagIdFromItemAndUpdate(item: Item, tagIdToDelete: number): Promise<void> {
     // מחיקת התג מהמערך
     const updatedItem: Item = {
@@ -39,7 +30,4 @@ async getItemById(itemCode: number): Promise<Item | null> {
     await this.updateItem(updatedItem);
 }
 }
-
- 
-
 export default ItemService;

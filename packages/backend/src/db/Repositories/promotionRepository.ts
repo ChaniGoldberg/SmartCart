@@ -40,7 +40,7 @@ export class PromotionRepository implements IPromotionRepository {
 
   // --- פונקציות לניהול קישורי Promotion-Item (ללא שינוי מהותי) ---
 
-  async linkItemToPromotion(promotionId: number, itemCode: number): Promise<void> {
+  async linkItemToPromotion(promotionId: number, itemCode: string): Promise<void> {
     try {
       console.log(`Linking item ${itemCode} to promotion ${promotionId} in ${this.promotionItemsTableName}`);
       const { error } = await this.supabase
@@ -62,7 +62,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async unlinkItemFromPromotion(promotionId: number, itemCode: number): Promise<void> {
+  async unlinkItemFromPromotion(promotionId: number, itemCode: string): Promise<void> {
     try {
       console.log(`Unlinking item ${itemCode} from promotion ${promotionId} in ${this.promotionItemsTableName}`);
       const { error } = await this.supabase
@@ -82,7 +82,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async getItemsByPromotionId(promotionId: number): Promise<number[]> {
+  async getItemsByPromotionId(promotionId: number): Promise<string[]> {
     try {
       console.log(`Fetching items for promotion ${promotionId} from ${this.promotionItemsTableName}`);
       const { data, error } = await this.supabase
@@ -101,7 +101,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async setItemsForPromotion(promotionId: number, itemCodes: number[]): Promise<void> {
+  async setItemsForPromotion(promotionId: number, itemCodes: string[]): Promise<void> {
     try {
       console.log(`Setting items for promotion ${promotionId}: ${itemCodes.join(', ')}`);
       const { error: deleteError } = await this.supabase
@@ -426,7 +426,7 @@ export class PromotionRepository implements IPromotionRepository {
         throw new Error(`Failed to fetch promotion-items relationships: ${promotionItemsError.message}`);
       }
 
-      const promotionItemsMap = new Map<number, number[]>();
+      const promotionItemsMap = new Map<number, string[]>();
       if (promotionItemsData) {
         promotionItemsData.forEach(row => {
           const promotionId = row.promotion_id;

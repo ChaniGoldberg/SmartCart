@@ -61,7 +61,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     return []; // Return an empty array if supabase is null
   }
 
-  async linkTagToItem(itemCode: number, tagId: number): Promise<void> {
+  async linkTagToItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Linking tag ${tagId} to item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -83,7 +83,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async unlinkTagFromItem(itemCode: number, tagId: number): Promise<void> {
+  async unlinkTagFromItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Unlinking tag ${tagId} from item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -103,7 +103,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getTagsByItemCode(itemCode: number): Promise<number[]> {
+  async getTagsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching tags for item ${itemCode} from ${this.itemTagsTableName}`);
       const { data, error } = await this.supabase
@@ -122,7 +122,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async setTagsForItem(itemCode: number, tagIds: number[]): Promise<void> {
+  async setTagsForItem(itemCode: string, tagIds: number[]): Promise<void> {
     try {
       console.log(`Setting tags for item ${itemCode}: ${tagIds.join(', ')}`);
       // מוחק קישורים קיימים עבור הפריט
@@ -155,7 +155,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getPromotionsByItemCode(itemCode: number): Promise<number[]> {
+  async getPromotionsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching promotions for item ${itemCode} from ${this.promotionItemsTableName}`);
       const { data, error } = await this.supabase
@@ -363,7 +363,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
         throw new Error(`Failed to fetch item-tags relationships: ${itemTagsError.message}`);
       }
 
-      const itemTagsMap = new Map<number, number[]>();
+      const itemTagsMap = new Map<string, number[]>();
       if (itemTagsData) {
         itemTagsData.forEach(row => {
           const itemCode = row.item_code;
@@ -389,7 +389,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getItemByItemCode(itemCode: number): Promise<Item | null> {
+  async getItemByItemCode(itemCode: string): Promise<Item | null> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
@@ -420,7 +420,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async deleteItemByItemCode(itemCode: number): Promise<void> {
+  async deleteItemByItemCode(itemCode: string): Promise<void> {
     try {
       // לפני מחיקת הפריט, מחק את כל הקישורים שלו מטבלת הקישור של תגיות
       console.log(`Deleting all tags linked to item ${itemCode} from ${this.itemTagsTableName}`);
