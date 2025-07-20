@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Promotion } from '@smartcart/shared/src/promotion';
 
@@ -7,7 +8,6 @@ interface PromotionsProps {
 
 export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
-
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -19,14 +19,22 @@ export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
         }
         const data = await response.json();
 
-        const withDates = data.map((promo: any) => ({
-          ...promo,
-          startDate: new Date(promo.startDate),
-          endDate: new Date(promo.endDate),
-          lastUpdated: new Date(promo.lastUpdated),
+        const withMappedFields = data.map((promo: any) => ({
+          promotionId: promo.promotion_id,
+          promotionDescription: promo.promotion_description,
+          startDate: new Date(promo.start_date),
+          endDate: new Date(promo.end_date),
+          originalPrice: promo.original_price,
+          discountedPrice: promo.discounted_price,
+          discountAmount: promo.discount_amount,
+          discountPercentage: promo.discount_percentage,
+          requiresCoupon: promo.requires_coupon,
+          requiresClubMembership: promo.requires_club_membership,
+          remarks: promo.remarks,
         }));
 
-        setPromotions(withDates);
+
+        setPromotions(withMappedFields);
       } catch (err: any) {
         console.error("שגיאה בטעינת המבצעים:", err.message);
       }
@@ -34,7 +42,6 @@ export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
 
     fetchPromotions();
   }, [storePk]);
-
 
 
 
@@ -55,7 +62,6 @@ export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
             </tr>
           </thead>
 
-
           <tbody>
             {promotions.map((promo) => (
               <tr key={promo.promotionId} className="border-b border-gray-200 hover:bg-gray-100">
@@ -72,7 +78,7 @@ export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
                     ? promo.originalPrice.toFixed(2) + ' ₪'
                     : 'לא ידוע'}
                 </td>
-                
+
                 <td className="py-4 px-6 text-right text-gray-600">
                   {typeof promo.discountedPrice === 'number'
                     ? promo.discountedPrice.toFixed(2) + ' ₪'
@@ -106,3 +112,4 @@ export const Promotions: React.FC<PromotionsProps> = ({ storePk }) => {
     </div>
   );
 };
+
