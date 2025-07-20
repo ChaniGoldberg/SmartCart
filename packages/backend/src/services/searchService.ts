@@ -1,30 +1,28 @@
 import { Item } from "@smartcart/shared/src/item";
-import ItemService from "./itemService";
+import { ItemRepository } from "@smartcart/backend/src/db/Repositories/itemRepository";
+import { PriceRepository } from "@smartcart/backend/src/db/Repositories/priceRepository";
 import PriceService from "./priceService";
 import { Price } from "@smartcart/shared/src/price";
 import { ISearchService } from "../interfaces/ISearchService";
-import { SearchForProductByName } from "./tagServices/searchForProductByName";
-import { ItemRepository } from "../db/Repositories/itemRepository";
-import { PriceRepository } from "../db/Repositories/priceRepository";
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-const supabaseUrl = process.env.SUPABASE_URL || "your-supabase-url";
-const supabaseKey = process.env.SUPABASE_ANON_KEY || "your-anon-key";
-const supabaseClient: SupabaseClient = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "./supabase";
 export class searchService implements ISearchService {
-    private itemService: ItemService;
     private priceService: PriceService;
+    private itemRepository: ItemRepository;
+    private priceRepository: PriceRepository;
     constructor() {
-        const itemRepository = new ItemRepository(supabaseClient);
-        const priceRepository = new PriceRepository(supabaseClient);
-        this.itemService = new ItemService();//itemRepository
-        this.priceService = new PriceService(priceRepository);
+        this.itemRepository = new ItemRepository(supabase);
+        this.priceRepository = new PriceRepository(supabase);
+        this.priceService = new PriceService(this.priceRepository);
     }
     async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: Price | null }[]> {
         try {
-            const items = await SearchForProductByName(itemTxt);
+            const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
+            console.log("items", items);
+         
             const prices = await this.priceService.getAllPrices();
+            console.log("prices", prices);
             return items.map(item => {
-                const price = prices.find(price => price.itemCode === item.itemCode);
+                const price = prices.find(price => price.itemCode === item.itemCode && item.itemStatus === true);
                 return {
                     item,
                     price: price || null,
