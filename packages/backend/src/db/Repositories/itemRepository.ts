@@ -51,15 +51,67 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
-async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
-    // supabase = getClient();
-    if (this.supabase != null) {
-      const { data, error } = await this.supabase.rpc('fuzzy_search_items', { search_query: itemText });
-      if (error) throw error;
-      return data;
-    }
-    return []; // Return an empty array if supabase is null
+  async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
+  if (!this.supabase) {
+    console.warn("⚠️ Supabase client not initialized");
+    return [];
   }
+
+  try {
+    // 1. קריאה לפונקציית RPC
+    const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items', {
+      search_query: itemText
+    });
+
+    if (error) {
+      console.error("❌ Error calling fuzzy_search_items:", error.message);
+      throw new Error(`Failed fuzzy search: ${error.message}`);
+    }
+
+    if (!rawItems || rawItems.length === 0) {
+      return [];
+    }
+
+    // 2. שליפת תגיות לכל item_code שחזר בתוצאות
+    const itemCodes = rawItems.map((item:Item)=> item.itemCode as string);
+
+    const { data: itemTagsData, error: itemTagsError } = await this.supabase
+      .from(this.itemTagsTableName)
+      .select('item_code, tag_id')
+      .in('item_code', itemCodes);
+
+    if (itemTagsError) {
+      console.error("❌ Error fetching item-tags:", itemTagsError.message);
+      throw new Error(`Failed to fetch item-tags: ${itemTagsError.message}`);
+    }
+
+    // 3. בניית מפת תגיות לכל item_code (כמחרוזת)
+    const itemTagsMap = new Map<string, number[]>();
+    if (itemTagsData) {
+      for (const row of itemTagsData) {
+        const itemCode = row.item_code as string;
+        const tagId = row.tag_id;
+        if (!itemTagsMap.has(itemCode)) {
+          itemTagsMap.set(itemCode, []);
+        }
+        itemTagsMap.get(itemCode)!.push(tagId);
+      }
+    }
+
+    // 4. המרת rawItems ל־Item עם camelCase + תגיות
+    const itemsWithTags: Item[] = rawItems.map((raw:any) => {
+      const item = this.fromDbItem(raw) as Item;
+      item.tagsId = itemTagsMap.get(String(item.itemCode)) || [];
+      return item;
+    });
+
+    return itemsWithTags;
+  } catch (err: any) {
+    console.error("💥 Error in fuzzySearchItemsByText:", err.message);
+    throw err;
+  }
+}
+
 
   async linkTagToItem(itemCode: string, tagId: number): Promise<void> {
     try {
@@ -471,6 +523,55 @@ if (error) {
       console.log(`Item with code ${itemCode}, its linked tags and promotions deleted successfully.`);
     } catch (error: any) {
       console.error(`Error in deleteItemByItemCode: ${error.message}`);
+      throw error;
+    }
+  }
+  async getItemsWithoutTags(): Promise<Item[]> {
+    try {
+      // שלוף את כל המוצרים
+      const { data: itemsData, error: itemsError } = await this.supabase
+        .from(this.tableName)
+        .select('*');
+
+      if (itemsError) {
+        console.error('Error fetching items:', itemsError);
+        throw new Error(`Failed to fetch items: ${itemsError.message}`);
+      }
+
+      if (!itemsData || itemsData.length === 0) {
+        return [];
+      }
+
+      // שלוף את כל הקשרים item_code <-> tag_id
+      const { data: itemTagsData, error: itemTagsError } = await this.supabase
+        .from(this.itemTagsTableName)
+        .select('item_code, tag_id');
+
+      if (itemTagsError) {
+        console.error('Error fetching item-tags relationships:', itemTagsError);
+        throw new Error(`Failed to fetch item-tags relationships: ${itemTagsError.message}`);
+      }
+
+      // צור סט של כל item_code שיש להם לפחות תג אחד
+      const itemsWithTagsSet = new Set<number>();
+      if (itemTagsData) {
+        for (const row of itemTagsData) {
+          itemsWithTagsSet.add(row.item_code);
+        }
+      }
+
+      // סנן מוצרים שאין להם תגיות בכלל
+      const itemsWithoutTags = itemsData
+        .filter(dbItem => !itemsWithTagsSet.has(dbItem.item_code))
+        .map(dbItem => {
+          const camelCaseItem = this.fromDbItem(dbItem) as Item;
+          camelCaseItem.tagsId = []; // תיוג ריק
+          return camelCaseItem;
+        });
+
+      return itemsWithoutTags;
+    } catch (error: any) {
+      console.error(`Error in getItemsWithoutTags: ${error.message}`);
       throw error;
     }
   }

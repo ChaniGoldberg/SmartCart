@@ -131,12 +131,17 @@ export class TagRepository implements ITagRepository {
                 throw new Error(`Failed to fetch tags: ${error.message}`);
             }
 
-            return data || [];
+            return (data || []).map(row => ({
+                tagId: row.tag_id,
+                tagName: row.tag_name,
+                isAlreadyScanned: row.is_already_scanned,
+            }));
         } catch (error: any) {
             console.error(`Error in getAllTags: ${error.message}`);
             throw error;
         }
     }
+
 
     async getTagById(tagId: number): Promise<Tag | null> {
         try {
