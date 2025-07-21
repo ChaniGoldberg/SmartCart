@@ -2,8 +2,22 @@ import { Request, Response } from 'express';
 import { tagService } from '../services/tagService';
 import { itemService } from '../injection.config';
 import { Item } from '@smartcart/shared/src/item';
+
+// שליפת כל הטאגים
+export async function getAllTags(req: Request, res: Response) {
+  try {
+    const tags = await tagService.getAllTags();
+    if (!tags) {
+      return res.status(404).json({ message: "No tags found" });
+    }
+    res.json(tags);
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+}
+
 export const addTag = async (req: Request, res: Response) => {
-    const { tagName } = req.body;
+    const { tagName } = req.params;
     try {
         const newTag = await tagService.addTag(tagName);
         res.status(201).json({
@@ -41,5 +55,20 @@ export const addNewTagsToItems = async (req: Request, res: Response) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Error adding tags to items', error });
+    }
+};
+
+export const getItemsWithoutTags = async (req: Request, res: Response) => {
+    try {
+        // שליפת מוצרים מהשירות שמחזיר רק מוצרים ללא תיוג
+        const items = await tagService.getItemsWithoutTags();
+        res.status(200).json({
+            success: true,
+            message: "Items without tags fetched successfully",
+            timestamp: new Date().toISOString(),
+            items
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching items without tags', error });
     }
 };

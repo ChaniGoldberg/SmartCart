@@ -1,18 +1,22 @@
-import { searchItemsByTag } from '../searchItemsByTag'; // Adjust the import path accordingly
+import { searchItemsByTag } from '../searchItemsByTag';
 import { itemService } from "../../../injection.config";
-import { tagService } from "../../../injection.config";
+import { searchTagsByText } from "../searchTagByText";
 
 jest.mock('../../../injection.config', () => ({
     itemService: {
         getAllItem: jest.fn(),
     },
-    tagService: {
-        getAllTags: jest.fn(),
-    },
-    
+}));
+
+jest.mock('../searchTagByText', () => ({
+    searchTagsByText: jest.fn(),
 }));
 
 describe('searchItemsByTag', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should return filtered items based on tag name', async () => {
         const mockTags = [
             { tagId: 1, tagName: 'Electronics' },
@@ -24,18 +28,19 @@ describe('searchItemsByTag', () => {
             { tagsId: [1, 2], name: 'Tablet' },
         ];
 
-        (tagService.getAllTags as jest.Mock).mockResolvedValue(mockTags);
+        (searchTagsByText as jest.Mock).mockResolvedValue(mockTags);
         (itemService.getAllItem as jest.Mock).mockResolvedValue(mockItems);
 
         const result = await searchItemsByTag('Electro');
 
         expect(result).toEqual([
             { tagsId: [1], name: 'Laptop' },
+            { tagsId: [2], name: 'Novel' },
             { tagsId: [1, 2], name: 'Tablet' },
         ]);
     });
 
-    it('should return null if no items match the tag', async () => {
+    it('should return an empty array if no items match the tag', async () => {
         const mockTags = [
             { tagId: 1, tagName: 'Electronics' },
         ];
@@ -43,9 +48,8 @@ describe('searchItemsByTag', () => {
             { tagsId: [2], name: 'Novel' },
         ];
 
-        (tagService.getAllTags as jest.Mock).mockResolvedValue(mockTags);
+        (searchTagsByText as jest.Mock).mockResolvedValue(mockTags);
         (itemService.getAllItem as jest.Mock).mockResolvedValue(mockItems);
-
 
         const result = await searchItemsByTag('Books');
 
@@ -53,12 +57,11 @@ describe('searchItemsByTag', () => {
     });
 
     it('should return null if no tags are found', async () => {
-        (tagService.getAllTags as jest.Mock).mockResolvedValue([]);
+        (searchTagsByText as jest.Mock).mockResolvedValue(null);
         (itemService.getAllItem as jest.Mock).mockResolvedValue([]);
-
 
         const result = await searchItemsByTag('AnyTag');
 
-        expect(result).toEqual([]);
+        expect(result).toBeNull();
     });
 });

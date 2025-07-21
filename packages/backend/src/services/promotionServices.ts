@@ -1,32 +1,50 @@
+import { PromotionRepository } from "../db/Repositories/promotionRepository";
 import { IPromotions } from "../interfaces/Ipromotions";
-import { db } from "../db/dbProvider"; // שימוש ב-db הכללי עם שם קובץ מתוקן
+import { supabase } from "../services/supabase"; // נשאר כמו שהוא
+import { Promotion } from "@smartcart/shared/src/promotion";
 
+export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
+
+const promotionRepository = new PromotionRepository(supabase);
 export const promotionsService: IPromotions = {
-    async getPromotionsByStoreId(storeId: number): Promise<typeof db.Promotion> {
-        if (!storeId || typeof storeId !== "number") {
-            throw { status: 400, message: "Invalid or missing storeId" };
-        }
+  async selectPromotionsByStorePK(storePK: string): Promise<Promotion[]> {
+    return await promotionRepository.SelectPromotionsByStorePK(storePK);
+  },
 
-        const today = new Date();
+  
+  // פונקציה לקבלת פרומושנים לפי מזהה סניף ומזהה מוצר
+  async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: string): Promise<PromotionSummary[]> {
+    if (!storePK || typeof storePK !== "string") {
+      throw { status: 400, message: "Invalid or missing storePK" };
+    }
+    if (typeof itemCode !== "string" ) {
+      throw { status: 400, message: "Invalid or missing itemCode. Expected a string." };
+    }
 
-        const promotions = db.Promotion.filter((promotion) => {
-            const start = new Date(promotion.startDate);
-            const end = new Date(promotion.endDate);
+    const today = new Date().toISOString();
 
-            return (
-                promotion.storeId === storeId &&
-                start <= today &&
-                end >= today
-            );
-        }).map((promotion) => ({
-            ...promotion,
-            startDate: new Date(promotion.startDate),
-            endDate: new Date(promotion.endDate),
-            lastUpdated: new Date(promotion.lastUpdated),
-        }));
+    const { data, error } = await supabase
+      .from("promotion")
+      .select("*")
+      .eq("store_pk", storePK)
+      .eq("promotion_items_code", itemCode)
+      .lte("start_date", today)
+      .gte("end_date", today);
 
-        return promotions;
-    },
+    if (error) {
+      console.error("Supabase error:", error.message);
+      throw { status: 500, message: "Failed to fetch promotions" };
+    }
+
+    const promotions = data.map((promotion: Promotion) => ({
+      promotionId: promotion.promotionId,
+      promotionDescription: promotion.promotionDescription,
+      isActive: promotion.isActive,
+      requiresCoupon: promotion.requiresCoupon,
+    }));
+
+    return promotions;
+  },
 };
-
+  
 export default promotionsService;

@@ -1,3 +1,5 @@
+import { ProductDTO } from "./dto";
+
 export interface Item {
     id: string;
     name: string;
@@ -16,6 +18,7 @@ export interface Item {
     data?: T;
     error?: string;
   }
-  
+
   export type ItemsResponse = ApiResponse<Item[]>;
   export type ItemResponse = ApiResponse<Item>;
+  export type ProductDTOResponse = ApiResponse<ProductDTO[]>;

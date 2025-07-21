@@ -1,12 +1,14 @@
 import { getRelevantPromotionsForCart } from "../cartService";
 import { Promotion } from "@smartcart/shared/src/promotion";
 import { Price } from "@smartcart/shared/src/price";
+import { shoppingCartTotalSummary } from '../cartService';
+import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
 
 describe("getRelevantPromotionsForCart", () => {
 
     const baseCartItem: Price = {
         priceId: 1,
-        storeId: 1,
+        storePK: "1",
         itemId: 1,
         itemCode: 1,
         price: 10,
@@ -15,13 +17,13 @@ describe("getRelevantPromotionsForCart", () => {
         quantity: 1,
         unitOfMeasure: "ml",
         isWeighted: false,
-        quantityInPackage: "1",
+        quantityInPackage: 1,
         unitOfMeasurePrice: 10,
         allowDiscount: true,
     };
     const basePromo: Promotion = {
         promotionId: 1,
-        storeId: 1,
+        storePK: "1",
         promotionDescription: "מבצע בסיסי",
         isActive: true,
         startDate: new Date("2025-01-01"),
@@ -123,4 +125,75 @@ describe("getRelevantPromotionsForCart", () => {
         const result = getRelevantPromotionsForCart([baseCartItem], promos);
         expect(result).toHaveLength(0);
     });
+});
+
+
+describe('shoppingCartTotalSummary', () => {
+  it('calculates total considering latest active promotions per item', async () => {
+   const cart: ProductDTO[] = [
+  new ProductDTO(101, 'P1', 'Milk', 'store1', 'item1', true, 'Desc1', 'BrandA', 10, 10, '1L'),
+  new ProductDTO(102, 'P2', 'Bread', 'store1', 'item2', true, 'Desc2', 'BrandB', 5, 5, '1pc'),
+  new ProductDTO(103, 'P3', 'Cheese', 'store1', 'item3', true, 'Desc3', 'BrandC', 15, 15, '250g')
+];
+
+    const promotions: Promotion[] = [
+      {
+        promotionId: 1,
+        storePK: 'store1',
+        promotionDescription: 'Old promo Milk',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-12-31'),
+        lastUpdated: new Date('2024-01-01'),
+        isActive: true,
+        discountedPrice: 8,
+        promotionItemsCode: [101],
+        requiresCoupon: false,
+        requiresClubMembership: false
+      },
+      {
+        promotionId: 2,
+        storePK: 'store1',
+        promotionDescription: 'New promo Milk',
+        startDate: new Date('2024-06-01'),
+        endDate: new Date('2024-12-31'),
+        lastUpdated: new Date('2024-06-01'),
+        isActive: true,
+        discountedPrice: 7,
+        promotionItemsCode: [101],
+        requiresCoupon: false,
+        requiresClubMembership: false
+      },
+      {
+        promotionId: 3,
+        storePK: 'store1',
+        promotionDescription: 'Promo Bread',
+        startDate: new Date('2024-05-01'),
+        endDate: new Date('2024-12-31'),
+        lastUpdated: new Date('2024-05-01'),
+        isActive: true,
+        discountedPrice: 4,
+        promotionItemsCode: [102],
+        requiresCoupon: false,
+        requiresClubMembership: false
+      },
+      {
+        promotionId: 4,
+        storePK: 'store1',
+        promotionDescription: 'Inactive Promo Cheese',
+        startDate: new Date('2024-02-01'),
+        endDate: new Date('2024-03-01'),
+        lastUpdated: new Date('2024-02-01'),
+        isActive: false,
+        discountedPrice: 1,
+        promotionItemsCode: [103],
+        requiresCoupon: false,
+        requiresClubMembership: false
+      }
+    ];
+
+    const total = await shoppingCartTotalSummary(cart, promotions);
+
+    // Milk uses latest promo (7), Bread uses promo (4), Cheese no active promo (15)
+    expect(total).toBe(7 + 4 + 15);
+  });
 });

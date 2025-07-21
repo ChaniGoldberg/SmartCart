@@ -4,6 +4,7 @@ import { storeController } from "../controllers/storeController";
 
 const router=Router();
 
-router.get("/stores", storeController);
+router.get("/", storeController);
+
 
 export default router;  

@@ -1,34 +1,37 @@
 export class ProductDTO {
-    productId: string;
+    itemCode: string;
+    priceId: number;
     ProductName: string;
-    storeName: string;
+    storePK: string;
     itemName: string;
     itemStatus: boolean;
     manufacturerItemDescription: string;
     manufacturerName: string;
     price: number;
     unitOfMeasurePrice: number;
-    quantityInPackage: string;
-    tagId: number;
-    tagName: string;
+    quantityInPackage: number;
+    hasPromotion?: number;
+    promotionText?: string;
 
-    constructor(
-        productId: string,
+ constructor(
+        itemCode: string,
+        priceId: number,
         ProductName: string,
-        storeName: string,
+        storePK: string,
         itemName: string,
         itemStatus: boolean,
         manufacturerItemDescription: string,
         manufacturerName: string,
         price: number,
         unitOfMeasurePrice: number,
-        quantityInPackage: string,
-        tagId: number,
-        tagName: string
+        quantityInPackage: number,
+        hasPromotion?: number,
+        promotionText?: string
     ) {
-        this.productId = productId;
+        this.itemCode = itemCode;
+        this.priceId = priceId;
         this.ProductName = ProductName;
-        this.storeName = storeName;
+        this.storePK = storePK;
         this.itemName = itemName;
         this.itemStatus = itemStatus;
         this.manufacturerItemDescription = manufacturerItemDescription;
@@ -36,7 +39,9 @@ export class ProductDTO {
         this.price = price;
         this.unitOfMeasurePrice = unitOfMeasurePrice;
         this.quantityInPackage = quantityInPackage;
-        this.tagId = tagId;
-        this.tagName = tagName;
+        this.hasPromotion = hasPromotion;
+        this.promotionText = promotionText;
     }
 }
+
+

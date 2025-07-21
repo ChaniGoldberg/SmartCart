@@ -30,6 +30,42 @@ app.get('/Category/:category', (req, res) => {
     res.send("אחר");
 });
 
+app.post('/categorize-products', (req, res) => {
+  const products = req.body.products;
+  const categoryNames = req.body.tags;
+
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^\w\s\u0590-\u05FF]/g, "");
+
+  const filteredSubcategories = subcategories.filter(subC =>
+    categoryNames.includes(subC.name)
+  );
+
+  const result = products.map((product, index) => {
+    const productName = typeof product === "string" ? product : product.name;
+    const normalizedName = normalize(productName);
+
+    const matchedCategories = filteredSubcategories
+      .filter(subC =>
+        subC.keywords.some(kw =>
+          normalizedName.includes(normalize(kw))
+        )
+      )
+      .map(subC => subC.name);
+
+    // אם זה מוצר שלישי – נוסיף "מבצע" כעוד קטגוריה
+    if ((index + 1) % 3 === 0) {
+      matchedCategories.push("מבצע");
+    }
+
+    return `${productName}: ${matchedCategories.join(",")}`;
+  });
+
+  res.send(result.join(" ; "));
+});
+
+
+
 app.listen(8080, () => {
     console.log('Server running on port 8080');
 });

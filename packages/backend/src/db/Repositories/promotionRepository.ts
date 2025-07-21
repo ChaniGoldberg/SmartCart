@@ -5,7 +5,7 @@ import { Promotion } from "../../../../shared/src/promotion";
 
 
 export class PromotionRepository implements IPromotionRepository {
-  private readonly tableName = 'promotions';
+  private readonly tableName = 'promotion';
   private readonly promotionItemsTableName = 'promotion_items'; // <--- שם טבלת הקישור
 
   constructor(private supabase: SupabaseClient) { }
@@ -15,6 +15,7 @@ export class PromotionRepository implements IPromotionRepository {
   private toDbPromotion(promo: Omit<Promotion, 'promotionItemsCode'>) {
     return {
       promotion_id: promo.promotionId,
+      store_pk: promo.storePK, // Assuming storePK is a unique identifier for the store
       // store_uid: promo.storeId, // חדש: storeId
       promotion_description: promo.promotionDescription,
       start_date: promo.startDate.toISOString(), // Required now
@@ -39,7 +40,7 @@ export class PromotionRepository implements IPromotionRepository {
 
   // --- פונקציות לניהול קישורי Promotion-Item (ללא שינוי מהותי) ---
 
-  async linkItemToPromotion(promotionId: number, itemCode: number): Promise<void> {
+  async linkItemToPromotion(promotionId: number, itemCode: string): Promise<void> {
     try {
       console.log(`Linking item ${itemCode} to promotion ${promotionId} in ${this.promotionItemsTableName}`);
       const { error } = await this.supabase
@@ -61,7 +62,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async unlinkItemFromPromotion(promotionId: number, itemCode: number): Promise<void> {
+  async unlinkItemFromPromotion(promotionId: number, itemCode: string): Promise<void> {
     try {
       console.log(`Unlinking item ${itemCode} from promotion ${promotionId} in ${this.promotionItemsTableName}`);
       const { error } = await this.supabase
@@ -81,7 +82,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async getItemsByPromotionId(promotionId: number): Promise<number[]> {
+  async getItemsByPromotionId(promotionId: number): Promise<string[]> {
     try {
       console.log(`Fetching items for promotion ${promotionId} from ${this.promotionItemsTableName}`);
       const { data, error } = await this.supabase
@@ -100,7 +101,7 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async setItemsForPromotion(promotionId: number, itemCodes: number[]): Promise<void> {
+  async setItemsForPromotion(promotionId: number, itemCodes: string[]): Promise<void> {
     try {
       console.log(`Setting items for promotion ${promotionId}: ${itemCodes.join(', ')}`);
       const { error: deleteError } = await this.supabase
@@ -378,15 +379,34 @@ export class PromotionRepository implements IPromotionRepository {
     }
   }
 
-  async getPromotionsByStoreId(storeId: number): Promise<Promotion[]> {
+
+  async SelectPromotionsByStorePK(storePK: string) : Promise<Promotion[]>  {
+    if (!storePK || typeof storePK !== "string") {
+      throw { status: 400, message: "Invalid or missing storePK" };
+    }
+    const today = new Date().toISOString();
+    const { data, error } = await this.supabase
+      .from("promotion")
+      .select("*")
+      .eq("store_pk", storePK) // שימוש ישיר במחרוזת
+      .lte("start_date", today)
+      .gte("end_date", today);
+    if (error) {
+      console.error("Supabase error:", error.message);
+      throw { status: 500, message: "Failed to fetch promotions" };
+    }
+    return (data as Promotion[]) || [];
+  }
+
+  async getPromotionsByStorePK(storePK: string): Promise<Promotion[]> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('*')
-        .eq('store_id', storeId);
+        .eq('store_pk', storePK);
 
       if (error) {
-        console.error(`Error fetching promotions for store ${storeId}:`, error);
+        console.error(`Error fetching promotions for store ${storePK}:`, error);
         throw new Error(`Failed to fetch promotions by store ID: ${error.message}`);
       }
 
@@ -406,7 +426,7 @@ export class PromotionRepository implements IPromotionRepository {
         throw new Error(`Failed to fetch promotion-items relationships: ${promotionItemsError.message}`);
       }
 
-      const promotionItemsMap = new Map<number, number[]>();
+      const promotionItemsMap = new Map<number, string[]>();
       if (promotionItemsData) {
         promotionItemsData.forEach(row => {
           const promotionId = row.promotion_id;
@@ -429,7 +449,7 @@ export class PromotionRepository implements IPromotionRepository {
 
       return promotionsWithItems;
     } catch (error: any) {
-      console.error(`Error in getPromotionsByStoreId: ${error.message}`);
+      console.error(`Error in getPromotionsByStorePK: ${error.message}`);
       throw error;
     }
   }

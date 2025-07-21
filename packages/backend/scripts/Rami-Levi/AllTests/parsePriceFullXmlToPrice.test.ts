@@ -56,7 +56,7 @@ describe('parsePriceFullXMLFileToPrice', () => {
 
         expect(result).toEqual([{
             priceId: 0,
-            storeId: 1,
+            storePK: "1",
             itemId: 101,
             itemCode: 202,
             price: 9.99,

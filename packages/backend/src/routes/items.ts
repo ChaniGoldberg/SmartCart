@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Item, ItemsResponse, ItemResponse } from '@smartcart/shared';
 import { databaseService } from '../services/database';
+import { deleteTagFromItem } from '../controllers/itemController';
 const router = Router();
 
 // Fallback mock data (used if database is not available)
@@ -33,7 +34,7 @@ const mockItems: Item[] = [
 
 // Determine if we should use database or mock data
 const useDatabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
-
+router.post('/delete-tag-from-item', deleteTagFromItem);
 // GET /api/items - Get all items
 router.get('/', async (req, res) => {
   try {
