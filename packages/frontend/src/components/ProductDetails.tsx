@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
-import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
+import { ProductCartDTO } from '@smartcart/shared';
+import { cartContext } from '../store/redux/cartRedux';
+import ItemCard from './ItemCard';
 interface ProductDetailsProps {
   productCart: ProductCartDTO;
   onQuantityChange?: (newQty: number) => void;
