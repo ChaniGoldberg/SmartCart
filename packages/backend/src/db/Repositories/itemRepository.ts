@@ -73,7 +73,7 @@ export class ItemRepository implements IItemRepository {
     }
 
     // 2. שליפת תגיות לכל item_code שחזר בתוצאות
-    const itemCodes = rawItems.map((item:Item)=> item.itemCode as number);
+    const itemCodes = rawItems.map((item:Item)=> item.itemCode as string);
 
     const { data: itemTagsData, error: itemTagsError } = await this.supabase
       .from(this.itemTagsTableName)

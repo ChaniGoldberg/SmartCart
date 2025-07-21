@@ -6,7 +6,7 @@ import tagProductsByGPT from './productLabellingByAI';
 import { logToFile } from './logger';
 
 // פונקציה לנרמול אובייקט מוצר לשמות שדות camelCase
-const LOG_HEARTS = " 💙💙💙💙💙";
+const LOG_HEARTS = "💙💙💙💙💙";
 
 function log(message: string) {
   logToFile(`${message}${LOG_HEARTS}`);
