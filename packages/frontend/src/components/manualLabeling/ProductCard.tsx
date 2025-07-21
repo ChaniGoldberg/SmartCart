@@ -5,8 +5,10 @@ import { Tag } from "@smartcart/shared/src/tag";
 interface ProductCardProps {
   product: Item;
   tags: Tag[];
+  
   isSelected: boolean;
-  toggleSelect: (id: number) => void;
+  toggleSelect: (id: string) => void;
+  
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
