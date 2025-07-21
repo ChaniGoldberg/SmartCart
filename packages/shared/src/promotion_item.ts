@@ -1,4 +1,4 @@
 export interface PromotionItems{
     promotionId:number
-    itemCode:number
+    itemCode:string
 }

@@ -1,5 +1,5 @@
 export class ProductDTO {
-    itemCode: number;
+    itemCode: string;
     priceId: number;
     ProductName: string;
     storePK: string;
@@ -14,7 +14,7 @@ export class ProductDTO {
     promotionText?: string;
 
  constructor(
-        itemCode: number,
+        itemCode: string,
         priceId: number,
         ProductName: string,
         storePK: string,

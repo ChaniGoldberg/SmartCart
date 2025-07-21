@@ -1,9 +1,7 @@
 
-// src/repositories/tag.repository.ts
 import { SupabaseClient } from "@supabase/supabase-js";
 import { ITagRepository } from "../IRepositories/ItagRepository";
 import { Tag } from "../../../../shared/src/tag";
-
 
 export class TagRepository implements ITagRepository {
     private readonly tableName = 'tag';
@@ -28,31 +26,6 @@ export class TagRepository implements ITagRepository {
             return data;
         }
         return []; // Return an empty array if supabase is null
-    }
-
-    async addTag(tag: Tag): Promise<Tag> {
-        try {
-            console.log(`Adding tag: ${tag.tagName} (id: ${tag.tagId}) to Supabase`);
-            const { data, error } = await this.supabase
-                .from(this.tableName)
-                .insert([this.toDbTag(tag)])
-                .select('*');
-
-            if (error) {
-                console.error('Error inserting tag:', error);
-                throw new Error(`Failed to add tag: ${error.message}`);
-            }
-
-            if (!data || data.length === 0) {
-                throw new Error('No data returned after adding tag.');
-            }
-
-            console.log('Tag added successfully:', data[0]);
-            return tag;
-        } catch (error: any) {
-            console.error(`Error in addTag: ${error.message}`);
-            throw error;
-        }
     }
 
     async addManyTags(tags: Tag[]): Promise<Tag[]> {
@@ -224,4 +197,44 @@ export class TagRepository implements ITagRepository {
             throw error;
         }
     }
+
+    async getTagByName(tagName: string): Promise<Tag | null> {
+        const { data, error } = await this.supabase
+            .from(this.tableName)
+            .select('*')
+            .eq('tag_name', tagName)
+            .maybeSingle();
+
+        if (error) {
+            console.error('Error fetching tag by name:', error);
+            throw new Error(`Failed to fetch tag by name: ${error.message}`);
+        }
+
+        return data ?? null;
+    }
+
+    async addTag(tagName: string): Promise<Tag> {
+        const newTag: Tag = {
+            tagId: 0,
+            tagName,
+            dateAdded: new Date(),
+            isAlreadyScanned: false,
+        };
+
+        const { data, error } = await this.supabase
+            .from(this.tableName)
+            .insert([this.toDbTag(newTag)])
+            .select('*');
+
+        if (error || !data || data.length === 0) {
+            console.error('Error inserting tag:', error);
+            throw new Error(`Failed to add tag: ${error?.message}`);
+        }
+
+        return {
+            ...newTag,
+            tagId: data[0].tag_id,
+        };
+    }
+
 }

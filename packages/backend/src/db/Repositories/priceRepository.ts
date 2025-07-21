@@ -10,10 +10,9 @@ export class PriceRepository implements IPriceRepository {
     // פונקציה להמרה ל-snake_case
     private toDbPrice(price: Price) {
         return {
-            price_id: price.priceId,
-            store_pk: price.storePK, // Assuming storePK is a unique identifier for the store
+            store_pk: price.storePK,
+             item_id: price.itemId,
             item_code: price.itemCode,
-            item_id: price.itemId,
             price: price.price,
             price_update_date: price.priceUpdateDate,
             unit_quantity: price.unitQuantity,
