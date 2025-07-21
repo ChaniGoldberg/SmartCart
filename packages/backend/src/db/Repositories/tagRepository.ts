@@ -210,6 +210,7 @@ export class TagRepository implements ITagRepository {
 
     async addTag(tagName: string): Promise<Tag> {
         const newTag: Tag = {
+            tagId: 0,
             tagName,
             dateAdded: new Date(),
             isAlreadyScanned: false,
