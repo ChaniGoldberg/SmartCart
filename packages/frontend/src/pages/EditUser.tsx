@@ -24,7 +24,9 @@ const UserEditComponent: React.FC = () => {
             userName: name,
             email: email,
             password: password !== '' && password === confirmPassword ? password : user ? user.password : '', 
-            userId: user ? user.userId : 0 
+            userId: user ? user.userId : 0 ,
+            preferred_store:"7290058140886-1-006"
+
         };
 
         setUser(updatedUser);

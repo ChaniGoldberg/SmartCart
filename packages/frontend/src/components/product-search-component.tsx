@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Package, ShoppingCart } from 'lucide-react';
-import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
+import { ProductDTO } from '@smartcart/shared';
 import { searchApiService } from '../services/searchApi'; 
 
 const ProductSearchComponent: React.FC = () => {
