@@ -1,11 +1,11 @@
 import React, { use, useContext, useState } from 'react';
-import { UserContext } from '../store/redux/userContext'; 
+import { UserContext } from '../store/redux/userContext';
 import { User } from '@smartcart/shared/src/user';
 import { useNavigate } from 'react-router-dom';
-import {apiClient} from '../services/api'; 
+import { apiClient } from '../services/api';
 
 const UserEditComponent: React.FC = () => {
-    const context = useContext(UserContext) 
+    const context = useContext(UserContext)
 
     if (!context) {
         throw new Error('UserProfile must be used within a UserProvider');
@@ -16,29 +16,29 @@ const UserEditComponent: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const navigate = useNavigate();
-    const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (email !== user?.email || name !== user?.userName || password ) {
-        const updatedUser: User = {
-            ...user,
-            userName: name,
-            email: email,
-            password: password !== '' && password === confirmPassword ? password : user ? user.password : '', 
-            userId: user ? user.userId : 0 ,
-            preferred_store:"7290058140886-1-006"
+        if (email !== user?.email || name !== user?.userName || password) {
+            const updatedUser: User = {
+                ...user,
+                userName: name,
+                email: email,
+                password: password !== '' && password === confirmPassword ? password : user ? user.password : '',
+                userId: user ? user.userId : 0,
+                preferred_store: "7290058140886-1-006"
 
-        };
+            };
 
-        setUser(updatedUser);
-        const response =await apiClient.post('/updateUser', updatedUser);
-        if (response.status !== 201) {
-            alert('Error updating profile'); // Replace with actual error handling
-            return;
+            setUser(updatedUser);
+            const response = await apiClient.post('/updateUser', updatedUser);
+            if (response.status !== 201) {
+                alert('Error updating profile'); // Replace with actual error handling
+                return;
+            }
+            alert('your Profile updated successfully!'); // Replace with actual update logic
+            navigate('/'); // Redirect to home or another page after update
+
         }
-        alert('your Profile updated successfully!'); // Replace with actual update logic
-        navigate('/'); // Redirect to home or another page after update
-        
-    }
     };
 
     return (
