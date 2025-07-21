@@ -52,14 +52,66 @@ export class ItemRepository implements IItemRepository {
   }
 
   async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
-    // supabase = getClient();
-    if (this.supabase != null) {
-      const { data, error } = await this.supabase.rpc('fuzzy_search_items', { search_query: itemText });
-      if (error) throw error;
-      return data;
-    }
-    return []; // Return an empty array if supabase is null
+  if (!this.supabase) {
+    console.warn("⚠️ Supabase client not initialized");
+    return [];
   }
+
+  try {
+    // 1. קריאה לפונקציית RPC
+    const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items', {
+      search_query: itemText
+    });
+
+    if (error) {
+      console.error("❌ Error calling fuzzy_search_items:", error.message);
+      throw new Error(`Failed fuzzy search: ${error.message}`);
+    }
+
+    if (!rawItems || rawItems.length === 0) {
+      return [];
+    }
+
+    // 2. שליפת תגיות לכל item_code שחזר בתוצאות
+    const itemCodes = rawItems.map((item:Item)=> item.itemCode as number);
+
+    const { data: itemTagsData, error: itemTagsError } = await this.supabase
+      .from(this.itemTagsTableName)
+      .select('item_code, tag_id')
+      .in('item_code', itemCodes);
+
+    if (itemTagsError) {
+      console.error("❌ Error fetching item-tags:", itemTagsError.message);
+      throw new Error(`Failed to fetch item-tags: ${itemTagsError.message}`);
+    }
+
+    // 3. בניית מפת תגיות לכל item_code (כמחרוזת)
+    const itemTagsMap = new Map<string, number[]>();
+    if (itemTagsData) {
+      for (const row of itemTagsData) {
+        const itemCode = row.item_code as string;
+        const tagId = row.tag_id;
+        if (!itemTagsMap.has(itemCode)) {
+          itemTagsMap.set(itemCode, []);
+        }
+        itemTagsMap.get(itemCode)!.push(tagId);
+      }
+    }
+
+    // 4. המרת rawItems ל־Item עם camelCase + תגיות
+    const itemsWithTags: Item[] = rawItems.map((raw:any) => {
+      const item = this.fromDbItem(raw) as Item;
+      item.tagsId = itemTagsMap.get(String(item.itemCode)) || [];
+      return item;
+    });
+
+    return itemsWithTags;
+  } catch (err: any) {
+    console.error("💥 Error in fuzzySearchItemsByText:", err.message);
+    throw err;
+  }
+}
+
 
   async linkTagToItem(itemCode: number, tagId: number): Promise<void> {
     try {

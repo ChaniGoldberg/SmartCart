@@ -6,7 +6,7 @@ import tagProductsByGPT from './productLabellingByAI';
 import { logToFile } from './logger';
 
 // פונקציה לנרמול אובייקט מוצר לשמות שדות camelCase
-const LOG_HEARTS = " 💙💙💙💙💙💙💙💙💙💙💙💙";
+const LOG_HEARTS = " 💙💙💙💙💙";
 
 function log(message: string) {
   logToFile(`${message}${LOG_HEARTS}`);
@@ -34,7 +34,9 @@ export async function autoTagNewTags(): Promise<string> {
     log(`🔍 טיפול בתג "${tag.tagName}" (ID: ${tag.tagId})`);
     let similarByName: any[] = [];
 
-    const taggedItem = allItems.find(item => item?.tagsId?.includes(tag.tagId));
+    const taggedItem = tag.tagId !== undefined
+      ? allItems.find(item => item?.tagsId?.includes(tag.tagId!))
+      : undefined;
     if (taggedItem) {
       log(`➕ נמצא מוצר שמכיל את התג: "${taggedItem.itemName}"`);
       similarByName = await itemRepository.fuzzySearchItemsByText(taggedItem.itemName);
