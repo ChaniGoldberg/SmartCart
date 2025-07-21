@@ -2,10 +2,16 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '@smartcart/shared/src/user'
 import { db } from '../db/dbProvider';
-
+import { createClient } from '@supabase/supabase-js';
+import 'dotenv/config';
+import { UserRepository } from '../db/Repositories/userRepository';
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
+const supabase = createClient(
+    process.env.SUPABASE_URL || "your-supabase-url",
+    process.env.SUPABASE_ANON_KEY || "your-anon-key"
+)
 
-
+const repo = new UserRepository(supabase)
 export function createUserTokenByJWT(user: User): string {
     return jwt.sign(user, SECRET_KEY);
 }
@@ -21,7 +27,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function registerUser(
-    userId: number, email: string, password: string, userName: string
+    userId: number, email: string, password: string, userName: string, preferred_store: string
 
 ): Promise<{ token: string; user: User }> {
     const existingUser = await getUserByEmail(email);
@@ -34,11 +40,12 @@ export async function registerUser(
         userId,
         email,
         password: hashedPassword,
-        userName
+        userName,
+        preferred_store
     };
     console.log(newUser)
-    db.save(newUser)
-    const token = createUserTokenByJWT(newUser);
+    const saveduser = await repo.addUser(newUser);
+    const token = createUserTokenByJWT(saveduser);
     return { token, user: newUser };
 
 }
@@ -56,13 +63,17 @@ export async function loginUser(email: string, password: string): Promise<{ toke
     const token = createUserTokenByJWT(user);
     return { token, user };
 }
+
 export async function updateUser(
     userId: number,
     email: string,
     password: string,
-    userName: string
+    userName: string,
+    preferred_store: string
 ): Promise<User> {
     const existingUser = await getUserByEmail(email);
+    console.log(existingUser);
+
     if (!existingUser) {
         throw new Error('User not exists');
     }
@@ -72,10 +83,11 @@ export async function updateUser(
         userId,
         email,
         password: hashedPassword,
-        userName
+        userName,
+        preferred_store
     };
     console.log(updatedUser);
-    db.save(updatedUser);
+    repo.updateUser(updatedUser);
     return updatedUser;
 }
 
