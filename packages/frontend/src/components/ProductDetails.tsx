@@ -3,16 +3,6 @@ import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { cartContext } from '../store/redux/cartRedux';
 import ItemCard from './ItemCard';
-
-
-// interface ProductDetailsProps {
-//   productCart: ProductCartDTO;
-//   onQuantityChange?: (newQty: number) => void;
-//   onSuggestClick?: () => void;
-// }
-// const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantityChange, onSuggestClick }) => {
-//   const [currentQty, setCurrentQty] = useState<number>(productCart.quantity);
-
 interface ProductDetailsProps {
   productCart: ProductCartDTO;
   onQuantityChange?: (newQty: number) => void;
@@ -41,18 +31,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
     if (onQuantityChange) onQuantityChange(newQty);
   };
 
-  // const handleRemoveItem = () => {
-  //   removeFromCart(productCart, currentQty);
-  //   setCurrentQty(0);
-  //   if (onQuantityChange) onQuantityChange(0);
-  // };
-  //   const handleRemoveItem = () => {
-  //   if (window.confirm("האם את/ה בטוח/ה שברצונך למחוק את הפריט?")) {
-  //     removeFromCart(productCart, currentQty);
-  //     setCurrentQty(0);
-  //     if (onQuantityChange) onQuantityChange(0);
-  //   }
-  // };
   const handleRemoveItem = () => {
     setShowConfirm(true);
   };
@@ -72,7 +50,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
   const fields: { label: string; value: React.ReactNode }[] = [
     { label: 'תיאור', value: productCart.product.manufacturerItemDescription || 'אין מידע זמין' },
     { label: 'מחיר', value: isFinite(productCart.product.price) ? `₪${productCart.product.price.toFixed(2)}` : 'לא עודכן' },
-    // { label: 'כמות באריזה', value: productCart.product.quantityInPackage || 'לא צוין' },
     { label: 'כמות באריזה', value: currentQty }, // שינוי כאן!
 
     { label: 'מחיר ליחידה', value: isFinite(productCart.product.unitOfMeasurePrice) ? `₪${productCart.product.unitOfMeasurePrice.toFixed(2)}` : 'לא זמין' },
