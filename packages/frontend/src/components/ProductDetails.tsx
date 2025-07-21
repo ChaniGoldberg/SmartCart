@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { cartContext } from '../store/redux/cartRedux';
+import ItemCard from './ItemCard';
+
 
 // interface ProductDetailsProps {
 //   productCart: ProductCartDTO;
@@ -19,7 +21,8 @@ interface ProductDetailsProps {
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantityChange, onSuggestClick }) => {
   const [currentQty, setCurrentQty] = useState<number>(productCart.quantity);
-    const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [suggestClick, setSuggestClick] = useState(false);
 
   const { addToCart, removeFromCart } = useContext(cartContext);
 
@@ -43,15 +46,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
   //   setCurrentQty(0);
   //   if (onQuantityChange) onQuantityChange(0);
   // };
-//   const handleRemoveItem = () => {
-//   if (window.confirm("האם את/ה בטוח/ה שברצונך למחוק את הפריט?")) {
-//     removeFromCart(productCart, currentQty);
-//     setCurrentQty(0);
-//     if (onQuantityChange) onQuantityChange(0);
-//   }
-// };
+  //   const handleRemoveItem = () => {
+  //   if (window.confirm("האם את/ה בטוח/ה שברצונך למחוק את הפריט?")) {
+  //     removeFromCart(productCart, currentQty);
+  //     setCurrentQty(0);
+  //     if (onQuantityChange) onQuantityChange(0);
+  //   }
+  // };
   const handleRemoveItem = () => {
-    setShowConfirm(true); 
+    setShowConfirm(true);
   };
 
   const confirmRemove = () => {
@@ -70,7 +73,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
     { label: 'תיאור', value: productCart.product.manufacturerItemDescription || 'אין מידע זמין' },
     { label: 'מחיר', value: isFinite(productCart.product.price) ? `₪${productCart.product.price.toFixed(2)}` : 'לא עודכן' },
     // { label: 'כמות באריזה', value: productCart.product.quantityInPackage || 'לא צוין' },
-      { label: 'כמות באריזה', value: currentQty }, // שינוי כאן!
+    { label: 'כמות באריזה', value: currentQty }, // שינוי כאן!
 
     { label: 'מחיר ליחידה', value: isFinite(productCart.product.unitOfMeasurePrice) ? `₪${productCart.product.unitOfMeasurePrice.toFixed(2)}` : 'לא זמין' },
     {
@@ -90,44 +93,42 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
 
 
   return (
-<div className="w-full max-w-10xl mx-auto mt-3 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition group">
-        <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{productCart.product.itemName}</h2>
-        <div className="flex flex-row flex-wrap gap-4 text-sm text-gray-800 text-right relative" dir='rtl'>
-          {fields.map(({ value }, index) => (
-            <div key={index} className="flex items-center whitespace-nowrap">
-              <span className="text-gray-800">{value}</span>
-              {index < fields.length - 1 && <span className="mx-2 text-gray-400">|</span>}
-            </div>
-          ))}
-          {productCart.product.hasPromotion === 1 && productCart.product.promotionText && (
-            <div className="w-full text-green-700 font-bold mt-2 text-right">
-              מבצע: {productCart.product.promotionText}
-            </div>
-          )}
-        </div>
-       
-        <div className="flex items-center mt-4 gap-2">
-          {/* <button onClick={() => changeQuantity(-1)} className="px-2 py-1 bg-gray-200 rounded"> */}
-          <button
-            onClick={() => changeQuantity(-1)}
-            className="px-2 py-1 bg-gray-200 rounded"
-            disabled={currentQty <= 1}
-            style={currentQty <= 1 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
-          >
-            -</button>
-          <span>{currentQty}</span>
-          <button onClick={() => changeQuantity(1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+    <div className="w-full max-w-10xl mx-auto mt-3 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition group">
+      <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{productCart.product.itemName}</h2>
+      <div className="flex flex-row flex-wrap gap-4 text-sm text-gray-800 text-right relative" dir='rtl'>
+        {fields.map(({ value }, index) => (
+          <div key={index} className="flex items-center whitespace-nowrap">
+            <span className="text-gray-800">{value}</span>
+            {index < fields.length - 1 && <span className="mx-2 text-gray-400">|</span>}
+          </div>
+        ))}
+        {productCart.product.hasPromotion === 1 && productCart.product.promotionText && (
+          <div className="w-full text-green-700 font-bold mt-2 text-right">
+            מבצע: {productCart.product.promotionText}
+          </div>
+        )}
+      </div>
 
-          <button onClick={handleRemoveItem} className="ml-1 px-1 py-1 bg-red-50 text-red-600 rounded">
-            מחק פריט 
-          </button>
-           {onSuggestClick && ( 
-            <button onClick={onSuggestClick} className="ml-1 px-1 py-1 bg-blue-50 text-blue-600 rounded">
-              מוצר חלופי
-            </button>
-           )}  
-        </div>
-        {/* מודל אישור מחיקה */}
+      <div className="flex items-center mt-4 gap-2">
+        <button
+          onClick={() => changeQuantity(-1)}
+          className="px-2 py-1 bg-gray-200 rounded"
+          disabled={currentQty <= 1}
+          style={currentQty <= 1 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+        >
+          -
+        </button>
+        <span>{currentQty}</span>
+        <button onClick={() => changeQuantity(1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+
+        <button onClick={handleRemoveItem} className="ml-1 px-1 py-1 bg-red-50 text-red-600 rounded">
+          מחק פריט
+        </button>
+        <button onClick={() => setSuggestClick(true)} className="ml-1 px-1 py-1 bg-blue-50 text-blue-600 rounded">
+          מוצר חלופי
+        </button>
+      </div>
+      {/* מודל אישור מחיקה */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
@@ -149,7 +150,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
           </div>
         </div>
       )}
-      </div>
+      {/* {suggestClick && (
+        <ItemCard item={}  />
+      )} */}
+    </div>
 
   );
 };
