@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { addProductAlert } from '../db/Repositories/back_notification';
+// import { addProductAlert } from '../db/Repositories/back_notification';
 
 // הוספת התראה חדשה
 async function addAlert(
@@ -24,15 +24,15 @@ async function addAlert(
     } = req.body;
 
     // שליחה לריפוזיטורי
-    const result = await addProductAlert(
-      price_id,
-      user_id,
-      notification_method,
-      min_discount_percent
-    );
+    // const result = await addProductAlert(
+    //   price_id,
+    //   user_id,
+    //   notification_method,
+    //   min_discount_percent
+    // );
 
     // אם רוצים, אפשר לוודא גם ששדות ברירת מחדל (כמו is_active ו-was_triggered) עודכנו בריפוזיטורי לפי הלוגיקה שם
-    res.status(201).json({ message: 'Alert created successfully', data: result });
+    // res.status(201).json({ message: 'Alert created successfully', data: result });
   } catch (error) {
     console.error('Error adding alert:', error);
     res.status(500).json({ message: 'Failed to create alert' });

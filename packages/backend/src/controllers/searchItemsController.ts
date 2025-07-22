@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { SearchForProductByName } from '../services/tagServices/searchForProductByName';
+// import { SearchForProductByName } from '../services/tagServices/searchForProductByName';
 import { searchItemsByTag } from '../services/tagServices/searchItemsByTag';
 import { searchTagsByText } from '../services/tagServices/searchTagByText';
 import { itemService, tagService } from '../injection.config';
@@ -7,12 +7,12 @@ import { itemService, tagService } from '../injection.config';
 export const searchItemsByName = async (req: Request, res: Response) => {
   const { name } = req.params;
   try {
-    const items = await SearchForProductByName(name);
+    // const items = await SearchForProductByName(name);
     res.status(200).json({
       success: true,
       message: `The search by input ${name} is successfully!`,
       timestamp: new Date().toISOString(),
-      items
+      // items
     });
   } catch (error) {
     res.status(500).json({ message: 'Search faile', error });
@@ -75,14 +75,14 @@ export async function getAllTags(req: Request, res: Response) {
     const { name } = req.params;
     try {
       // מבצע חיפוש לפי שם מוצר
-      const itemsByName = await SearchForProductByName(name) || [];
+      // const itemsByName = await SearchForProductByName(name) || [];
   
       // מבצע חיפוש לפי תג
       const itemsByTag = await searchItemsByTag(name) || [];
   
       // מאחד את כל התוצאות
       const results = [
-        ...itemsByName,
+        // ...itemsByName,
         ...itemsByTag
       ];
   
