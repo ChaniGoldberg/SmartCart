@@ -14,13 +14,44 @@ export class searchService implements ISearchService {
         this.priceRepository = new PriceRepository(supabase);
         this.priceService = new PriceService(this.priceRepository);
     }
-    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: Price | null }[]> {
+  async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: Price | null }[]> {
         try {
-            const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
-            console.log("items", items);
-         
-            const prices = await this.priceService.getAllPrices();
-            console.log("prices", prices);
+            // const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
+            // console.log("items", items);
+           // בינתיים:
+            const items: Item[] = [
+                {
+                    itemCode: "1",
+                    itemId: 1,
+                    itemType: 1,
+                    itemName: "milk",
+                    correctItemName: "milk",
+                    manufacturerName: "aaa",
+                    manufactureCountry: "aaa",
+                    manufacturerItemDescription: "aaa",
+                    itemStatus: true,
+                    tagsId: [1, 2, 3]
+                }]
+
+            // const prices = await this.priceService.getAllPrices();
+            // console.log("prices", prices);
+            //בינתיים:
+            //עד שיהיה נתונים בדטה
+            const prices: Price[] = [{
+                priceId: 2,        // מזהה ייחודי למחיר
+                storePK: "01-201540-2021212",
+                itemId: 1,
+                itemCode: "1",
+                price: 6.5,
+                priceUpdateDate: new Date("01/01/2025"),
+                unitQuantity: "1",               // כמות ביחידת מידה (למשל: 1, 500ml)
+                quantity: 1,             // כמות המוצר (למשל: מספר יחידות במלאי)
+                unitOfMeasure: "ml",       // יחידת מידה (למשל: ק"ג, ליטר, יחידה)
+                isWeighted: false,          // האם המוצר נמכר לפי משקל (1=כן, 0=לא)
+                quantityInPackage: 1,   // כמות ביחידה ארוזה (למשל: 6 בקבוקים במארז)            
+                unitOfMeasurePrice: 1,    // מחיר ליחידת מידה
+                allowDiscount: true
+            }]
             return items.map(item => {
                 const price = prices.find(price => price.itemCode === item.itemCode && item.itemStatus === true);
                 return {
@@ -34,4 +65,5 @@ export class searchService implements ISearchService {
         }
     }
 }
+
 export default searchService;

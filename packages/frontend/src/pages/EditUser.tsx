@@ -32,10 +32,10 @@ const UserEditComponent: React.FC = () => {
             setUser(updatedUser);
             const response = await apiClient.post('/updateUser', updatedUser);
             if (response.status !== 201) {
-                alert('Error updating profile'); // Replace with actual error handling
+                alert('שגיאה בעדכון הפרופיל'); // Replace with actual error handling
                 return;
             }
-            alert('your Profile updated successfully!'); // Replace with actual update logic
+            alert('הפרופיל שלך עודכן בהצלחה!'); // Replace with actual update logic
             navigate('/'); // Redirect to home or another page after update
 
         }
@@ -44,10 +44,10 @@ const UserEditComponent: React.FC = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center">Edit Profile</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">עריכת פרופיל</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name:</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">שם:</label>
                         <input
                             type="text"
                             id="name"
@@ -58,7 +58,7 @@ const UserEditComponent: React.FC = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">אימייל:</label>
                         <input
                             type="email"
                             id="email"
@@ -70,7 +70,7 @@ const UserEditComponent: React.FC = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password:</label>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">סיסמה:</label>
                         <input
                             type="password"
                             id="password"
@@ -80,10 +80,10 @@ const UserEditComponent: React.FC = () => {
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
                         />
                     </div>
-                    {(!/[0-9]/.test(password)) && <p>'Password must contain at least one number'</p>};
+                    {(!/[0-9]/.test(password)) && <p>'סיסמה חייבת להכיל לפחות מספר אחד'</p>};
                     {password && (
                         <div className="mb-4">
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password:</label>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">אישור סיסמה:</label>
                             <input
                                 type="password"
                                 id="confirmPassword"
@@ -96,7 +96,7 @@ const UserEditComponent: React.FC = () => {
                             </p>
                         </div>
                     )}
-                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Update</button>
+                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">עדכן</button>
                 </form>
             </div>
         </div>
