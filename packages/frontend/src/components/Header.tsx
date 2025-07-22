@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => (
-  <header className="shadow-md rounded-b-lg overflow-hidden w-full fixed top-0 left-0 z-50">
+  <header className="fixed top-0 left-0 w-full z-50 shadow-md">
     {/* פס אפור עם שלושת העיגולים בצד שמאל */}
     <div className="bg-gray-100 h-6 flex items-center justify-start px-3 space-x-2">
       <span className="w-3 h-3 bg-red-500 rounded-full"></span>
