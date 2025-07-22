@@ -13,6 +13,8 @@ import { ItemRepository } from "../../src/db/Repositories/itemRepository";
 const tagRepository = new TagRepository(supabase);
 const itemRepository = new ItemRepository(supabase);
 
+
+
 export async function labelItemsWithAI() {
   try {
     const items: Item[] = await itemRepository.getItemsWithoutTags();
@@ -29,41 +31,56 @@ export async function labelItemsWithAI() {
       logToFile("לא נמצאו תיוגים לעיבוד.🩵🩵🩵🩵");
       return;
     }
-
-    logToFile(`Tags fetched: ${tags.length} tags 🩵🩵🩵🩵`);
-    logToFile(`tags fetched: ${tags.map(t => t.tagName).join(", ")} 🩵🩵🩵🩵`);
+    const tagNames = tags.map(t => t?.tagName).filter(Boolean) as string[];
 
     const instructions: string = `
-הנך מקבל רשימת מוצרים יחד עם רשימת תיוגים קיימים. לכל מוצר, תאתר תיוגים מתאימים מתוך הרשימה.
-אם לדעתך יש תיוגים מתאימים נוספים – תוסיף אותם עם כוכבית בסוף (לדוגמה: תיוג חדש*). 
-הפלט צריך להיות מחרוזת, כאשר כל שורה בפורמט:
-שם מוצר: שם תיוג 1, שם תיוג 2, תיוג חדש *
-- כל שורה מופרדת ב־;
-- אל תוסיף הסברים, רק את המחרוזת בפורמט הזה.
-- אל תשתמש בגרשיים או סוגריים.
-- חשוב: אם אין תיוג רלוונטי מתוך הרשימה, תוכל להשתמש רק בתיוגים חדשים (מסומנים בכוכבית).
+מטרתך: לתייג כל מוצר בצורה עשירה, מדויקת ומכסה את כל ההיבטים האפשריים — שימוש, מרכיבים, קטגוריה, קונטקסט — לפי רשימת תיוגים קיימת, ובמידת הצורך גם באמצעות תיוגים חדשים.
+- כל מוצר חייב לכלול לפחות **שלושה תיוגים**. אם הרשימה הקיימת לא מספיקה — צור תיוגים חדשים עם כוכבית (*) בסוף. עדיף **לכסות יותר מדי** מאשר להחסיר תיוג רלוונטי.
+- אל תחשוש להוסיף תיוג חדש גם אם יש תיוג קרוב או דומה — כל הבדל סמנטי רלוונטי מתקבל.
+-  אל תנחש מידע שלא נמצא בשם המוצר (כגון “טבעוני”, “ללא גלוטן”, “דיאט”) אם זה לא נאמר ישירות.
+-  השתמש בדיוק במונחים של התיוגים הקיימים, ללא שינוי ניסוח, וללא תוספות טקסט מיותר.
+---
+פורמט הפלט:
+כל שורה כוללת מוצר אחד, ותיראה כך:
+שם מוצר: תגית 1, תגית 2, תגית חדשה*, תגית נוספת*, תגית 5;
+- כל שורה מסתיימת ב־`; `
+- *כל תיוג חדש שאינו ברשימה יקבל כוכבית בסוף: תגית חדשה
+---
+דוגמה:
+ספריי לשיער חזק מאוד: טואלטיקה והיגיינה, מוצרי שיער*, טיפוח*, עיצוב שיער*;
+---
+ כעת, תייג את המוצרים הבאים:
 `;
+    // Split items into batches of 100
+    for (let i = 0; i < items.length; i += 100) {
+      const batch = items.slice(i, i + 100);
+      const productNames = batch.map(p => p.itemName);
 
-    const result: string = await tagProductsByGPT(items, tags, instructions);
-    logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
-    logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
+      logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items 🩵🩵🩵🩵`);
 
-    await parseAndSaveTagsFromResponse(result);
-    logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
+      try {
+        const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
+        logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
+        logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
 
-    logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
-    await autoTagNewTags();
-    logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
+        await parseAndSaveTagsFromResponse(result);
+        logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
 
-    console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-    logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-    logToFile(`תוצאה סופית:\n${result}`);
-
-    return result;
-
+        console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
+        logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
+        logToFile(`תוצאה סופית:\n${result}`);
+      } catch (error: any) {
+        console.error("❌ שגיאה בתהליך התיוג:", error);
+        logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
+        throw error;
+      }
+    }
   } catch (error: any) {
     console.error("❌ שגיאה בתהליך התיוג:", error);
     logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
     throw error;
   }
+  logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
+  await autoTagNewTags();
+  logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
 }
