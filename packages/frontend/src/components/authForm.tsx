@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../store/redux/authSlice';
+import { useUser } from '../store/redux/userContext';
 
 interface AuthFormProps {
   onClose: () => void;
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
-  const dispatch = useDispatch();
+  const { setUser } = useUser();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -88,14 +87,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         return;
       }
 
+      // שמירה בקונטקסט + ב-localStorage
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
 
-      dispatch(loginSuccess(data.token));
       onClose();
     } catch (error) {
       setGeneralError('שגיאה בחיבור לשרת');
     }
   };
-
 
   return (
     <div style={{
@@ -117,7 +118,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         {isLogin ? 'התחברות' : 'הרשמה'}
       </h2>
 
-      {/* שגיאה כללית כמו "משתמש כבר קיים" */}
       {generalError && (
         <div className="text-red-600 text-center font-medium mb-4">
           {generalError}
