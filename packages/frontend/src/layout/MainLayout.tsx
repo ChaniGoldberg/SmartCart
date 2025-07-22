@@ -7,10 +7,14 @@ type Props = {
 
 const MainLayout: React.FC<Props> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-800 font-sans">
-      <Header />
+    <div className="h-screen flex flex-col overflow-hidden bg-white text-gray-800 font-sans">
+      {/* HEADER עם z-50 ומיקום קבוע */}
+      <div className="fixed top-0 left-0 w-full z-[9999]">
+        <Header />
+      </div>
+      <div className="h-20" />
 
-      <main className="flex-grow px-6 py-12 mt-20">
+      <main className="flex-grow overflow-hidden">
         {children}
       </main>
 
