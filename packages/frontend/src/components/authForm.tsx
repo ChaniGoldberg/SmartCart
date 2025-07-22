@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useUser } from '../store/redux/userContext';
+import GoogleLoginButton from './GoogleLoginButton';
 
 interface AuthFormProps {
   onClose: () => void;
@@ -124,7 +125,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         </div>
       )}
 
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div >
+          <GoogleLoginButton></GoogleLoginButton>
+        </div>
         {!isLogin && (
           <>
             <input
