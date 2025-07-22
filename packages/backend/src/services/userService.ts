@@ -23,8 +23,10 @@ export function hashPassword(password: string): Promise<string> {
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-    return db.User.find(user => user.email === email) || null;
+    const users = await repo.getAllUsers();
+    return users.find(user => user.email === email) || null;
 }
+
 
 export async function registerUser(
     userId: number, email: string, password: string, userName: string, preferred_store: string
