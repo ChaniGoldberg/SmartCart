@@ -80,13 +80,12 @@ async function sendTaggingRequest(payload: any): Promise<string> {
     }
 }
 
-export default async function tagProductsByGPT(items: Item[], tags: Tag[], instructions: string): Promise<string> {
+export default async function tagProductsByGPT(productNames: string[], tagNames: string[], instructions: string): Promise<string> {
     logToFile("🚀 [tagProductsByGPT] התחלת תהליך תיוג מוצרים בעזרת GPT 💚💚💚💚");
-    logToFile(`[tagProductsByGPT] סך המוצרים לקבלה: ${items.length} 💚💚💚💚`);
-    logToFile(`[tagProductsByGPT] סך התגיות לקבלה: ${tags.length} 💚💚💚💚`);
+    logToFile(`[tagProductsByGPT] סך המוצרים לקבלה: ${productNames.length} 💚💚💚💚`);
+    logToFile(`[tagProductsByGPT] סך התגיות לקבלה: ${tagNames.length} 💚💚💚💚`);
 
-    const tagNames = tags.map(t => t?.tagName).filter(Boolean);
-    const productNames = items.map(p => p.itemName);
+
 
     logToFile(`GPT_MODE : ${GPT_MODE} 💚💚💚💚`);
     const prompt = buildPrompt(tagNames, productNames, instructions);

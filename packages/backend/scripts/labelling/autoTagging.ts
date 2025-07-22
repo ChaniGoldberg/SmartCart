@@ -90,12 +90,7 @@ export async function autoTagNewTags(): Promise<string> {
       log(`ℹ️ לא נוספו תיוגים חדשים לתג "${tag.tagName}"`);
     }
   }
-
-  const untaggedItems = allItems.filter(item => !taggedNow.has(String(item.itemCode)));
-  log(`📦 מספר מוצרים שנותרו ללא תיוג: ${untaggedItems.length}`);
-
-  log(`🧠 שולח מוצרים ללא תיוג ל־GPT...`);
-  const resultString = await tagProductsByGPT(untaggedItems, allTags, `
+  const instructions =  `
 ברשותך רשימת מוצרים ורשימת תיוגים קיימים. עבור כל מוצר, בחר תיוגים רלוונטיים מתוך הרשימה בלבד.
 הפלט צריך להיות מחרוזת, כאשר כל שורה בפורמט הבא:
 שם מוצר: תיוג 1, תיוג 2
@@ -104,8 +99,24 @@ export async function autoTagNewTags(): Promise<string> {
 - אין להוסיף תיוגים חדשים
 - אין להוסיף הסברים או טקסטים נוספים
 - אין להשתמש בגרשיים, סוגריים או תווים מיוחדים
-  `);
+    `
 
-  log("🎯 הסתיים תיוג בעזרת GPT");
-  return resultString;
+  const untaggedItems = allItems.filter(item => !taggedNow.has(String(item.itemCode)));
+  log(`📦 מספר מוצרים שנותרו ללא תיוג: ${untaggedItems.length}`);
+
+  log(`🧠 שולח מוצרים ללא תיוג ל־GPT...`);
+
+  let finalResult = "";
+  for (let i = 0; i < untaggedItems.length; i += 100) {
+    const batch = untaggedItems.slice(i, i + 100);
+    const productNames = batch.map(item => item.itemName);
+    log(`🧠 שולח אצווה ${i / 100 + 1} ל-GPT (${batch.length} מוצרים)`);
+
+    const resultString = await tagProductsByGPT(productNames, allTags.map(tag => tag.tagName),instructions);
+
+    log(`🎯 הסתיים תיוג אצווה ${i / 100 + 1} בעזרת GPT`);
+    finalResult += resultString + "\n";
+  }
+
+  return finalResult.trim();
 }
