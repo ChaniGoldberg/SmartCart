@@ -21,56 +21,46 @@ export async function getPriceByStorePKItemID(storePK: string, itemId: number): 
 }
 
 
+
 interface PromotionFilterOptions {
   isClubMember?: boolean;
   clubId?: number;
   hasCoupon?: boolean;
   // אפשר להוסיף עוד תנאים בעתיד
 }
-
-const promotionRepo = new PromotionRepository(supabase);
 export async function getRelevantPromotionsForCart(
   cartItems: Price[],
-  options:PromotionFilterOptions={}
-){
-  const promotionsFromDB = await promotionRepo.getAllPromotions();
-  return promotionsFromDB.filter(promo => {
+  promotions: Promotion[],
+  options: undefined | PromotionFilterOptions = {}
+): Promise<Promotion[]> {
+  return promotions.filter(promo => {
     // בדיקת תוקף
     const now = new Date();
     if (!promo.isActive || now < promo.startDate || now > promo.endDate) return false;
-
     // בדיקת קופון
     if (promo.requiresCoupon && !options.hasCoupon) return false;
-
     // בדיקת מועדון
     if (promo.requiresClubMembership) {
       if (!options.isClubMember) return false;
       if (promo.clubId && promo.clubId !== options.clubId) return false;
     }
-
     // בדיקת מינימום סכום קנייה
     if (promo.minPurchaseAmount) {
       const total = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
       if (total < promo.minPurchaseAmount) return false;
     }
-
     // בדיקת מינימום ומקסימום כמות פריטים במבצע
-
     if (promo.minQuantity) {
       // סך הכמות של כל הפריטים הרלוונטיים למבצע
       const promoItemsInCart = cartItems.filter(item =>
         promo.promotionItemsCode.includes(item.itemCode)
       );
       const totalPromoQty = promoItemsInCart.reduce((sum, item) => sum + item.quantity, 0);
-
       if (totalPromoQty < promo.minQuantity || (promo.maxQuantity && totalPromoQty > promo.maxQuantity)) {
         return false;
       }
     }
-
-
     // אפשר להוסיף עוד תנאים כאן...
-
     // אם עבר את כל הבדיקות - המבצע רלוונטי לסל
     return true;
   });
@@ -98,7 +88,7 @@ export async function getItemByItemCode(itemCode: string): Promise<Item | null> 
 export async function getProductwithPomotionPrice(shoppingCart: Price[], promotions: Promotion[]): Promise<ProductCartDTO[]> {
 
   const productList: ProductCartDTO[] = []
-  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart);
+  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart,promotions);
   for (const item of shoppingCart) {
     const promotion = [...relevantPromotions].find(p =>
       p.promotionItemsCode.includes(item.itemCode)
