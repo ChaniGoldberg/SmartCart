@@ -8,7 +8,7 @@ import { StoreLocationDto } from "@smartcart/shared/src/dto/StoreLocation.dto";
 
 export default function MapPage() {
   const [supermarkets, setSupermarkets] = useState<StoreLocationDto[]>([]);
-  const [selectedstorePK, setSelectedstorePK] = useState<string>("");
+  const [selectedstore, setSelectedstore] = useState<StoreLocationDto| null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { latitude, longitude, loading: locationLoading, error: locationError } = useUserLocation();
@@ -16,7 +16,7 @@ export default function MapPage() {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const res = await fetch('/api/stores/');
+        const res = await fetch('http://localhost:3001/api/stores');
         if (!res.ok) throw new Error('קריאת API נכשלה');
         const rawStores = await res.json();
         const processed = rawStores
@@ -62,7 +62,7 @@ export default function MapPage() {
               key={sup.storePK}
               position={[sup.latitude, sup.longitude]}
               icon={getChainIcon(sup.chainName)}
-              eventHandlers={{ click: () => setSelectedstorePK(sup.storePK) }}
+              eventHandlers={{ click: () => setSelectedstore(sup) }}
             >
               <Tooltip direction="top" offset={[0, -10]} opacity={1}>
                 <div>
@@ -81,7 +81,7 @@ export default function MapPage() {
           ))}
         </MapContainer>
       </div>
-      {selectedstorePK && (
+      {selectedstore && (
         <div style={{
           width: '400px',
           background: '#fff',
@@ -91,7 +91,7 @@ export default function MapPage() {
           padding: '1rem',
           direction: 'rtl'
         }}>
-          <button onClick={() => setSelectedstorePK("")} style={{
+          <button onClick={() => setSelectedstore(null)} style={{
             float: 'left',
             background: 'transparent',
             border: 'none',
@@ -100,9 +100,13 @@ export default function MapPage() {
           }}>
             ❌
           </button>
-          <Promotions storePk={selectedstorePK.toString()} />
+          {/* <Promotions storePk={selectedstore.toString()} /> */}
+          <Promotions storePk={selectedstore.storePK} storeName={selectedstore.storeName} chainName={selectedstore.chainName}/>
+
         </div>
       )}
     </div>
   );
 }
+
+
