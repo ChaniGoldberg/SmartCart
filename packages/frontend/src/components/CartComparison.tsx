@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { CartDTO } from "@smartcart/shared";
-import { ProductDTO } from "@smartcart/shared";
+import { CartDTO } from "@smartcart/shared/src/dto/Cart.dto";
+import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
 import MainLayout from '../layout/MainLayout';
-import { ProductCartDTO } from "@smartcart/shared";
+import { ProductCartDTO } from "@smartcart/shared/src/dto/ProductCart.dto";
 
 // מערך הסלים לדוגמה
 const carts: CartDTO[] = [];
