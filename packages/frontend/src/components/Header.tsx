@@ -16,16 +16,15 @@ const Header: React.FC = () => (
       {/* לוגו בצד ימין */}
       <div className="flex items-center gap-2 font-bold text-lg">
         <span className="text-xl">
-          <Link to="/cart" className="no-underline">🛒</Link></span>
-        <span>SmartShop</span>
+          <Link to="/cart" className="no-underline">🛒SmartShop</Link></span>
       </div>
 
       {/* תפריט ניווט בצד שמאל */}
       <nav className="flex gap-6 text-sm font-medium">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/map" className="hover:underline">Map</Link>
-        <Link to="/search" className="hover:underline">search items</Link>
-        <Link to="/login" className="hover:underline">Log in</Link>
+        <Link to="/" className="hover:underline">דף הבית</Link>
+        <Link to="/map" className="hover:underline">מפה</Link>
+        <Link to="/search" className="hover:underline">חיפוש מוצרים</Link>
+        <Link to="/login" className="hover:underline">התחברות</Link>
       </nav>
     </div>
   </header>

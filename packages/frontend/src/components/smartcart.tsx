@@ -19,7 +19,7 @@ const Smartcart: React.FC = () => {
 
             {/* פוטר */}
             <footer className="text-center text-sm text-gray-400 py-4 border-t border-gray-200 bg-white">
-                © {new Date().getFullYear()} SmartCart. All rights reserved.
+                © {new Date().getFullYear()} SmartCart. כל הזכויות שמורות
             </footer>
         </div>
     );
