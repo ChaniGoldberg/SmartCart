@@ -1,10 +1,22 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import { cartContext } from './cartRedux';
 import { ProductDTO} from '@smartcart/shared';
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
+import { loadFromCartStorage, saveToCartStorage } from '../storage/cartStorage';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartItems, setCartItems] = useState<ProductCartDTO[]>([]); // השתמש ב-ProductCartDTO
+   
+  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(
+    () => {
+      const cartStorage = loadFromCartStorage();
+      return cartStorage ? JSON.parse(cartStorage) : [];
+    }
+  );
+  useEffect(() => {
+    saveToCartStorage(cartItems);
+  }, [cartItems]);
+
+
 
   const addToCart = (item: ProductCartDTO, quantity: number = 1): void => {
     setCartItems(prevItems => {
