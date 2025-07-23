@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Search, Package, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
 import { searchApiService } from '../services/searchApi';
 import { Check } from 'lucide-react';
 import { useUser } from '../store/redux/userContext';
+import { cartContext } from '../store/redux/cartRedux';
+import { ProductCartDTO } from "@smartcart/shared/src/dto/ProductCart.dto";
+
 const ProductSearchComponent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [products, setProducts] = useState<ProductDTO[]>([]);
@@ -14,10 +17,15 @@ const ProductSearchComponent: React.FC = () => {
     [itemCode: string]: { quantity: number; isActive: boolean };
   }>({});
 
+  const { addToCart } = useContext(cartContext);
+  const handleAddToCart = (item: ProductCartDTO, quantity: number) => {
+    addToCart(item, quantity);
+  };
+  //לאחר שיעשו התחברות ושמירה של המשתמש, יש להפעיל את השורות הבאות
   //const { user } = useUser();
   //const storePK = user?.storePk||""
 
-  const storePK = "01-201540-2021212";
+  const storePK = "7290058140886-1-001";
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
       setError('אנא הזן מונח חיפוש');
@@ -30,7 +38,7 @@ const ProductSearchComponent: React.FC = () => {
       const results = await searchApiService.getSearchProduct(searchTerm, storePK);
       setProducts(results);
       const initialStates = results.reduce((acc, product) => {
-        acc[product.itemCode] = { quantity: 0, isActive: false };
+        acc[product.itemCode] = { quantity: 1, isActive: false };
         return acc;
       }, {} as { [itemCode: string]: { quantity: number; isActive: boolean } });
       setAddToCartStates(initialStates);
@@ -71,13 +79,32 @@ const ProductSearchComponent: React.FC = () => {
     }
   };
   const handleConfirm = (itemCode: string) => {
-    const quantity = addToCartStates[itemCode]?.quantity || 0;
+    const quantity = addToCartStates[itemCode]?.quantity || 1;
     if (quantity === 0) {
       alert('יש לבחור כמות גדולה מ-0');
       return;
     }
-    alert(`מוצר ${itemCode} נוסף לסל עם כמות: ${quantity}`);
-    // כאן ניתן להוסיף קריאה לשרת או Redux
+    try {
+      const product = products.find((p) => p.itemCode === itemCode);
+      if (!product) { return }
+      const productCart: ProductCartDTO = {
+        product: product,
+        quantity: quantity
+      };
+      handleAddToCart(productCart, quantity);
+      alert(`מוצר ${itemCode} נוסף לסל עם כמות: ${quantity}`);
+      setAddToCartStates((prev) => ({
+        ...prev,
+        [itemCode]: {
+          quantity: 1, // Reset back to default quantity
+          isActive: false, // Set isActive to false to show "הוסף לסל" button again
+        },
+      }));
+    }
+    catch (error) {
+      console.error("Error adding to cart:", error);
+      alert('אירעה שגיאה בהוספת המוצר לסל');
+    }
   };
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -159,8 +186,8 @@ const ProductSearchComponent: React.FC = () => {
                         </button>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <button onClick={() => handleQuantityChange(product.itemCode, -1)} className="px-2 py-1 bg-gray-200 rounded">
-                            <Minus size={16} />
+                          <button onClick={() => handleQuantityChange(product.itemCode, 1)} className="px-2 py-1 bg-gray-200 rounded">
+                            <Plus size={16} />
                           </button>
                           <input
                             type="number"
@@ -168,9 +195,10 @@ const ProductSearchComponent: React.FC = () => {
                             value={cartState.quantity}
                             onChange={(e) => handleInputQuantityChange(product.itemCode, e.target.value)}
                           />
-                          <button onClick={() => handleQuantityChange(product.itemCode, 1)} className="px-2 py-1 bg-gray-200 rounded">
-                            <Plus size={16} />
+                          <button onClick={() => handleQuantityChange(product.itemCode, -1)} className="px-2 py-1 bg-gray-200 rounded">
+                            <Minus size={16} />
                           </button>
+
                           <button
                             onClick={() => handleConfirm(product.itemCode)}
                             className="flex items-center justify-center w-10 h-10 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"

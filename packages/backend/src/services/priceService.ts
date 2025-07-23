@@ -5,7 +5,7 @@ import { IPriceRepository } from "../db/IRepositories/IPriceRepository";
 export class PriceService implements IPrice {
     constructor(private priceRepository: IPriceRepository) {}
 
-    async getAllPrices(): Promise<Price[]> {
+    async getAllPrices(): Promise<any[]> {
         return this.priceRepository.getAllPrices();
     }
 }
