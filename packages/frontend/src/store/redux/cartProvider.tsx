@@ -6,20 +6,14 @@ import { loadFromCartStorage, saveToCartStorage } from '../storage/cartStorage';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
    
-  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(
-    () => {
-      const cartStorage = loadFromCartStorage();
-      return cartStorage ? JSON.parse(cartStorage) : [];
-    }
-  );
+  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(loadFromCartStorage());
   useEffect(() => {
     saveToCartStorage(cartItems);
   }, [cartItems]);
 
 
 
-  const addToCart = (item: ProductCartDTO, quantity: number = 1): void => {
-
+  const addToCart = (item: ProductCartDTO, qtyToAdd: number = 1): void => {
     setCartItems(prevItems => {
       const existing = prevItems.find(cartItem => cartItem.product.itemCode === item.product.itemCode);
       if (existing) {
