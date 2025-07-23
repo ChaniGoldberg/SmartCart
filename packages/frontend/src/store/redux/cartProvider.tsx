@@ -18,7 +18,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
 
 
-  const addToCart = (item: ProductCartDTO, quantity: number = 1): void => {
+  const addToCart = (item: ProductCartDTO, qtyToAdd: number = 1): void => {
     setCartItems(prevItems => {
       const existing = prevItems.find(cartItem => cartItem.product.itemCode === item.product.itemCode);
       if (existing) {
