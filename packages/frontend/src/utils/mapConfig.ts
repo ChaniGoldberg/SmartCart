@@ -1,14 +1,14 @@
 import L from 'leaflet';
 
 const chainLogoMap: Record<string, string> = {
-  'רמי לוי': 'rami-levy.png',
+  'רמי לוי שיווק השקמה': 'rami-levy.png',
   'אושר עד': 'osherad.png',
   'יוחננוף': 'yochananof.png',
   'נתיב החסד': 'netiv-hachesed.png',
 };
 
 const chainColorMap: Record<string, string> = {
-  'רמי לוי': '#d32f2f',
+  'רמי לוי שיווק השקמה': '#d32f2f',
   'אושר עד': '#1976d2',
   'יוחננוף': '#f57c00',
   'נתיב החסד': '#388e3c',

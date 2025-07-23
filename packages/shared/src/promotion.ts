@@ -16,7 +16,7 @@ export interface Promotion {
     discountedPrice: number;
     discountAmount?: number; // Calculated: originalPrice - discountedPrice
     discountPercentage?: number; // Calculated percentage
-    promotionItemsCode: number[];//fk
+    promotionItemsCode: string[];//fk
     // conditions of promotions
     minQuantity?: number;
     maxQuantity?: number;

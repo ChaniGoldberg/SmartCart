@@ -1,4 +1,4 @@
 export interface ItemTag {
     tagId: number;//fk
-    itemCode: number;//fk
+    itemCode: string;//fk
 }

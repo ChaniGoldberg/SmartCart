@@ -1,14 +1,14 @@
 export class StoreLocationDto {
-  storeId: number;
-  chainId: number;
+  storePK: string;
+  chainId: string;
   chainName: string;
   storeName: string;
-  fullAddress: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  fullAddress: string;
+  latitude: number ;
+  longitude: number;
 
-constructor(storeId:number,chainId:number,chainName:string,storeName:string,fullAddress:string|null,latitude:number|null,longitude:number|null) {
-this.storeId=storeId;
+constructor(storePK:string,chainId:string,chainName:string,storeName:string,fullAddress:string,latitude:number,longitude:number) {
+this.storePK=storePK;
 this.chainId=chainId;
 this.chainName=chainName; 
 this.storeName=storeName;

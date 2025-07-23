@@ -1,5 +1,5 @@
 import { StoreRepository } from "../db/Repositories/storeRepository";
-import { getValidStores,addStoreService } from "../services/storeService";
+import { getValidStores } from "../services/storeService";
 import { Request, Response } from "express";
 
 /**

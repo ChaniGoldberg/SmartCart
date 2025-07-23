@@ -22,6 +22,7 @@ const SearchProduct: React.FC<SearchProductProps> = ({ setSearch }) => {
           className="w-full border border-gray-400 rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 text-right"
           placeholder="הכנס טקסט לחיפוש..."
           dir="rtl"
+          
         />
         <button
           type="submit"
@@ -33,5 +34,6 @@ const SearchProduct: React.FC<SearchProductProps> = ({ setSearch }) => {
     </div>
   );
 };
+
 
 export default SearchProduct;

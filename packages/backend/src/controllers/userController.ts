@@ -6,7 +6,7 @@ import { registerUser, updateUser, loginUser } from "../services/userService";
 const userController = {
     register: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { email, password, userId, userName } = req.body;
+            const { email, password, userId, userName,preferred_store } = req.body;
 
             const emailValidation = validate.checkEmail(email);
             if (emailValidation !== true) {
@@ -20,7 +20,7 @@ const userController = {
                 return;
             }
 
-            const { user, token } = await registerUser(userId, email, password, userName);
+            const { user, token } = await registerUser(userId, email, password, userName,preferred_store);
 
             res.status(201).json({ message: "User registered successfully", user, token });
 
@@ -32,7 +32,7 @@ const userController = {
     },
     update: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { email, password, userId, userName } = req.body;
+            const { email, password, userId, userName,preferred_store } = req.body;
 
             const emailValidation = validate.checkEmail(email);
             if (emailValidation !== true) {
@@ -46,7 +46,7 @@ const userController = {
                 return;
             }
 
-            const user = await updateUser(userId, email, password, userName);
+            const user = await updateUser(userId, email, password, userName,preferred_store);
             res.status(201).json({ message: "User update profile finished successfully", user: user });
             
 

@@ -3,7 +3,7 @@ import { Item, } from '@smartcart/shared';
   import { log } from "console";
 
 export class DatabaseService {
-  private readonly tableName = 'items';
+  private readonly tableName = 'item';
   private supabase: SupabaseClient | null = null;
 
   private getClient(): SupabaseClient {
@@ -29,7 +29,7 @@ export class DatabaseService {
       const { data, error } = await this.getClient()
         .from(this.tableName)
         .select('*')
-        .order('created_at', { ascending: true });
+        // .order('created_at', { ascending: true });
 
       if (error) {
         console.error('Database error fetching items:', error);
