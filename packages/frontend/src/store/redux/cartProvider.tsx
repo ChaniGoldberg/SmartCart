@@ -6,12 +6,7 @@ import { loadFromCartStorage, saveToCartStorage } from '../storage/cartStorage';
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
    
-  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(
-    () => {
-      const cartStorage = loadFromCartStorage();
-      return cartStorage ? JSON.parse(cartStorage) : [];
-    }
-  );
+  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(loadFromCartStorage());
   useEffect(() => {
     saveToCartStorage(cartItems);
   }, [cartItems]);
@@ -24,7 +19,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (existing) {
         return prevItems.map(cartItem =>
           cartItem.product.itemCode === item.product.itemCode
-            ? { ...cartItem, quantity: (cartItem.quantity || 0) + quantity }
+            ? { ...cartItem, quantity: (cartItem.quantity || 0) + qtyToAdd }
             : cartItem
         );
       } else {
