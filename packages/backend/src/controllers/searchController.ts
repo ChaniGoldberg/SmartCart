@@ -6,7 +6,7 @@ import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
 
 
 
-export const parseToProductDTO = (item: Item, price: Price | null) => {
+export const parseToProductDTO = (item: Item, price: any | null) => {
     return {
         itemCode: item.itemCode,
         priceId: price?.price || 0,
@@ -24,8 +24,6 @@ export const parseToProductDTO = (item: Item, price: Price | null) => {
 const searchController = {
 
     searchPriceForStoreByItemTxtAndStorePK: async (req: Request, res: Response): Promise<any> => {
-        console.log("ss")
-        console.log("searchPriceForStoreByItemTxtAndStorePK called with params:", req.params);
         const itemTxt = req.params.itemTxt;
         const storePK = req.params.storePK;
 
@@ -37,7 +35,7 @@ const searchController = {
         try {
             const itemPrices = await itemPriceService.getItemsWithPrices(itemTxt);
             const filteredPrices = itemPrices.filter(itemPrice =>
-                itemPrice.price?.storePK === storePK
+                itemPrice.price?.store_pk === storePK
             );
             const Products: ProductDTO[] = filteredPrices.map(itemPrice => parseToProductDTO(itemPrice.item, itemPrice.price))
             res.json(Products);
