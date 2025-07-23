@@ -18,6 +18,7 @@ import fuzzySearchRoutes from './routes/fuzzySearchRoutes';
 import cartRoutes from './routes/cartRoutes';
 import searchRouter from './routes/searchRoute';
 import promotionRoutes from './routes/promotionRoutes';
+import shareCart from './routes/shareCart';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -55,6 +56,7 @@ app.use('/api/searchProduct', searchRouter);
 app.use('/api/users', userRoutes)
 app.use("/api/fuzzySearch", fuzzySearchRoutes); 
 app.use("/api/cart",cartRoutes);
+app.use("/api", shareCart);
 
 setupSwagger(app);
 
