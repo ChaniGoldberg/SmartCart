@@ -1,7 +1,7 @@
 export interface User {
-    userId: number; // pk
+    userId: string; 
     email: string;
-    password: string;
+    password: string; 
     userName: string;
-    preferred_store:string
+    preferred_store: string; // חובה - המשתמש חייב לבחור חנות מועדפת.
 }
