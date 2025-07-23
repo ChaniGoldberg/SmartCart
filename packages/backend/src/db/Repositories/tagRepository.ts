@@ -9,9 +9,9 @@ export class TagRepository implements ITagRepository {
 
     constructor(private supabase: SupabaseClient) { }
 
-    private toDbTag(tag: Tag) {
+    private toDbTag(tag: any) {
         return {
-            tag_id: tag.tagId,
+            
             tag_name: tag.tagName,
             date_added: tag.dateAdded ? tag.dateAdded.toISOString() : null,
             is_already_scanned: tag.isAlreadyScanned,
@@ -214,8 +214,7 @@ export class TagRepository implements ITagRepository {
     }
 
     async addTag(tagName: string): Promise<Tag> {
-        const newTag: Tag = {
-            tagId: 0,
+        const newTag = {
             tagName,
             dateAdded: new Date(),
             isAlreadyScanned: false,

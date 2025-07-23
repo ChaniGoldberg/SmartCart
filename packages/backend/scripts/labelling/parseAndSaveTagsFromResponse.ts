@@ -78,11 +78,5 @@ export async function parseAndSaveTagsFromResponse(response: string): Promise<vo
 
   logToFile(`🎯 סיום עיבוד כל השורות 💛💛💛💛`);
 
-  const updatedItems = await itemRepository.getAllItems();
-  logToFile(`--- מצב מוצרים לאחר עדכון --- 💛💛💛💛`);
-  updatedItems.forEach(item => {
-    logToFile(`    📄 ${item.itemName}: tagsId = [${item.tagsId?.join(", ")}] 💛💛💛💛`);
-  });
-
   logToFile(`✅ סיום תהליך עיבוד תגיות בהצלחה 💛💛💛💛`);
 }

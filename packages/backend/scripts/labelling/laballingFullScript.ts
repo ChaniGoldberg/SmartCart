@@ -18,7 +18,8 @@ const itemRepository = new ItemRepository(supabase);
 export async function labelItemsWithAI() {
     try {
         const allItems: Item[] = await itemRepository.getItemsWithoutTags();
-        const items = allItems.slice(250, 300);
+        const items = allItems.slice(580, 590);
+        const productNames = items.map(p => p.itemName);//למחוק
 
         if (!items || items.length === 0) {
             logToFile("אין מוצרים ללא תיוגים לעיבוד.🩵🩵🩵🩵");
@@ -28,61 +29,81 @@ export async function labelItemsWithAI() {
         logToFile(`items fetched: ${items.length} items 🩵🩵🩵🩵`);
         logToFile(`items fetched: ${items.map(t => t.itemName).join(", ")} 🩵🩵🩵🩵`);
 
-    const tags: Tag[] | null = await tagRepository.getAllTags();
-    if (!tags) {
-      logToFile("לא נמצאו תיוגים לעיבוד.🩵🩵🩵🩵");
-      return;
-    }
-    const tagNames = tags.map(t => t?.tagName).filter(Boolean) as string[];
+        const tags: Tag[] | null = await tagRepository.getAllTags();
+        if (!tags) {
+            logToFile("לא נמצאו תיוגים לעיבוד.🩵🩵🩵🩵");
+            return;
+        }
+        const tagNames = tags.map(t => t?.tagName).filter(Boolean) as string[];
 
-    const instructions: string = `
-מטרתך: לתייג כל מוצר בצורה עשירה, מדויקת ומכסה את כל ההיבטים האפשריים — שימוש, מרכיבים, קטגוריה, קונטקסט — לפי רשימת תיוגים קיימת, ובמידת הצורך גם באמצעות תיוגים חדשים.
-- כל מוצר חייב לכלול לפחות **שלושה תיוגים**. אם הרשימה הקיימת לא מספיקה — צור תיוגים חדשים עם כוכבית (*) בסוף. עדיף **לכסות יותר מדי** מאשר להחסיר תיוג רלוונטי.
-- אל תחשוש להוסיף תיוג חדש גם אם יש תיוג קרוב או דומה — כל הבדל סמנטי רלוונטי מתקבל.
--  אל תנחש מידע שלא נמצא בשם המוצר (כגון “טבעוני”, “ללא גלוטן”, “דיאט”) אם זה לא נאמר ישירות.
--  השתמש בדיוק במונחים של התיוגים הקיימים, ללא שינוי ניסוח, וללא תוספות טקסט מיותר.
+        const instructions: string = `
+    
+Your goal: Tag each product in a rich, precise, and comprehensive way — covering all possible aspects such as usage, ingredients, category, and context — using a predefined list of tags, and creating new tags when necessary.
+
+Instructions:
+- If the existing tag list is insufficient, create new tags and mark them with an asterisk (*) at the end.
+- It is better to **over-tag** than to miss a relevant tag.
+- Do not hesitate to create new tags.
+- Do not guess information that is not explicitly stated in the product name (e.g., “vegan”, “gluten-free”, “diet”).
+- Use the **exact wording** of the existing tags without modifying or expanding them.
+
 ---
-פורמט הפלט:
-כל שורה כוללת מוצר אחד, ותיראה כך:
-שם מוצר: תגית 1, תגית 2, תגית חדשה*, תגית נוספת*, תגית 5;
-- כל שורה מסתיימת ב־`; `
-- *כל תיוג חדש שאינו ברשימה יקבל כוכבית בסוף: תגית חדשה
+
+To encourage creation of new tags:
+- Always create a new tag (marked with an asterisk *) if you believe a relevant tag does not exist in the predefined list.
+- It is better to create many new tags than to miss important aspects of the product.
+- If unsure whether a tag exists, assume it does not and mark it as new.
+- New tags should be precise and relevant to the product name only.
+- Over-tagging is preferred over under-tagging.
+- **Do not change or guess tag wording.**
+
 ---
-דוגמה:
+
+**Strict formatting rules:**
+- **Each output line must follow this format exactly:**  
 ספריי לשיער חזק מאוד: טואלטיקה והיגיינה, מוצרי שיער*, טיפוח*, עיצוב שיער*;
+
+- **Do not add any numbers, bullets, or explanation before or after the lines**
+- **Do not return results as a list or numbered lines — just one formatted product per line.**
+- When adding new tags, **only write the tag name followed by an asterisk (*), without any extra words like "new tag" or explanations**
+- **Do not add a period** at the end of the line; end only with a semicolon (;)**
+- **Do not return a period in the end of line in any case**
+
 ---
- כעת, תייג את המוצרים הבאים:
+
 `;
-    // Split items into batches of 100
-    for (let i = 0; i < items.length; i += 100) {
-      const batch = items.slice(i, i + 100);
-      const productNames = batch.map(p => p.itemName);
+        // Split items into batches of 100
+        // for (let i = 0; i < items.length; i += 100) {
+        //     const batch = items.slice(i, i + 100);
+        //     const productNames = batch.map(p => p.itemName);
 
-      logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items 🩵🩵🩵🩵`);
+        //     logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items 🩵🩵🩵🩵`);
 
-      try {
-        const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
-        logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
-        logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
+        try {
+              const result: string = await tagProductsByGPT(productNames, tagNames, instructions) //למחוק
+            await parseAndSaveTagsFromResponse(result);//.למחוק
+            // const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
+            // logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
+            // logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
 
-        await parseAndSaveTagsFromResponse(result);
-        logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
+            // await parseAndSaveTagsFromResponse(result);
+            logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
 
-        console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-        logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-        logToFile(`תוצאה סופית:\n${result}`);
-      } catch (error: any) {
+            console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
+            logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
+            //  logToFile(`תוצאה סופית:\n${result}`);
+        } catch (error: any) {
+            console.error("❌ שגיאה בתהליך התיוג:", error);
+            logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
+            throw error;
+        }
+        // }
+    } catch (error: any) {
         console.error("❌ שגיאה בתהליך התיוג:", error);
         logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
         throw error;
-      }
     }
-  } catch (error: any) {
-    console.error("❌ שגיאה בתהליך התיוג:", error);
-    logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
-    throw error;
-  }
-  logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
-  await autoTagNewTags();
-  logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
+    //   logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
+    //await autoTagNewTags();
+    //  logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
 }
