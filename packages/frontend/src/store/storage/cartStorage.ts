@@ -1,8 +1,12 @@
 import { useContext, useEffect } from "react";
 import { cartContext } from '../redux/cartRedux';
 
-const cartC = useContext(cartContext);
 
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartC.cartItems));
-  }, [cartC.cartItems]);
+export const saveToCartStorage = (cart:any) => {
+  localStorage.setItem('cart', JSON.stringify(cart.cartItems));
+};
+
+export const loadFromCartStorage = () => {
+  const cart = localStorage.getItem('cart');
+  return cart ? JSON.parse(cart) : null;
+};

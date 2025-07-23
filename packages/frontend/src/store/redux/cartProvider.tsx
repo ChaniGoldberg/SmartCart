@@ -1,10 +1,25 @@
-import React, { useState, ReactNode } from 'react';
+import React, { useState, ReactNode, useEffect } from 'react';
 import { cartContext } from './cartRedux';
 import { Price } from '@smartcart/shared/src/price';
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
+import { loadFromCartStorage, saveToCartStorage } from '../storage/cartStorage';
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartItems, setCartItems] = useState<ProductCartDTO[]>([]);
-  const addToCart = (item: ProductCartDTO, qtyToAdd: number = 1): void => {
+   
+  const [cartItems, setCartItems] = useState<ProductCartDTO[]>(
+    () => {
+      const cartStorage = loadFromCartStorage();
+      return cartStorage ? JSON.parse(cartStorage) : [];
+    }
+  );
+  useEffect(() => {
+    saveToCartStorage(cartItems);
+  }, [cartItems]);
+
+
+
+  const addToCart = (item: ProductCartDTO, quantity: number = 1): void => {
+
     setCartItems(prevItems => {
       const existing = prevItems.find(cartItem => cartItem.product.itemCode === item.product.itemCode);
       if (existing) {
