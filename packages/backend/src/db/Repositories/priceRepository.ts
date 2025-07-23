@@ -10,10 +10,9 @@ export class PriceRepository implements IPriceRepository {
     // פונקציה להמרה ל-snake_case
     private toDbPrice(price: Price) {
         return {
-            price_id: price.priceId,
-            store_pk: price.storePK, // Assuming storePK is a unique identifier for the store
+            store_pk: price.storePK,
+             item_id: price.itemId,
             item_code: price.itemCode,
-            item_id: price.itemId,
             price: price.price,
             price_update_date: price.priceUpdateDate,
             unit_quantity: price.unitQuantity,
@@ -200,4 +199,28 @@ export class PriceRepository implements IPriceRepository {
             throw error;
         }
     }
+    async getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .select('*')
+                .eq('store_pk', storePK)
+                .eq('item_id', itemId)
+                .single();
+    
+            if (error) {
+                if (error.code === 'PGRST116') { // Not found
+                    return null;
+                }
+                console.error('Error fetching price by storePK and itemId:', error);
+                throw new Error(`Failed to fetch price: ${error.message}`);
+            }
+    
+            return data;
+        } catch (error: any) {
+            console.error(`Error in getPriceByStorePKItemID: ${error.message}`);
+            throw error;
+        }
+    }
+    
 }

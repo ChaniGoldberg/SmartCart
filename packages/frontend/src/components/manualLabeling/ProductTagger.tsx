@@ -1,265 +1,49 @@
-// import React, { useState } from "react";
 
-// // קומפוננטה שמאפשרת להוסיף תיוגים למוצרים ולערוך את רשימת התיוגים
-// const ProductTagger = ({ products, tags: initialTags, onTagChange }) => {
-  
-//   const [productTags, setProductTags] = useState(
-//     () =>
-//       Object.fromEntries(
-//         products.map((product) => [product.id, []])
-//       )
-//   );
-//   const [selectedTags, setSelectedTags] = useState([]);
-//   const [tags, setTags] = useState(initialTags);
-//   const [newTagLabel, setNewTagLabel] = useState("");
-//   const [pendingTag, setPendingTag] = useState(""); // תיוג שממתין לאישור
-//   const [showConfirm, setShowConfirm] = useState(false); // האם להציג את הפופאפ
 
-//   // בוחר/מסיר תיוג מהבחירה
-//   const handleTagClick = (tagId) => {
-//     setSelectedTags((prev) =>
-//       prev.includes(tagId)
-//         ? prev.filter((id) => id !== tagId)
-//         : [...prev, tagId]
-//     );
-//   };
-
-//   // שיוך התיוגים שנבחרו לכל המוצרים
-//   const handleApplyTags = () => {
-//     const newProductTags = { ...productTags };
-//     products.forEach((product) => {
-//       const current = new Set(productTags[product.id]);
-//       selectedTags.forEach((tagId) => current.add(tagId));
-//       newProductTags[product.id] = Array.from(current);
-//       if (onTagChange) {
-//         onTagChange(
-//           product.id,
-//           tags.filter((tag) => newProductTags[product.id].includes(tag.id))
-//         );
-//       }
-//     });
-//     setProductTags(newProductTags);
-//     setSelectedTags([]);
-//   };
-
-//   // ביציאה מהשדה - פותח חלונית אישור אם יש ערך
-//   const handleAddTagOnBlur = () => {
-//     const trimmed = newTagLabel.trim();
-//     if (!trimmed) return;
-//     if (tags.some((tag) => tag.label === trimmed)) {
-//       setNewTagLabel("");
-//       return;
-//     }
-//     setPendingTag(trimmed);
-//     setShowConfirm(true);
-//   };
-
-//   // אישור הוספת תיוג
-//   const handleConfirmAddTag = () => {
-//     const newTag = {
-//       id: tags.length > 0 ? Math.max(...tags.map((t) => t.id)) + 1 : 1,
-//       label: pendingTag,
-//     };
-//     setTags([...tags, newTag]);
-//     setNewTagLabel("");
-//     setPendingTag("");
-//     setShowConfirm(false);
-//   };
-
-//   // ביטול הוספת תיוג
-//   const handleCancelAddTag = () => {
-//     setNewTagLabel("");
-//     setPendingTag("");
-//     setShowConfirm(false);
-//   };
-
-//   return (
-//     <div style={{ position: "relative" }}>
-//       {/* חלונית אישור הוספת תיוג */}
-//       {showConfirm && (
-//          <div
-//           style={{
-//             position: "fixed",
-//             top: 30,
-//             left: "50%",
-//             transform: "translateX(-50%)",
-//             background: "#fff",
-//             border: "1px solid #1976d2",
-//             borderRadius: 8,
-//             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-//             padding: 24,
-//             zIndex: 1000,
-//             minWidth: 260,
-//             textAlign: "center",
-//             color: "#222", // צבע טקסט כהה וברור
-//           }}
-//         >
-//           <div style={{ marginBottom: 16 }}>
-//             להוסיף את התיוג "<b>{pendingTag}</b>" לרשימת התיוגים?
-//           </div>
-//           <button
-//             onClick={handleConfirmAddTag}
-//             style={{
-//               marginRight: 8,
-//               padding: "6px 16px",
-//               background: "#1976d2",
-//               color: "#fff",
-//               border: "none",
-//               borderRadius: 8,
-//               cursor: "pointer",
-//               fontWeight: "bold",
-//             }}
-//           >
-//             אישור
-//           </button>
-//           <button
-//             onClick={handleCancelAddTag}
-//             style={{
-//               padding: "6px 16px",
-//               background: "#e0e0e0",
-//               color: "#333",
-//               border: "none",
-//               borderRadius: 8,
-//               cursor: "pointer",
-//               fontWeight: "bold",
-//             }}
-//           >
-//             ביטול
-//           </button>
-//         </div>
-//       )}
-
-//       {/* כותרת */}
-//       <div style={{ marginBottom: 16, fontWeight: "bold" }}>בחר תיוגים להוספה לכל המוצרים:</div>
-//       {/* הוספת תיוג חדש */}
-//       <input
-//         type="text"
-//         value={newTagLabel}
-//         onChange={(e) => setNewTagLabel(e.target.value)}
-//         placeholder="הוסף תיוג חדש"
-//         onBlur={handleAddTagOnBlur}
-//         style={{
-//           marginBottom: 12,
-//           marginLeft: 0,
-//           marginRight: 8,
-//           padding: "6px",
-//           borderRadius: "8px",
-//           border: "1px solid #ccc",
-//         }}
-//         disabled={showConfirm}
-//       />
-//       {/* רשימת התיוגים לבחירה */}
-//       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
-//         {tags.map((tag) => (
-//           <button
-//             key={tag.id}
-//             type="button"
-//             onClick={() => handleTagClick(tag.id)}
-//             style={{
-//               padding: "6px 16px",
-//               borderRadius: "16px",
-//               border: "none",
-//               cursor: "pointer",
-//               background: selectedTags.includes(tag.id) ? "#1976d2" : "#e0e0e0",
-//               color: selectedTags.includes(tag.id) ? "#fff" : "#333",
-//               fontWeight: selectedTags.includes(tag.id) ? "bold" : "normal",
-//               transition: "background 0.2s, color 0.2s",
-//             }}
-//           >
-//             {tag.label}
-//           </button>
-//         ))}
-//       </div>
-//       {/* כפתור להוספת התיוגים שנבחרו לכל המוצרים */}
-//       <button
-//         type="button"
-//         onClick={handleApplyTags}
-//         style={{
-//           padding: "8px 24px",
-//           borderRadius: "16px",
-//           border: "none",
-//           background: "#1976d2",
-//           color: "#fff",
-//           fontWeight: "bold",
-//           cursor: "pointer",
-//           marginBottom: 24,
-//         }}
-//         disabled={selectedTags.length === 0}
-//       >
-//         החל תיוג על {products.length} מוצרים
-//       </button>
-//       {/* הצגת רשימת המוצרים והתיוגים ששויכו להם בפועל */}
-//       <div>
-//         {products.map((product) => (
-//           <div key={product.id} style={{ marginBottom: 12, borderBottom: "1px solid #eee", paddingBottom: 8 }}>
-//             <div style={{ fontWeight: "bold" }}>{product.name}</div>
-//             <div style={{ fontSize: 14, color: "#555" }}>
-//               תיוגים:{" "}
-//               {tags
-//                 .filter((tag) => (productTags[product.id] || []).includes(tag.id))
-//                 .map((tag) => tag.label)
-//                 .join(", ") || "אין"}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProductTagger;
-
+import { Item } from "@smartcart/shared/src/item";
+import { Tag } from "@smartcart/shared/src/tag";
 import React, { useState } from "react";
-import axios from "axios";
 
-interface Product {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  label: string;
-}
 
 interface ProductTaggerProps {
   items: Item[];
   tags: Tag[];
-  onTagChange?: (productId: number, tags: Tag[]) => void;
+  onTagChange?: (itemCode: string, tags: Tag[]) => void;
 }
 
-const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTags, onTagChange }) => {
-  const [productTags, setProductTags] = useState<Record<number, number[]>>(
+const ProductTagger: React.FC<ProductTaggerProps> = ({ items, tags: initialTags, onTagChange }) => {
+  const [productTags, setProductTags] = useState<Record<string, number[]>>(
     () =>
       Object.fromEntries(
-        products.map((product) => [product.id, []])
+        items.map((item) => [item.itemCode, []])
       )
   );
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [newTagLabel, setNewTagLabel] = useState("");
-  const [pendingTag, setPendingTag] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [tags, setTags] = useState<Tag[]>(initialTags);
+  const [newTagLabel, setNewTagLabel] = useState<string>("");
+  const [pendingTag, setPendingTag] = useState<string>(""); // תיוג שממתין לאישור
+  const [showConfirm, setShowConfirm] = useState<boolean>(false); // האם להציג את הפופאפ
 
-  // לחיצה על תגית לבחירה או הסרה
+  // בוחר/מסיר תיוג מהבחירה
   const handleTagClick = (tagId: number) => {
-    setSelectedTags((prev) => //עדכון מערך מזהי התגיות שנבחרו
-      prev.includes(tagId) ? //בדיקה אם התגית נבחרה
-        prev.filter((id) => id !== tagId) // אם כן מוריד אותה מהרשימה
-        : [...prev, tagId] //אם לא מוסיף אותה
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
     );
   };
 
   // שיוך התיוגים שנבחרו לכל המוצרים
   const handleApplyTags = () => {
     const newProductTags = { ...productTags };
-    products.forEach((product) => {
-      const current = new Set(newProductTags[product.id] || []);
+    items.forEach((item) => {
+      const current = new Set(newProductTags[item.itemCode] || []);
       selectedTags.forEach((tagId) => current.add(tagId));
-      newProductTags[product.id] = Array.from(current);
+      newProductTags[item.itemCode] = Array.from(current);
       if (onTagChange) {
         onTagChange(
-          product.id,
-          tags.filter((tag) => newProductTags[product.id].includes(tag.id))
+          item.itemCode,
+          tags.filter((tag) => newProductTags[item.itemCode].includes(tag.tagId))
         );
       }
     });
@@ -267,12 +51,11 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
     setSelectedTags([]);
   };
 
-
-  // ביציאה משדה תיוג חדש - לפתוח אישור
+  // ביציאה מהשדה - פותח חלונית אישור אם יש ערך
   const handleAddTagOnBlur = () => {
     const trimmed = newTagLabel.trim();
     if (!trimmed) return;
-    if (tags.some((tag) => tag.label === trimmed)) {
+    if (tags.some((tag) => tag.tagName === trimmed)) {
       setNewTagLabel("");
       return;
     }
@@ -283,8 +66,10 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
   // אישור הוספת תיוג
   const handleConfirmAddTag = () => {
     const newTag: Tag = {
-      id: tags.length > 0 ? Math.max(...tags.map((t) => t.id)) + 1 : 1,
-      label: pendingTag,
+      tagId: tags.length > 0 ? Math.max(...tags.map((t) => t.tagId)) + 1 : 1,
+      tagName: pendingTag,
+      dateAdded: new Date(),
+      isAlreadyScanned:false
     };
     setTags([...tags, newTag]);
     setNewTagLabel("");
@@ -301,7 +86,7 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
 
   return (
     <div style={{ position: "relative" }}>
-      {/* חלונית אישור תיוג חדש */}
+      {/* חלונית אישור הוספת תיוג */}
       {showConfirm && (
         <div
           style={{
@@ -312,25 +97,26 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
             background: "#fff",
             border: "1px solid #1976d2",
             borderRadius: 8,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
             padding: 24,
             zIndex: 1000,
+            minWidth: 260,
             textAlign: "center",
-            fontSize: 16,
-            fontWeight: "bold",
+            color: "#222",
           }}
         >
           <div style={{ marginBottom: 16 }}>
-            להוסיף את התיוג "<b>{pendingTag}</b>"?
+            להוסיף את התיוג "<b>{pendingTag}</b>" לרשימת התיוגים?
           </div>
           <button
             onClick={handleConfirmAddTag}
             style={{
               marginRight: 8,
-              backgroundColor: "#1976d2",
+              padding: "6px 16px",
+              background: "#1976d2",
               color: "#fff",
               border: "none",
-              borderRadius: 20,
-              padding: "8px 16px",
+              borderRadius: 8,
               cursor: "pointer",
               fontWeight: "bold",
             }}
@@ -338,12 +124,13 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
             אישור
           </button>
           <button
-            onClick={() => setShowConfirm(false)}
+            onClick={handleCancelAddTag}
             style={{
-              backgroundColor: "#e0e0e0",
+              padding: "6px 16px",
+              background: "#e0e0e0",
+              color: "#333",
               border: "none",
-              borderRadius: 20,
-              padding: "8px 16px",
+              borderRadius: 8,
               cursor: "pointer",
               fontWeight: "bold",
             }}
@@ -353,86 +140,70 @@ const ProductTagger: React.FC<ProductTaggerProps> = ({ products, tags: initialTa
         </div>
       )}
 
-      {/* שורת הכנסת תיוג חדש */}
+      {/* כותרת */}
+      <div style={{ marginBottom: 16, fontWeight: "bold" }}>בחר תיוגים להוספה לכל המוצרים:</div>
+      {/* הוספת תיוג חדש */}
       <input
         type="text"
         value={newTagLabel}
         onChange={(e) => setNewTagLabel(e.target.value)}
         placeholder="הוסף תיוג חדש"
         onBlur={handleAddTagOnBlur}
-        disabled={showConfirm}
         style={{
           marginBottom: 12,
-          padding: "6px 12px",
-          borderRadius: 20,
+          marginLeft: 0,
+          marginRight: 8,
+          padding: "6px",
+          borderRadius: "8px",
           border: "1px solid #ccc",
-          fontSize: 14,
-          width: "100%",
-          boxSizing: "border-box",
-          direction: "rtl",
-          textAlign: "right",
         }}
+        disabled={showConfirm}
       />
-
       {/* רשימת התיוגים לבחירה */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
         {tags.map((tag) => (
           <button
-            key={tag.id}
+            key={tag.tagId}
             type="button"
-            onClick={() => handleTagClick(tag.id)}
+            onClick={() => handleTagClick(tag.tagId)}
             style={{
               padding: "6px 16px",
               borderRadius: "16px",
               border: "none",
               cursor: "pointer",
-              background: selectedTags.includes(tag.id) ? "#1976d2" : "#e0e0e0",
-              color: selectedTags.includes(tag.id) ? "#fff" : "#333",
-              fontWeight: selectedTags.includes(tag.id) ? "bold" : "normal",
+              background: selectedTags.includes(tag.tagId) ? "#1976d2" : "#e0e0e0",
+              color: selectedTags.includes(tag.tagId) ? "#fff" : "#333",
+              fontWeight: selectedTags.includes(tag.tagId) ? "bold" : "normal",
               transition: "background 0.2s, color 0.2s",
             }}
           >
-            {tag.label}
+            {tag.tagName}
           </button>
         ))}
       </div>
-
-      {/* כפתור הפעלה */}
+      {/* כפתור להוספת התיוגים שנבחרו לכל המוצרים */}
       <button
+        type="button"
         onClick={handleApplyTags}
         style={{
-          width: "100%",
-          padding: "12px 0",
-          borderRadius: 20,
-          background: "#2e8540",
+          padding: "8px 24px",
+          borderRadius: "16px",
+          border: "none",
+          background: "#1976d2",
           color: "#fff",
           fontWeight: "bold",
-          fontSize: 16,
-          cursor: selectedTags.length === 0 ? "not-allowed" : "pointer",
-          opacity: selectedTags.length === 0 ? 0.6 : 1,
-          border: "none",
+          cursor: "pointer",
+          marginBottom: 24,
         }}
         disabled={selectedTags.length === 0}
       >
         החל תיוג על {items.length} מוצרים
       </button>
-      {/* הצגת רשימת המוצרים והתיוגים ששויכו להם בפועל */}
-      <div>
-        {products.map((product) => (
-          <div key={product.id} style={{ marginBottom: 12, borderBottom: "1px solid #eee", paddingBottom: 8 }}>
-            <div style={{ fontWeight: "bold" }}>{product.name}</div>
-            <div style={{ fontSize: 14, color: "#555" }}>
-              תיוגים:{" "}
-              {tags
-                .filter((tag) => (productTags[product.id] || []).includes(tag.id))
-                .map((tag) => tag.label)
-                .join(", ") || "אין"}
-            </div>
-          </div>
-        ))}
-      </div>
+    
     </div>
   );
 };
 
 export default ProductTagger;
+
+

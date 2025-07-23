@@ -29,13 +29,13 @@ export const searchApiService = {
     return response.data;
   },
 
- getSearchProduct: async (itemTxt:string,storePK:string): Promise<ProductDTO[]> => {
-  debugger
-    console.log("getSearchProduct called with params:", itemTxt, storePK);
-    const response = await apiClient.get<ProductDTOResponse>(`/searchProduct/${itemTxt}/${storePK}`);
-    if (response.data.success && response.data.data) {
-      return response.data.data;
+  getSearchProduct: async (itemTxt: string, storePK: string): Promise<ProductDTO[]> => {
+    const response = await apiClient.get(`/searchProduct/${itemTxt}/${storePK}`);
+   //const response1 = await apiClient.get<ProductDTOResponse>(`/searchProduct/${itemTxt}/${storePK}`);
+   console.log("response", response); 
+   if (response.status == 200) {
+      return response.data || [];
     }
-    throw new Error(response.data.error || 'Failed to fetch prodects');
+    throw new Error(response.data.error);
   },
 }

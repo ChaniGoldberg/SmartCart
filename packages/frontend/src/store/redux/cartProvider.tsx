@@ -1,6 +1,6 @@
 import React, { useState, ReactNode, useEffect } from 'react';
 import { cartContext } from './cartRedux';
-import { ProductDTO} from '@smartcart/shared';
+import { Price } from '@smartcart/shared/src/price';
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { loadFromCartStorage, saveToCartStorage } from '../storage/cartStorage';
 
@@ -23,19 +23,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             : cartItem
         );
       } else {
-        return [...prevItems, { ...item, quantity }];
+        // אם לא קיים, הוסף עותק חדש עם הכמות המבוקשת
+        return [...prevItems, { ...item, quantity: qtyToAdd }];
       }
     });
   };
-
-  const removeFromCart = (item: ProductCartDTO, quantity: number = 1): void => {
+  const removeFromCart = (item: ProductCartDTO, qtyToRemove: number = 1): void => {
     setCartItems(prevItems => {
       return prevItems.flatMap(cartItem => {
         if (cartItem.product.itemCode === item.product.itemCode) {
-          const newQuantity = (cartItem.quantity || 0) - quantity;
+          const newQuantity = (cartItem.quantity || 0) - qtyToRemove;
           if (newQuantity > 0) {
+            // עדכן כמות
             return [{ ...cartItem, quantity: newQuantity }];
           } else {
+            // הסר מהסל
             return [];
           }
         }
@@ -43,10 +45,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     });
   };
-
   return (
-    <cartContext.Provider value={{ cartItems, setCartItems, addToCart, removeFromCart }}>
+    <cartContext.Provider value={{
+      cartItems, setCartItems, addToCart, removeFromCart, removeToAllternative(item) {
+      },
+    }}>
       {children}
     </cartContext.Provider>
   );
 };
+

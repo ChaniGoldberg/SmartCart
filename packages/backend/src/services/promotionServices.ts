@@ -1,30 +1,33 @@
-
+import { PromotionRepository } from "../db/Repositories/promotionRepository";
 import { IPromotions } from "../interfaces/Ipromotions";
 import { supabase } from "../services/supabase"; // נשאר כמו שהוא
-
-export const promotionsService: IPromotions = {
-  async getPromotionsByStoreId(storePK: string): Promise<typeof db.Promotion> {
-    if (!storePK || typeof storePK !== "string") {
-      throw { status: 400, message: "Invalid or missing storeId" };
-//C:\Users\hp326\Documents\תכנות\Smart-cart\smartcart\packages\backend\src\services\promotionServices.ts
-
-import { IPromotions } from "../interfaces/Ipromotions";
-import { db } from "../db/dbProvider";
 import { Promotion } from "@smartcart/shared/src/promotion";
 
- export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
+export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
 
+const promotionRepository = new PromotionRepository(supabase);
 export const promotionsService: IPromotions = {
-    async getPromotionsByStoreId(storePK: string): Promise<Promotion[]> {
-        if (!storePK || typeof storePK !== "string") {
-            throw { status: 400, message: "Invalid or missing storePK" };
+  async selectPromotionsByStorePK(storePK: string): Promise<Promotion[]> {
+    return await promotionRepository.SelectPromotionsByStorePK(storePK);
+  },
+
+  
+  // פונקציה לקבלת פרומושנים לפי מזהה סניף ומזהה מוצר
+  async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: string): Promise<PromotionSummary[]> {
+    if (!storePK || typeof storePK !== "string") {
+      throw { status: 400, message: "Invalid or missing storePK" };
+    }
+    if (typeof itemCode !== "string" ) {
+      throw { status: 400, message: "Invalid or missing itemCode. Expected a string." };
     }
 
     const today = new Date().toISOString();
+
     const { data, error } = await supabase
       .from("promotion")
       .select("*")
-      .eq("store_pk", storePK) // שימוש ישיר במחרוזת
+      .eq("store_pk", storePK)
+      .eq("promotion_items_code", itemCode)
       .lte("start_date", today)
       .gte("end_date", today);
 
@@ -33,50 +36,7 @@ export const promotionsService: IPromotions = {
       throw { status: 500, message: "Failed to fetch promotions" };
     }
 
-    return data || [];
-  },
-  const promotions = db.Promotion.filter((promotion: Promotion) => {
-    const start = new Date(promotion.startDate);
-    const end = new Date(promotion.endDate);
-
-    return (
-      promotion.storePK === storePK &&
-      promotion.isActive &&
-      start <= today &&
-      end >= today
-    );
-  }).map((promotion: Promotion) => ({
-    ...promotion,
-    startDate: new Date(promotion.startDate),
-    endDate: new Date(promotion.endDate),
-    lastUpdated: new Date(promotion.lastUpdated),
-  }));
-
-  return promotions;
-},
-
-  async getPromotionsByStoreIdAndItemCode(storePK: string, itemCode: number): Promise<PromotionSummary[]> {
-    if (!storePK || typeof storePK !== "string") {
-      throw { status: 400, message: "Invalid or missing storePK" };
-    }
-    if (typeof itemCode !== "number") {
-      throw { status: 400, message: "Invalid or missing itemCode. Expected a number." };
-    }
-
-    const today = new Date();
-
-    const promotions = db.Promotion.filter((promotion: Promotion) => {
-      const start = new Date(promotion.startDate);
-      const end = new Date(promotion.endDate);
-
-      return (
-        promotion.storePK === storePK &&
-        promotion.isActive &&
-        promotion.promotionItemsCode.includes(itemCode) &&
-        start <= today &&
-        end >= today
-      );
-    }).map((promotion: Promotion) => ({
+    const promotions = data.map((promotion: Promotion) => ({
       promotionId: promotion.promotionId,
       promotionDescription: promotion.promotionDescription,
       isActive: promotion.isActive,
@@ -86,5 +46,5 @@ export const promotionsService: IPromotions = {
     return promotions;
   },
 };
-
+  
 export default promotionsService;

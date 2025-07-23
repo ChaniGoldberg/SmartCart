@@ -10,10 +10,11 @@ export class UserRepository implements IUserRepository {
     // המרה ל-snake_case
     private toDbUser(user: User) {
         return {
-            user_id: user.userId,
+            // user_id: user.userId,
             email: user.email,
             password: user.password,
             user_name: user.userName,
+            preferred_store: user.preferred_store
         };
     }
 

@@ -8,18 +8,22 @@ import { Item } from "@smartcart/shared/src/item";
 import ProductTagger from "./ProductTagger";
 
 const TagSearchPage: React.FC = () => {
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>("");
   const [tags, setTags] = useState<Tag[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingTags, setIsLoadingTags] = useState<boolean>(false);
+  const [isLoadingItems, setIsLoadingItems] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const [selectedTagsTypeTags, setSelectedTagsTypeTags] = useState<Tag[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
-  const loadTags = async (searchText: string = 'חלב') => {
-    setIsLoading(true);
+  const loadTags = async (searchText: string = "חלב") => {
+    setIsLoadingTags(true);
     setError(null);
     try {
-      const url = `http://localhost:3001/api/search/textTag/${encodeURIComponent(searchText)}`;
+      const url = `http://localhost:3001/api/search/textTag/${encodeURIComponent(
+        searchText
+      )}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`שגיאה בשרת: ${response.status}`);
@@ -27,50 +31,63 @@ const TagSearchPage: React.FC = () => {
       const data: any = await response.json();
       setTags(data.items);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בחיבור לשרת');
-      console.error('Error loading tags:', err);
+      setError(err instanceof Error ? err.message : "שגיאה בחיבור לשרת");
+      console.error("Error loading tags:", err);
     } finally {
-      setIsLoading(false);
+      setIsLoadingTags(false);
     }
   };
-
+const loadItems = async () => {
+  setIsLoadingItems(true);
+  setError(null);
+  try {
+    const response = await fetch('http://localhost:3001/api/items');
+    if (!response.ok) {
+      throw new Error(`שגיאה בשרת: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.success && data.data) {
+      setItems(data.data);
+    } else {
+      throw new Error(data.error || 'כשלון בקבלת מוצרים');
+    }
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'שגיאה כללית');
+  } finally {
+    setIsLoadingItems(false);
+  }
+};
   useEffect(() => {
     loadTags();
+    loadItems();
   }, []);
 
   return (
-    <div className="flex h-screen font-sans bg-white">
+    <div className="flex h-screen font-sans bg-white min-h-screen">
       {/* צד שמאל - נבחרים ותיוג */}
-      <div className="w-2/5 flex flex-col justify-between border-l border-gray-300 bg-gray-50 p-6 space-y-6">
-        <div>
-          {/* קומפוננטה 4 - מוצרים נבחרים */}
-          <SelectedItems initialItems={selectedItems} />
-        </div>
-        <div>
-          {/* קומפוננטה 5 - הוספת תיוג למוצרים נבחרים */}
-          <ProductTagger tags={selectedTagsTypeTags} items={selectedItems} />
-        </div>
+      <div className="w-2/5 flex flex-col justify-between border-l border-gray-300 bg-gray-50 p-6 min-h-screen">
+      <div className=" p-4 w-full flex flex-col">
+        <SelectedItems
+          initialItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+        /></div>
+        <div className=" p-4 w-full flex flex-col top-2/5">
+        <ProductTagger tags={tags} items={selectedItems} /></div>
       </div>
 
       {/* צד ימין - חיפוש ותוצאות */}
-      <div className="w-3/5 p-8 space-y-6 overflow-y-auto">
-        <div className="space-y-4">
-          {/* קומפוננטה 1 - שורת חיפוש */}
-          <div className="w-full">
-            <SearchProduct setSearch={setSearch} />
-          </div>
-
-          {/* קומפוננטה 2 - תוצאות חיפוש עם קומפוננטה 3 בפנים */}
-          <ProductSearchPage
-            setSelectdItemsGlobal={setSelectedItems}
-            tagsFromServer={tags}
-            search={search}
-            setSelectedTagsTypeTags={setSelectedTagsTypeTags}
-          />
-        </div>
+      <div className="w-3/5 p-8 space-y-6 min-h-screen">
+        <SearchProduct setSearch={setSearch} />
+        <ProductSearchPage
+          products={items}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
+          tagsFromServer={tags}
+          search={search}
+          setSelectedTagsTypeTags={setSelectedTagsTypeTags}
+        />
       </div>
     </div>
   );
 };
-
 export default TagSearchPage;

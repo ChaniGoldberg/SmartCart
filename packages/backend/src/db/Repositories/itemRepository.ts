@@ -51,17 +51,69 @@ export class ItemRepository implements IItemRepository {
     };
   }
 
-async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
-    // supabase = getClient();
-    if (this.supabase != null) {
-      const { data, error } = await this.supabase.rpc('fuzzy_search_items', { search_query: itemText });
-      if (error) throw error;
-      return data;
-    }
-    return []; // Return an empty array if supabase is null
+  async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
+  if (!this.supabase) {
+    console.warn("⚠️ Supabase client not initialized");
+    return [];
   }
 
-  async linkTagToItem(itemCode: number, tagId: number): Promise<void> {
+  try {
+    // 1. קריאה לפונקציית RPC
+    const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items', {
+      search_query: itemText
+    });
+
+    if (error) {
+      console.error("❌ Error calling fuzzy_search_items:", error.message);
+      throw new Error(`Failed fuzzy search: ${error.message}`);
+    }
+
+    if (!rawItems || rawItems.length === 0) {
+      return [];
+    }
+
+    // 2. שליפת תגיות לכל item_code שחזר בתוצאות
+    const itemCodes = rawItems.map((item:Item)=> item.itemCode as string);
+
+    const { data: itemTagsData, error: itemTagsError } = await this.supabase
+      .from(this.itemTagsTableName)
+      .select('item_code, tag_id')
+      .in('item_code', itemCodes);
+
+    if (itemTagsError) {
+      console.error("❌ Error fetching item-tags:", itemTagsError.message);
+      throw new Error(`Failed to fetch item-tags: ${itemTagsError.message}`);
+    }
+
+    // 3. בניית מפת תגיות לכל item_code (כמחרוזת)
+    const itemTagsMap = new Map<string, number[]>();
+    if (itemTagsData) {
+      for (const row of itemTagsData) {
+        const itemCode = row.item_code as string;
+        const tagId = row.tag_id;
+        if (!itemTagsMap.has(itemCode)) {
+          itemTagsMap.set(itemCode, []);
+        }
+        itemTagsMap.get(itemCode)!.push(tagId);
+      }
+    }
+
+    // 4. המרת rawItems ל־Item עם camelCase + תגיות
+    const itemsWithTags: Item[] = rawItems.map((raw:any) => {
+      const item = this.fromDbItem(raw) as Item;
+      item.tagsId = itemTagsMap.get(String(item.itemCode)) || [];
+      return item;
+    });
+
+    return itemsWithTags;
+  } catch (err: any) {
+    console.error("💥 Error in fuzzySearchItemsByText:", err.message);
+    throw err;
+  }
+}
+
+
+  async linkTagToItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Linking tag ${tagId} to item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -83,7 +135,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async unlinkTagFromItem(itemCode: number, tagId: number): Promise<void> {
+  async unlinkTagFromItem(itemCode: string, tagId: number): Promise<void> {
     try {
       console.log(`Unlinking tag ${tagId} from item ${itemCode} in ${this.itemTagsTableName}`);
       const { error } = await this.supabase
@@ -103,7 +155,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getTagsByItemCode(itemCode: number): Promise<number[]> {
+  async getTagsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching tags for item ${itemCode} from ${this.itemTagsTableName}`);
       const { data, error } = await this.supabase
@@ -122,7 +174,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async setTagsForItem(itemCode: number, tagIds: number[]): Promise<void> {
+  async setTagsForItem(itemCode: string, tagIds: number[]): Promise<void> {
     try {
       console.log(`Setting tags for item ${itemCode}: ${tagIds.join(', ')}`);
       // מוחק קישורים קיימים עבור הפריט
@@ -155,7 +207,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getPromotionsByItemCode(itemCode: number): Promise<number[]> {
+  async getPromotionsByItemCode(itemCode: string): Promise<number[]> {
     try {
       console.log(`Fetching promotions for item ${itemCode} from ${this.promotionItemsTableName}`);
       const { data, error } = await this.supabase
@@ -228,10 +280,21 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
         .insert(dbItemsToInsert)
         .select('*');
 
-      if (error) {
-        console.error('Error inserting multiple items:', error);
-        throw new Error(`Failed to add multiple items: ${error.message}`);
-      }
+if (error) {
+  console.error('❌ Error inserting multiple items:', error);
+  try {
+    console.error('Error JSON:', JSON.stringify(error, null, 2));
+  } catch (jsonError) {
+    // אם לא ניתן להמיר ל־JSON, פשוט נמשיך
+  }
+  const message =
+    typeof error === 'object' && error !== null
+      ? error.message || JSON.stringify(error)
+      : String(error);
+
+  throw new Error(`Failed to add multiple items: ${message}`);
+}
+
 
       if (!data) {
         throw new Error('No data returned after adding multiple items.');
@@ -363,7 +426,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
         throw new Error(`Failed to fetch item-tags relationships: ${itemTagsError.message}`);
       }
 
-      const itemTagsMap = new Map<number, number[]>();
+      const itemTagsMap = new Map<string, number[]>();
       if (itemTagsData) {
         itemTagsData.forEach(row => {
           const itemCode = row.item_code;
@@ -389,7 +452,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async getItemByItemCode(itemCode: number): Promise<Item | null> {
+  async getItemByItemCode(itemCode: string): Promise<Item | null> {
     try {
       const { data, error } = await this.supabase
         .from(this.tableName)
@@ -420,7 +483,7 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
     }
   }
 
-  async deleteItemByItemCode(itemCode: number): Promise<void> {
+  async deleteItemByItemCode(itemCode: string): Promise<void> {
     try {
       // לפני מחיקת הפריט, מחק את כל הקישורים שלו מטבלת הקישור של תגיות
       console.log(`Deleting all tags linked to item ${itemCode} from ${this.itemTagsTableName}`);
@@ -460,6 +523,55 @@ async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
       console.log(`Item with code ${itemCode}, its linked tags and promotions deleted successfully.`);
     } catch (error: any) {
       console.error(`Error in deleteItemByItemCode: ${error.message}`);
+      throw error;
+    }
+  }
+  async getItemsWithoutTags(): Promise<Item[]> {
+    try {
+      // שלוף את כל המוצרים
+      const { data: itemsData, error: itemsError } = await this.supabase
+        .from(this.tableName)
+        .select('*');
+
+      if (itemsError) {
+        console.error('Error fetching items:', itemsError);
+        throw new Error(`Failed to fetch items: ${itemsError.message}`);
+      }
+
+      if (!itemsData || itemsData.length === 0) {
+        return [];
+      }
+
+      // שלוף את כל הקשרים item_code <-> tag_id
+      const { data: itemTagsData, error: itemTagsError } = await this.supabase
+        .from(this.itemTagsTableName)
+        .select('item_code, tag_id');
+
+      if (itemTagsError) {
+        console.error('Error fetching item-tags relationships:', itemTagsError);
+        throw new Error(`Failed to fetch item-tags relationships: ${itemTagsError.message}`);
+      }
+
+      // צור סט של כל item_code שיש להם לפחות תג אחד
+      const itemsWithTagsSet = new Set<number>();
+      if (itemTagsData) {
+        for (const row of itemTagsData) {
+          itemsWithTagsSet.add(row.item_code);
+        }
+      }
+
+      // סנן מוצרים שאין להם תגיות בכלל
+      const itemsWithoutTags = itemsData
+        .filter(dbItem => !itemsWithTagsSet.has(dbItem.item_code))
+        .map(dbItem => {
+          const camelCaseItem = this.fromDbItem(dbItem) as Item;
+          camelCaseItem.tagsId = []; // תיוג ריק
+          return camelCaseItem;
+        });
+
+      return itemsWithoutTags;
+    } catch (error: any) {
+      console.error(`Error in getItemsWithoutTags: ${error.message}`);
       throw error;
     }
   }

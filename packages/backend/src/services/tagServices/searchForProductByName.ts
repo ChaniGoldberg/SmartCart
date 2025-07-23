@@ -1,16 +1,21 @@
-import ItemService from "../itemService";
+import "dotenv/config";
+import SearchService from "../searchService"; // עדכני נתיב אם צריך
 
-export async function SearchForProductByName(name: string) {
-  const itemService = new ItemService();
-    const allItems = await itemService.getAllItem();
-    let goodItems = []
-    for (const item of allItems) {
-        if (item.itemName.includes(name))
-            goodItems.push(item);
-        else 
-        if (item.manufacturerItemDescription.includes(name))
-            goodItems.push(item);
+(async () => {
+ 
+})();
+export default async function testSearchService() {
+    const searchService = new SearchService();
+
+    try {
+      const searchText = "גבינה"; // טקסט חיפוש לדוגמא
+      const results = await searchService.getItemsWithPrices(searchText);
+  
+      console.log(`Found ${results.length} items with prices for search text '${searchText}':`);
+      results.slice(0, 5).forEach(({ item, price }, index) => {
+        console.log(`#${index + 1}: ${item.itemName} - Price: ${price?.price || "No price"}`);
+      });
+    } catch (error) {
+      console.error("Error in search service test:", error);
     }
-    return goodItems;
 }
-

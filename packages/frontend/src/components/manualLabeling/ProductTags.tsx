@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Tag } from '@smartcart/shared/src/tag';
 
 interface TagFilterProps {
-    tags?: Tag[];
+
+    setSelectedTagsTypeTags: (tag:Tag[]) => void
+    tags: Tag[];
     onTagSelect?: (tagName: string) => void;
 }
 
 
-const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
+const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect ,setSelectedTagsTypeTags}) => {
     const [tagNames, setTagNames] = useState<string[]>([]);
     const [selectedTag, setSelectedTag] = useState<string>('הכל');
 
@@ -80,7 +82,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
             {tagNames.length === 0 && (
                 <div style={{
                     textAlign: 'center',
-                    color: '#6c757d',
+                    color: '#6C757D',
                     padding: '20px',
                     fontStyle: 'italic'
                 }}>
@@ -90,4 +92,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ tags = [], onTagSelect }) => {
         </div>
     );
 };
+
 export default TagFilter;
+
+
