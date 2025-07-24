@@ -18,6 +18,7 @@ import fuzzySearchRoutes from './routes/fuzzySearchRoutes';
 import cartRoutes from './routes/cartRoutes';
 import searchRouter from './routes/searchRoute';
 import promotionRoutes from './routes/promotionRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 import shareCart from './routes/shareCart';
 import searchAnotherRoute from './routes/searchAnotherRoute';
 
@@ -58,6 +59,8 @@ app.use('/api/searchAnotherProduct', searchAnotherRoute);
 app.use('/api/users', userRoutes)
 app.use("/api/fuzzySearch", fuzzySearchRoutes); 
 app.use("/api/cart",cartRoutes);
+app.use("/api/notification",notificationRoutes);
+
 app.use("/api", shareCart);
 
 setupSwagger(app);
