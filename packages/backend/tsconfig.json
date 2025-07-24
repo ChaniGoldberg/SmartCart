@@ -1,6 +1,4 @@
 {
-
-
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
@@ -18,12 +16,14 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "scripts/**/*", "jest.config.js"],
-  "exclude": ["node_modules", "dist"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "src/services/tests/**"
+  ],
   "ts-node": {
     "esm": false
   }
 }
-
-
-
-
