@@ -62,7 +62,6 @@ export function extractStoresFromXmlToStore(jsonData: any): Store[] {
     storePK: `${chainId}-${subChainId}-${store.StoreID}`,
     storeId: Number(store.StoreID ?? 0),
     chainId,
-    chainName,
     subChainId,
     subChainName,
     storeName: store.StoreName ?? "",
