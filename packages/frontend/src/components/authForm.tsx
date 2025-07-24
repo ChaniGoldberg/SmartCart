@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../store/redux/userContext';
 import GoogleLoginButton from './GoogleLoginButton';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthFormProps {
   onClose: () => void;
@@ -8,6 +9,7 @@ interface AuthFormProps {
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
   const { setUser } = useUser();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -94,6 +96,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
       localStorage.setItem('token', data.token);
 
       onClose();
+      navigate('/');
     } catch (error) {
       setGeneralError('שגיאה בחיבור לשרת');
     }
