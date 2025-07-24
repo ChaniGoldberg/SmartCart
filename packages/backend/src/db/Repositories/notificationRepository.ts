@@ -8,7 +8,7 @@ import { Notification } from "@smartcart/shared/src/notification";
 
 
 export class NotificationRepository implements INotificationRepository {
-  private readonly tableName = 'notifications';
+  private readonly tableName = 'notification';
 
   constructor(private supabase: SupabaseClient) { }
 
@@ -21,7 +21,7 @@ export class NotificationRepository implements INotificationRepository {
       is_active: notification.isActive,
       has_been_triggered: notification.hasBeenTriggered,
       notification_type: notification.notificationType,
-      created_at: notification.createdAt?.toISOString() || new Date().toISOString(),
+      createdat: notification.createdAt?.toISOString() || new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
   }
@@ -35,7 +35,7 @@ export class NotificationRepository implements INotificationRepository {
       isActive: dbNotification.is_active,
       hasBeenTriggered: dbNotification.has_been_triggered,
       notificationType: dbNotification.notification_type,
-      createdAt: new Date(dbNotification.created_at),
+      createdAt: new Date(dbNotification.createdat),
       updatedAt: new Date(dbNotification.updated_at),
     };
   }
@@ -44,7 +44,7 @@ export class NotificationRepository implements INotificationRepository {
   async addNotification(notification: Notification): Promise<Notification> {
     try {
       console.log(`Adding notification for product ${notification.productCode} to user ${notification.username}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
         .insert([this.toDbNotification(notification)])
@@ -72,7 +72,7 @@ export class NotificationRepository implements INotificationRepository {
   async getNotificationStatus(notificationId: number): Promise<{ isActive: boolean; hasBeenTriggered: boolean } | null> {
     try {
       console.log(`Checking status for notification ${notificationId}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('is_active, has_been_triggered')
@@ -102,16 +102,15 @@ export class NotificationRepository implements INotificationRepository {
   async toggleNotificationStatus(notificationId: number, isActive: boolean): Promise<boolean> {
     try {
       console.log(`${isActive ? 'Activating' : 'Deactivating'} notification ${notificationId}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
-        .update({ 
-          is_active: isActive,
+        .update({
+          is_active: !isActive,
           updated_at: new Date().toISOString()
         })
         .eq('notification_id', notificationId)
         .select('is_active');
-
       if (error) {
         console.error('Error toggling notification status:', error);
         throw new Error(`Failed to toggle notification status: ${error.message}`);
@@ -120,6 +119,7 @@ export class NotificationRepository implements INotificationRepository {
       if (!data || data.length === 0) {
         throw new Error('Notification not found or not updated.');
       }
+      console.log('Attempting to update', notificationId, isActive);
 
       console.log(`Notification ${notificationId} ${isActive ? 'activated' : 'deactivated'} successfully`);
       return data[0].is_active;
@@ -133,10 +133,10 @@ export class NotificationRepository implements INotificationRepository {
   async markNotificationAsTriggered(notificationId: number): Promise<boolean> {
     try {
       console.log(`Marking notification ${notificationId} as triggered`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
-        .update({ 
+        .update({
           has_been_triggered: true,
           updated_at: new Date().toISOString()
         })
@@ -164,10 +164,10 @@ export class NotificationRepository implements INotificationRepository {
   async getAllNotifications(): Promise<Notification[]> {
     try {
       console.log('Fetching all notifications');
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
-        .select('*')
+        .select(`*`)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -180,7 +180,17 @@ export class NotificationRepository implements INotificationRepository {
         return [];
       }
 
-      const notifications = data.map(dbNotification => this.fromDbNotification(dbNotification));
+      const notifications = data.map((dbNotification: any) => ({
+        notificationId: dbNotification.notificationid,
+        productCode: dbNotification.productcode,
+        username: dbNotification.username,
+        isActive: dbNotification.isactive,
+        hasBeenTriggered: dbNotification.hasbeentriggered,
+        notificationType: dbNotification.notificationtype,
+        createdAt: dbNotification.createdat ? new Date(dbNotification.createdat) : undefined,
+        updatedAt: dbNotification.updatedat ? new Date(dbNotification.updatedat) : undefined,
+      }));
+
       console.log(`Found ${notifications.length} notifications`);
       return notifications;
     } catch (error: any) {
@@ -193,11 +203,11 @@ export class NotificationRepository implements INotificationRepository {
   async getNotificationsByUsername(username: string): Promise<Notification[]> {
     try {
       console.log(`Fetching notifications for user: ${username}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('*')
-        .eq('username', username)
+        .eq('user_name', username)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -223,12 +233,12 @@ export class NotificationRepository implements INotificationRepository {
   async getNotificationsByProductCode(productCode: string): Promise<Notification[]> {
     try {
       console.log(`Fetching notifications for product: ${productCode}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('*')
         .eq('product_code', productCode)
-        .order('created_at', { ascending: false });
+        .order('createdat', { ascending: false });
 
       if (error) {
         console.error(`Error fetching notifications for product ${productCode}:`, error);
@@ -253,13 +263,13 @@ export class NotificationRepository implements INotificationRepository {
   async getActiveUntriggeredNotifications(): Promise<Notification[]> {
     try {
       console.log('Fetching active untriggered notifications');
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select('*')
         .eq('is_active', true)
         .eq('has_been_triggered', false)
-        .order('created_at', { ascending: false });
+        .order('createdat', { ascending: false });
 
       if (error) {
         console.error('Error fetching active untriggered notifications:', error);
@@ -284,7 +294,7 @@ export class NotificationRepository implements INotificationRepository {
   async deleteNotification(notificationId: number): Promise<void> {
     try {
       console.log(`Deleting notification ${notificationId}`);
-      
+
       const { error } = await this.supabase
         .from(this.tableName)
         .delete()
@@ -306,10 +316,10 @@ export class NotificationRepository implements INotificationRepository {
   async updateNotificationType(notificationId: number, notificationType: 'whatsapp' | 'email' | 'sms'): Promise<Notification | null> {
     try {
       console.log(`Updating notification ${notificationId} type to ${notificationType}`);
-      
+
       const { data, error } = await this.supabase
         .from(this.tableName)
-        .update({ 
+        .update({
           notification_type: notificationType,
           updated_at: new Date().toISOString()
         })

@@ -4,7 +4,7 @@ import { Store } from "@smartcart/shared/src/store";
 import { Price } from "@smartcart/shared/src/price";
 import { Item } from "@smartcart/shared/src/item";
 import {Tag} from "@smartcart/shared/src/tag"
-import { Alert } from "@smartcart/shared/src/alert";
+import { Notification } from "@smartcart/shared/src/notification";
 
 export interface IDB {
   User:User[],
@@ -15,5 +15,5 @@ export interface IDB {
   Tag: Tag[];
   Item_Tag:[];
   save(obj:any):void;
-  Alert: Alert[];
+  Notification: Notification[];
 }
