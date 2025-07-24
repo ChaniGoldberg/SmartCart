@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../store/redux/userContext';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 interface UserSidebarProps {
   isOpen: boolean;
@@ -19,19 +20,51 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
+  const [isSwalActive, setIsSwalActive] = useState(false);
+
   useEffect(() => {
     setName(user?.userName || '');
     setEmail(user?.email || '');
   }, [user]);
 
-  const handleLogout = () => {
-    const confirmed = window.confirm('האם את/ה בטוח/ה שברצונך להתנתק?');
-    if (confirmed) {
+  const handleLogout = async () => {
+    setIsSwalActive(true); 
+
+    const result = await Swal.fire({
+      title: 'האם את/ה בטוח/ה שברצונך להתנתק?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'כן, התנתק',
+      cancelButtonText: 'ביטול',
+      background: '#fff',
+      customClass: {
+        popup: 'text-right rtl',
+      }
+    });
+
+    setIsSwalActive(false);
+
+    if (result.isConfirmed) {
+      setIsSwalActive(true);  
+      await Swal.fire({
+        title: 'התנתקת בהצלחה',
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1500,
+        background: '#fff',
+        customClass: {
+          popup: 'text-right rtl',
+        },
+      });
+      setIsSwalActive(false);  
+
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       setUser(null);
       setToken(null);
-      navigate('/login');
+      navigate('/');
       onClose();
     }
   };
@@ -56,7 +89,6 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
       password: password || user?.password || '',
     };
 
-    // כאן תוכל להוסיף קריאה לשרת לעדכון פרופיל
     alert('הפרופיל עודכן בהצלחה!');
     setIsEditing(false);
     onClose();
@@ -68,13 +100,14 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-40"
           onClick={onClose}
+          style={{ display: isSwalActive ? 'none' : 'block' }}  
         />
       )}
 
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        } flex flex-col`}
+        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          } flex flex-col`}
+        style={{ pointerEvents: isSwalActive ? 'none' : 'auto' }} 
       >
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-bold text-teal-700">
