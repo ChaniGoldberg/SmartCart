@@ -19,6 +19,7 @@ import cartRoutes from './routes/cartRoutes';
 import searchRouter from './routes/searchRoute';
 import promotionRoutes from './routes/promotionRoutes';
 import shareCart from './routes/shareCart';
+import searchAnotherRoute from './routes/searchAnotherRoute';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -53,6 +54,7 @@ app.use("/api/search", searchItemsRoutes);
 app.use("/api/tag", tagRoutes); 
 app.use('/api/search', searchStoreRoutes);
 app.use('/api/searchProduct', searchRouter);
+app.use('/api/searchAnotherProduct', searchAnotherRoute);
 app.use('/api/users', userRoutes)
 app.use("/api/fuzzySearch", fuzzySearchRoutes); 
 app.use("/api/cart",cartRoutes);
