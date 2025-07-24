@@ -32,7 +32,6 @@ export const searchApiService = {
   getSearchProduct: async (itemTxt: string, storePK: string): Promise<ProductDTO[]> => {
     const response = await apiClient.get(`/searchProduct/${itemTxt}/${storePK}`);
    //const response1 = await apiClient.get<ProductDTOResponse>(`/searchProduct/${itemTxt}/${storePK}`);
-   console.log("response", response); 
    if (response.status == 200) {
       return response.data || [];
     }
