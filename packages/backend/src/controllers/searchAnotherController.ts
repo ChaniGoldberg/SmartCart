@@ -33,7 +33,7 @@ console.log("searchPriceForStoresByItemTxtAndStorePKs called with itemTxt:", ite
         try {
             const itemPrices = await itemPriceService.getItemsWithPrices(itemTxt);
             const filteredPrices = itemPrices.filter(itemPrice =>
-                storePKs.includes(itemPrice.price?.store_pk) // Check if the price's store_pk is in the list of storePKs
+                storePKs.includes(itemPrice.price?.storePK) // Check if the price's store_pk is in the list of storePKs
             );
             const Products: ProductDTO[] = filteredPrices.map(itemPrice => parseToProductDTO(itemPrice.item, itemPrice.price));
             res.json(Products);

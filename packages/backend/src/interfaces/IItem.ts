@@ -1,4 +1,4 @@
-import { Item } from "@smartcart/shared"
+import { Item } from "@smartcart/shared/src/item"
 
 export interface IItem {
 
