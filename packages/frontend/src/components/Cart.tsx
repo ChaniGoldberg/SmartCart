@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { cartContext } from '../store/redux/cartRedux';
 import ProductDetails from './ProductDetails';
 import '../index.css';
 import '../App.css';
 import CheapProductAlternatives from './AlternativeItemsList';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, X } from 'lucide-react';
+import ShareCartPopup from './ShareCartPopup'; // חדש
 const Cart: React.FC = () => {
   const context = useContext(cartContext);
+    const [showPopup, setShowPopup] = useState(false);
   if (!context) {
     throw new Error("Cart must be used within a CartProvider");
   }
@@ -33,6 +35,14 @@ const Cart: React.FC = () => {
           </div>
         )}
       </main>
+       <button
+        onClick={() => setShowPopup(true)}
+  className="mt-10 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded"
+      >
+        שתף סל במייל
+      </button>
+
+      {showPopup && <ShareCartPopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };
