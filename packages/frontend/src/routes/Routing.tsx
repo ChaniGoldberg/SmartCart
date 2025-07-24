@@ -15,7 +15,6 @@ export const routes = [
      { path: "/login", element: <AuthForm onClose={() => {}}/>, label: "התחברות" },
     //  { path: "/login", element: <Login />, label: "התחברות" },
      { path: "/cart", element: <Cart />, label: "סל" },
-    { path: "/search", element: <ProductSearchComponent />, label: "סל" },
     {path:"/profile",element:<UserEditComponent></UserEditComponent>,label:"פרופיל"}
 ];
 

@@ -45,7 +45,6 @@ const Header: React.FC = () => {
           <nav className="flex gap-6 text-sm font-medium">
             <Link to="/" className="hover:underline">דף הבית</Link>
             <Link to="/map" className="hover:underline">מפה</Link>
-            <Link to="/search" className="hover:underline">חיפוש מוצרים</Link>
 
             {user ? (
               <button
