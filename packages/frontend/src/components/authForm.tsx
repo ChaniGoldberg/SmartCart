@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../store/redux/authSlice';
+import { useUser } from '../store/redux/userContext';
+import GoogleLoginButton from './GoogleLoginButton';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthFormProps {
   onClose: () => void;
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
-  const dispatch = useDispatch();
+  const { setUser } = useUser();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -88,14 +90,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         return;
       }
 
+      // שמירה בקונטקסט + ב-localStorage
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
 
-      dispatch(loginSuccess(data.token));
       onClose();
+      navigate('/');
     } catch (error) {
       setGeneralError('שגיאה בחיבור לשרת');
     }
   };
-
 
   return (
     <div style={{
@@ -117,14 +122,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         {isLogin ? 'התחברות' : 'הרשמה'}
       </h2>
 
-      {/* שגיאה כללית כמו "משתמש כבר קיים" */}
       {generalError && (
         <div className="text-red-600 text-center font-medium mb-4">
           {generalError}
         </div>
       )}
 
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div >
+          <GoogleLoginButton></GoogleLoginButton>
+        </div>
         {!isLogin && (
           <>
             <input

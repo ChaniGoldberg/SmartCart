@@ -199,4 +199,28 @@ export class PriceRepository implements IPriceRepository {
             throw error;
         }
     }
+    async getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .select('*')
+                .eq('store_pk', storePK)
+                .eq('item_id', itemId)
+                .single();
+    
+            if (error) {
+                if (error.code === 'PGRST116') { // Not found
+                    return null;
+                }
+                console.error('Error fetching price by storePK and itemId:', error);
+                throw new Error(`Failed to fetch price: ${error.message}`);
+            }
+    
+            return data;
+        } catch (error: any) {
+            console.error(`Error in getPriceByStorePKItemID: ${error.message}`);
+            throw error;
+        }
+    }
+    
 }

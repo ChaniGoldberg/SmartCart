@@ -14,15 +14,15 @@ export class searchService implements ISearchService {
         this.priceRepository = new PriceRepository(supabase);
         this.priceService = new PriceService(this.priceRepository);
     }
-    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: Price | null }[]> {
+
+    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: any | null }[]> {
         try {
             const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
-            console.log("items", items);
-         
             const prices = await this.priceService.getAllPrices();
-            console.log("prices", prices);
+
+
             return items.map(item => {
-                const price = prices.find(price => price.itemCode === item.itemCode && item.itemStatus === true);
+                const price = prices.find(price => price.item_code === item.itemCode )//&& item.itemStatus === true);את זה צריך להוריד מירוק אחרי שיכניסו לדטה בייס מוצרים פעילים
                 return {
                     item,
                     price: price || null,
@@ -34,4 +34,5 @@ export class searchService implements ISearchService {
         }
     }
 }
+
 export default searchService;

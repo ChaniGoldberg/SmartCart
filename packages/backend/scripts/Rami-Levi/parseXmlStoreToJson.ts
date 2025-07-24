@@ -48,7 +48,7 @@ export async function readAndParseXmlFile(xmlFilePath: string): Promise<any> {
 export function extractStoresFromXmlToStore(jsonData: any): Store[] {
   console.log("in the 3 function!!!!!!!!!!!!!!!");
 
-  const chainId = Number(jsonData?.ChainID ?? 0);
+  const chainId = jsonData?.ChainID ?? "";
   const chainName = jsonData?.ChainName ?? "";
 
   const subChain = jsonData?.SubChains?.SubChain;
