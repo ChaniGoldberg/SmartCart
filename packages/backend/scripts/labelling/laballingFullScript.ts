@@ -17,17 +17,15 @@ const itemRepository = new ItemRepository(supabase);
 
 export async function labelItemsWithAI() {
     try {
-        const allItems: Item[] = await itemRepository.getItemsWithoutTags();
-        const items = allItems.slice(580, 590);
-        const productNames = items.map(p => p.itemName);//למחוק
+        const items: Item[] = await itemRepository.getItemsWithoutTags();
+        const productNames = items.map(p => p.itemName);
 
         if (!items || items.length === 0) {
-            logToFile("אין מוצרים ללא תיוגים לעיבוד.🩵🩵🩵🩵");
-            return;
+            logToFile("אין מוצרים ללא תיוגים לעיבוד.");
+            return
         }
 
-        logToFile(`items fetched: ${items.length} items 🩵🩵🩵🩵`);
-        logToFile(`items fetched: ${items.map(t => t.itemName).join(", ")} 🩵🩵🩵🩵`);
+        logToFile(`items fetched: ${items.length} items `);
 
         const tags: Tag[] | null = await tagRepository.getAllTags();
         if (!tags) {
@@ -72,38 +70,29 @@ To encourage creation of new tags:
 ---
 
 `;
-        // Split items into batches of 100
-        // for (let i = 0; i < items.length; i += 100) {
-        //     const batch = items.slice(i, i + 100);
-        //     const productNames = batch.map(p => p.itemName);
+        //Split items into batches of 100
+        for (let i = 0; i < items.length; i += 100) {
+            const batch = items.slice(i, i + 100);
+            const productNames = batch.map(p => p.itemName);
 
-        //     logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items 🩵🩵🩵🩵`);
+            logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items`);
 
         try {
-              const result: string = await tagProductsByGPT(productNames, tagNames, instructions) //למחוק
-            await parseAndSaveTagsFromResponse(result);//.למחוק
-            // const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
-            // logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
-            // logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
+            const result: string = await tagProductsByGPT(productNames, tagNames, instructions)
 
-            // await parseAndSaveTagsFromResponse(result);
-            logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
+            await parseAndSaveTagsFromResponse(result);
 
-            console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-            logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-            //  logToFile(`תוצאה סופית:\n${result}`);
         } catch (error: any) {
             console.error("❌ שגיאה בתהליך התיוג:", error);
-            logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
+            logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} `);
             throw error;
         }
-        // }
+         }
+        await autoTagNewTags();
     } catch (error: any) {
         console.error("❌ שגיאה בתהליך התיוג:", error);
-        logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
+        logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} `);
         throw error;
     }
-    //   logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
-    //await autoTagNewTags();
-    //  logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
+  
 }
