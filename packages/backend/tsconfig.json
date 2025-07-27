@@ -50,7 +50,12 @@
     "sourceMap": true,
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "scripts/**/*", "jest.config.js","../../shared/src"],
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "jest.config.js",
+    "../../shared/src" // ✅ הוספנו את זה
+  ],
   "exclude": [
     "node_modules",
     "dist",
