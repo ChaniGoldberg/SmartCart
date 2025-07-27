@@ -52,10 +52,13 @@
     "composite": true
   },
   "include": [
-    "src/**/*",
-    "scripts/**/*",
-    "jest.config.js"
-  ],
+  "src/**/*",
+  "scripts/**/*",
+  "jest.config.js",
+  "utils/**/*",
+  "mockData/**/*",
+  "../../shared/src"
+],
   "exclude": [
     "node_modules",
     "dist",
