@@ -8,17 +8,6 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = () => {
-    const confirmed = window.confirm('האם את/ה בטוח/ה שברצונך להתנתק?');
-    if (confirmed) {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      setUser(null);
-      setToken(null);
-      navigate('/login');
-    }
-  };
-
   const getInitial = (name: string) => {
     return name?.charAt(0).toUpperCase();
   };
@@ -64,13 +53,6 @@ const Header: React.FC = () => {
                   {getInitial(user?.userName || user?.email || '?')}
                 </button>
 
-                {/* כפתור התנתקות */}
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white text-sm font-semibold"
-                >
-                  התנתק
-                </button>
               </>
             ) : (
               <Link to="/login" className="hover:underline text-white text-sm font-semibold">
