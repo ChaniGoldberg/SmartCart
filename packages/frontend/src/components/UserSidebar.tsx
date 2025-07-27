@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../store/redux/userContext';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+//import Swal from 'sweetalert2';
 
 interface UserSidebarProps {
   isOpen: boolean;

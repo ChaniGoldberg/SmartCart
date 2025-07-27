@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../store/redux/userContext';
 import GoogleLoginButton from './GoogleLoginButton';
 import { useNavigate } from 'react-router-dom';
@@ -7,25 +7,48 @@ interface AuthFormProps {
   onClose: () => void;
 }
 
+interface Store {
+  storePK: number;
+  storeName: string;
+}
+
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
   const { setUser } = useUser();
   const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
+  const [selectedStorePK, setSelectedStorePK] = useState<number | null>(null);
+  const [stores, setStores] = useState<Store[]>([]);
+
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; userName?: string }>({});
   const [generalError, setGeneralError] = useState('');
 
   const baseUrl = 'http://localhost:3001/api/users';
 
+  useEffect(() => {
+    fetch('http://localhost:3001/api/stores')
+      .then(res => res.json())
+      .then(data => setStores(data))
+      .catch((err) => console.error('שגיאה בטעינת רשימת החנויות', err));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = isLogin ? '/login' : '/register';
-    const body = isLogin ? { email, password } : { userName, email, password };
-
     setGeneralError('');
     setFieldErrors({});
+
+    if (!isLogin && !selectedStorePK) {
+      setGeneralError('יש לבחור חנות');
+      return;
+    }
+
+    const url = isLogin ? '/login' : '/register';
+    const body = isLogin
+      ? { email, password }
+      : { userName, email, password, preferred_store: selectedStorePK };
 
     try {
       const res = await fetch(`${baseUrl}${url}`, {
@@ -55,7 +78,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         return;
       }
 
-      // שמירה בקונטקסט + ב-localStorage
       setUser(data.user);
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('token', data.token);
@@ -93,11 +115,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         </div>
       )}
 
-
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div >
-          <GoogleLoginButton></GoogleLoginButton>
-        </div>
+        <GoogleLoginButton />
+
         {!isLogin && (
           <>
             <input
@@ -109,10 +129,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
               required
             />
             {fieldErrors.userName && (
-              <div className="text-red-500 text-sm transition-all duration-300 animate-pulse">
-                {fieldErrors.userName}
-              </div>
+              <div className="text-red-500 text-sm animate-pulse">{fieldErrors.userName}</div>
             )}
+
+            <select
+              value={selectedStorePK ?? ''}
+              onChange={(e) => setSelectedStorePK(Number(e.target.value))}
+              className="p-3 rounded-md border border-gray-300 text-base"
+              required
+            >
+              <option value="" disabled>בחר חנות</option>
+              {stores.map(store => (
+                <option key={store.storePK} value={store.storePK}>
+                  {store.storeName}
+                </option>
+              ))}
+            </select>
           </>
         )}
 
@@ -125,9 +157,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
           required
         />
         {fieldErrors.email && (
-          <div className="text-red-500 text-sm transition-all duration-300 animate-pulse">
-            {fieldErrors.email}
-          </div>
+          <div className="text-red-500 text-sm animate-pulse">{fieldErrors.email}</div>
         )}
 
         <input
@@ -139,9 +169,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
           required
         />
         {fieldErrors.password && (
-          <div className="text-red-500 text-sm">
-            {fieldErrors.password}
-          </div>
+          <div className="text-red-500 text-sm">{fieldErrors.password}</div>
         )}
 
         <button
@@ -219,10 +247,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
           </>
         )}
       </div>
-
     </div>
   );
 };
-
 
 export default AuthForm;
