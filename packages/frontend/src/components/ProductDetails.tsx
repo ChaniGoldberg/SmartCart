@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
+import { ProductDTO } from "@smartcart/shared";
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { cartContext } from '../store/redux/cartRedux';
 import ItemCard from './ItemCard';

@@ -10,3 +10,5 @@ export * from './user';
 export * from './volume';
 export * from './weight';
 export * from './dto/index'
+export type { Item as Item } from './item';
+export type { Item as ItemFromTypes } from './types';

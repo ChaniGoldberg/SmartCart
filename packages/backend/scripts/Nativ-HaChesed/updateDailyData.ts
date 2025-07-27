@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 import { Store } from '@smartcart/shared/src/store';
 import cron from 'node-cron';
 import * as cheerio from 'cheerio';

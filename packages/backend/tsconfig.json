@@ -1,10 +1,44 @@
+
+// {
+//   "compilerOptions": {
+//     "target": "ES2020",
+//     "module": "commonjs",
+//     "lib": ["ES2020", "DOM"],
+//     "outDir": "./dist",
+//     "rootDir": "../../",
+//     "strict": true,
+//     "esModuleInterop": true,
+//     "allowSyntheticDefaultImports": true,
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "resolveJsonModule": true,
+//     "declaration": true,
+//     "declarationMap": true,
+//     "sourceMap": true
+//   },
+//   "include": ["src/**/*", "scripts/**/*", "jest.config.js"],
+//   "exclude": [
+//     "node_modules",
+//     "dist",
+//     "**/*.spec.ts",
+//     "**/*.test.ts",
+//     "src/services/tests/**"
+//   ],
+//   "ts-node": {
+//     "esm": false
+//   }
+// }P
+
+
+
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020", "DOM"],
     "outDir": "./dist",
-    "rootDir": "../../",
+    "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

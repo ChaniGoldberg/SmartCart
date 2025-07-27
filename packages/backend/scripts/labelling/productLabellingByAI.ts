@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { OpenAI } from "openai";
-import { Tag } from "@smartcart/shared/src/tag";
-import { Item } from "@smartcart/shared/src/item";
+import { Tag } from "@smartcart/shared";
+import { Item } from "@smartcart/shared";
 import { logToFile } from "./logger";
 import fetch from 'node-fetch';
 import { log } from "console";

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { itemService } from "../injection.config";
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 
 export const deleteTagFromItem = async (req: Request, res: Response) => {
     try {

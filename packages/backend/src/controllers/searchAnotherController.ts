@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Item } from "@smartcart/shared/src/item";
-import { Price } from "@smartcart/shared/src/price";
+import { Item } from "@smartcart/shared";
+import { Price } from "@smartcart/shared";
 import searchService from "../services/searchService";
-import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
+import { ProductDTO } from "@smartcart/shared";
 
 export const parseToProductDTO = (item: Item, price: any | null) => {
     return {

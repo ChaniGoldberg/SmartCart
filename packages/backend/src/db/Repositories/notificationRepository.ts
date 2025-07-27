@@ -4,7 +4,7 @@
 // src/repositories/notificationRepository.ts
 import { SupabaseClient } from "@supabase/supabase-js";
 import { INotificationRepository } from "../IRepositories/INotificationRepository";
-import { Notification } from "@smartcart/shared/src/notification";
+import { Notification } from "@smartcart/shared";
 
 
 export class NotificationRepository implements INotificationRepository {

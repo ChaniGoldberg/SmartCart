@@ -2,7 +2,7 @@
 // src/controllers/notificationController.ts
 import { Request, Response } from 'express';
 import notificationService from '../services/notificationsService';
-import { Notification } from "@smartcart/shared/src/notification";
+import { Notification } from "@smartcart/shared";
 
 export class NotificationController {
 

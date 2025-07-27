@@ -1,11 +1,11 @@
-import { Price } from "@smartcart/shared/src/price"
+import { Price } from "@smartcart/shared"
 import { db } from "../db/dbProvider";
-import { Promotion } from "@smartcart/shared/src/promotion";
-import { Item } from "@smartcart/shared/src/item";
+import { Promotion } from "@smartcart/shared";
+import { Item } from "@smartcart/shared";
 import { PriceRepository } from "../db/Repositories/priceRepository";
 import { PromotionRepository } from "../db/Repositories/promotionRepository";
 import { supabase } from "./supabase";
-import { ProductCartDTO } from "@smartcart/shared/src";
+import { ProductCartDTO } from "@smartcart/shared";
 
 
 

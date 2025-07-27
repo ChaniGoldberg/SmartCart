@@ -1,4 +1,4 @@
-import { Store } from "@smartcart/shared/src/store";
+import { Store } from "@smartcart/shared";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs/promises";
 import * as iconv from "iconv-lite";

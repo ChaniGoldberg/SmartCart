@@ -1,8 +1,8 @@
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 import { ItemRepository } from "@smartcart/backend/src/db/Repositories/itemRepository";
 import { PriceRepository } from "@smartcart/backend/src/db/Repositories/priceRepository";
 import PriceService from "./priceService";
-import { Price } from "@smartcart/shared/src/price";
+import { Price } from "@smartcart/shared";
 import { ISearchService } from "../interfaces/ISearchService";
 import { supabase } from "./supabase";
 export class searchService implements ISearchService {

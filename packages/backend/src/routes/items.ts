@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { Item, ItemsResponse, ItemResponse } from '@smartcart/shared';
+import { ItemFromTypes, ItemsResponse, ItemResponse } from '@smartcart/shared';
 import { databaseService } from '../services/database';
 import { deleteTagFromItem } from '../controllers/itemController';
 const router = Router();
 
 // Fallback mock data (used if database is not available)
-const mockItems: Item[] = [
+const mockItems: ItemFromTypes[] = [
   {
     id: '1',
     name: 'Laptop',
@@ -38,7 +38,7 @@ router.post('/delete-tag-from-item', deleteTagFromItem);
 // GET /api/items - Get all items
 router.get('/', async (req, res) => {
   try {
-    let items: Item[];
+    let items: ItemFromTypes[];
     
     if (useDatabase) {
       items = await databaseService.getAllItems();
@@ -103,7 +103,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    let item: Item | null = null;
+    let item: ItemFromTypes | null = null;
     
     if (useDatabase) {
       item = await databaseService.getItemById(id);
