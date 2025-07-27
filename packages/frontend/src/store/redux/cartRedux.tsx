@@ -1,5 +1,4 @@
-import { ProductCartDTO } from "@smartcart/shared/src/dto/ProductCart.dto";
-import { Price } from "@smartcart/shared/src/price";
+import { ProductCartDTO } from "@smartcart/shared";
 import React, { Dispatch, SetStateAction } from 'react';
 export type CartContextType = {
   cartItems: ProductCartDTO[];

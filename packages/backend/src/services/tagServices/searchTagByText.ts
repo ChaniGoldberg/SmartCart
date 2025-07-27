@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { Tag } from "@smartcart/shared/src/tag";
+import { Tag } from "@smartcart/shared";
 import { tagService } from "../../injection.config";
 import { TagRepository } from "../../db/Repositories/tagRepository";
 import { supabase } from "../supabase";

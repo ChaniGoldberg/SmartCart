@@ -1,6 +1,6 @@
 import { parseXmlToJson } from "../parseXmlToJson";
 import { cleanJsonObjects } from "../parseXmlToJson";
-import { Chain } from "@smartcart/shared/src/stores";
+import { Chain } from "@smartcart/shared";
 describe('parseXmlToJson', () => {
   it('should parse valid XML into cleaned JSON', async () => {
     const xml = `

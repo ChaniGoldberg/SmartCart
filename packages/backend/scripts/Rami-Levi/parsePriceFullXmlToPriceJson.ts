@@ -1,6 +1,6 @@
 import * as fs from "fs/promises";
 import { parseStringPromise } from "xml2js";
-import { Price } from "@smartcart/shared/src/price";
+import { Price } from "@smartcart/shared";
 export async function parsePriceFullXmlToPriceJson(xmlFilePath: string): Promise<Price[]> {
     try {
         // Read the XML file as a string

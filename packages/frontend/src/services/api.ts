@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Item, ItemsResponse, ItemResponse } from '@smartcart/shared';
+import { ItemFromTypes, ItemsResponse, ItemResponse } from '@smartcart/shared';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -28,7 +28,7 @@ export const apiService = {
   },
 
   // Get all items
-  getItems: async (): Promise<Item[]> => {
+  getItems: async (): Promise<ItemFromTypes[]> => {
     const response = await apiClient.get<ItemsResponse>('/items');
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -37,7 +37,7 @@ export const apiService = {
   },
 
   // Get specific item
-  getItem: async (id: string): Promise<Item> => {
+  getItem: async (id: string): Promise<ItemFromTypes> => {
     const response = await apiClient.get<ItemResponse>(`/items/${id}`);
     if (response.data.success && response.data.data) {
       return response.data.data;

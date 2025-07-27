@@ -1,4 +1,4 @@
-import { Price } from "@smartcart/shared/src/price";
+import { Price } from "@smartcart/shared";
 import { IPrice } from "../interfaces/IPrice";
 import { IPriceRepository } from "../db/IRepositories/IPriceRepository";
 

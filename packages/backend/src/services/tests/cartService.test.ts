@@ -1,6 +1,6 @@
 import { getRelevantPromotionsForCart } from "../cartService";
-import { Promotion } from "@smartcart/shared/src/promotion";
-import { Price } from "@smartcart/shared/src/price";
+import { Promotion } from "@smartcart/shared";
+import { Price } from "@smartcart/shared";
 import { shoppingCartTotalSummary } from '../cartService';
 import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
 

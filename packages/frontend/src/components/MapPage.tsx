@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { useUserLocation } from '../hooks/useUserLocation';
 import { getChainIcon } from '../utils/mapConfig';
 import { Promotions } from '../components/promotions';
-import { StoreLocationDto } from "@smartcart/shared/src/dto/StoreLocation.dto";
+import { StoreLocationDto } from "@smartcart/shared";
 
 export default function MapPage() {
   const [supermarkets, setSupermarkets] = useState<StoreLocationDto[]>([]);

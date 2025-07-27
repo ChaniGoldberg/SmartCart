@@ -1,4 +1,4 @@
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 import { ItemRepository } from "../db/Repositories/itemRepository";
 import { supabase } from "./supabase";
 export class ItemService {

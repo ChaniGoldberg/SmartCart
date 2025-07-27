@@ -1,10 +1,10 @@
 import React from 'react';
-import { Item } from '@smartcart/shared';
+import { ItemFromTypes } from '@smartcart/shared';
 import AlternativeItemsList from './AlternativeItemsList';
 
 interface ItemCardProps {
-  item: Item;
-  onClick?: (item: Item) => void;
+  item: ItemFromTypes;
+  onClick?: (item: ItemFromTypes) => void;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({ item, onClick }) => {

@@ -1,4 +1,4 @@
-// import { Category } from "@smartcart/shared/src/"
+// import { Category } from "@smartcart/shared"
 
 // export interface ICategory {
 

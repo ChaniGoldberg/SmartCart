@@ -1,4 +1,4 @@
-// import { User } from "@smartcart/shared/src/user";
+// import { User } from "@smartcart/shared";
 // import { ReactNode, useState } from "react";
 // import { UserContext } from "./userContext";
 

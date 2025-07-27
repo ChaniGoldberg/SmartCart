@@ -1,6 +1,6 @@
 import { useUserLocation } from "frontend/src/hooks/useUserLocation";
 import { getValidStores } from "../src/services/storeService";
-import { StoreLocationDto } from "@smartcart/shared/src";
+import { StoreLocationDto } from "@smartcart/shared";
 
 interface Location {
     latitude: number | null;

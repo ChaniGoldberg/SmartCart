@@ -1,7 +1,7 @@
 import { PromotionRepository } from "../db/Repositories/promotionRepository";
 import { IPromotions } from "../interfaces/Ipromotions";
 import { supabase } from "../services/supabase"; // נשאר כמו שהוא
-import { Promotion } from "@smartcart/shared/src/promotion";
+import { Promotion } from "@smartcart/shared";
 
 export type PromotionSummary = Pick<Promotion, 'promotionId' | 'promotionDescription' | 'isActive' | 'requiresCoupon'>;
 

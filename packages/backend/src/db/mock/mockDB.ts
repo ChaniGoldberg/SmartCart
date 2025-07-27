@@ -8,12 +8,12 @@ import pricejson from "@smartcart/backend/mockData/prices.json"
 import tagjson from "@smartcart/backend/mockData/tags.json"
 
 
-import { User } from "@smartcart/shared/src/user";
-import { Promotion } from "@smartcart/shared/src/promotion";
-import { Store } from "@smartcart/shared/src/store";
-import { Price } from "@smartcart/shared/src/price";
-import { Tag } from "@smartcart/shared/src/tag";
-import { Item } from "@smartcart/shared/src/item";
+import { User } from "@smartcart/shared";
+import { Promotion } from "@smartcart/shared";
+import { Store } from "@smartcart/shared";
+import { Price } from "@smartcart/shared";
+import { Tag } from "@smartcart/shared";
+import { Item } from "@smartcart/shared";
 export const mockDb: IDB = {
     User:userjson as any as User [],
     Promotion: promotionjson as any as Promotion[],

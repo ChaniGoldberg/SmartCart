@@ -5,7 +5,7 @@ import { searchApiService } from '../services/searchApi';
 import { Check } from 'lucide-react';
 import { useUser } from '../store/redux/userContext';
 import { cartContext } from '../store/redux/cartRedux';
-import { ProductCartDTO } from "@smartcart/shared/src/dto/ProductCart.dto";
+import { ProductCartDTO } from "@smartcart/shared";
 
 const ProductSearchComponent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
