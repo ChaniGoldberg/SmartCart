@@ -154,6 +154,10 @@ export default function AlertsList() {
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h2 className="text-xl font-bold">{alert.productCode}</h2>
+                  {/* 🟢 מיני-כותרת חדשה עם שם המשתמש */}
+                  <p className="text-md font-medium text-teal-800">
+                    הי {user?.userName}, המבצע מחכה לך
+                  </p>
                   <p className="text-sm text-gray-600">{alert.username}</p>
                   <p className="text-sm font-semibold">{alert.notificationType}</p>
                 </div>

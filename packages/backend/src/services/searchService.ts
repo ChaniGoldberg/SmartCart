@@ -15,7 +15,7 @@ export class searchService implements ISearchService {
         this.priceService = new PriceService(this.priceRepository);
     }
 
-    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: any | null }[]> {
+    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price:Price | null }[]> {
         try {
             const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
             const prices = await this.priceService.getAllPrices();

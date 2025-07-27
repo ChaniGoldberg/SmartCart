@@ -1,5 +1,5 @@
 export interface Price {
-  priceId: number;  //pk           // מזהה ייחודי למחיר
+  priceId?: number;  //pk           // מזהה ייחודי למחיר
   storePK: string;  //fk   
   itemId: number; 
   itemCode:string//fk

@@ -4,7 +4,7 @@ import { getPriceByStorePKItemID, getProductwithPomotionPrice, getRelevantPromot
 import { promotionsService } from "../services/promotionServices";
 import { shoppingCartTotalSummary } from "../services/cartService";
 import { CartDTO, ProductCartDTO, ProductDTO } from "@smartcart/shared";
-import { Price } from "@smartcart/shared";
+import { Price } from "@smartcart/shared/src";
 import { findStoresWithinRadius } from "../../utils/findStoresWithinRadius";
 
 
