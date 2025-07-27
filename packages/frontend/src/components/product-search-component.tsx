@@ -5,6 +5,7 @@ import { searchApiService } from '../services/searchApi';
 import { Check } from 'lucide-react';
 import { useUser } from '../store/redux/userContext';
 import { cartContext } from '../store/redux/cartRedux';
+import { log } from 'console';
 import { ProductCartDTO } from "@smartcart/shared";
 
 const ProductSearchComponent: React.FC = () => {
@@ -21,11 +22,13 @@ const ProductSearchComponent: React.FC = () => {
   const handleAddToCart = (item: ProductCartDTO, quantity: number) => {
     addToCart(item, quantity);
   };
-  //לאחר שיעשו התחברות ושמירה של המשתמש, יש להפעיל את השורות הבאות
-  //const { user } = useUser();
-  //const storePK = user?.storePk||""
 
-  const storePK = "7290058140886-1-001";
+  const { user } = useUser();
+    let storePK = user?.preferred_store||"";
+    //חנות דפולטיבית
+    if(user?.preferred_store==undefined){
+      storePK = "7290058140886-1-001"; // חנות דפולטיבית אם לא נבחרה חנות מועדפת
+    }
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
       setError('אנא הזן מונח חיפוש');

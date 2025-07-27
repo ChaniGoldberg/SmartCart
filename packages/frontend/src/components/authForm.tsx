@@ -36,57 +36,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        console.log("🔥 error message from server:", data);
+      if (data.error) {
+        const lowerError = data.error.toLowerCase();
 
-        let errorMessage = '';
-
-        if (typeof data.error === 'string') {
-          errorMessage = data.error;
-        } else if (data?.error?.message) {
-          errorMessage = data.error.message;
-        } else if (data?.message) {
-          errorMessage = data.message;
+        if (url === '/login') {
+          setFieldErrors({ password: data.error });
         } else {
-          errorMessage = 'שגיאה לא ידועה';
+          if (lowerError.includes('email') || lowerError.includes('אימייל')) {
+            setFieldErrors(prev => ({ ...prev, email: data.error }));
+          } else if (lowerError.includes('password') || lowerError.includes('סיסמה')) {
+            setFieldErrors(prev => ({ ...prev, password: data.error }));
+          } else if (lowerError.includes('username') || lowerError.includes('משתמש')) {
+            setFieldErrors(prev => ({ ...prev, userName: data.error }));
+          } else {
+            setGeneralError(data.error);
+          }
         }
-
-        const lowerError = errorMessage.toLowerCase();
-
-        if (isLogin && (lowerError.includes('user not found') || lowerError.includes('invalid password'))) {
-          setFieldErrors({ password: 'דוא"ל או סיסמה שגויים' });
-          return;
-        }
-
-        if (
-          lowerError.includes('email') ||
-          lowerError.includes('אימייל') ||
-          lowerError.includes('דוא') ||
-          lowerError.includes('@') ||
-          lowerError.includes('must include') ||
-          lowerError.includes('אחרי')
-        ) {
-          setFieldErrors(prev => ({ ...prev, email: 'אימייל לא תקין' }));
-          return;
-        }
-
-        if (lowerError.includes('password') || lowerError.includes('סיסמה')) {
-          setFieldErrors(prev => ({ ...prev, password: 'הסיסמה לא תקינה' }));
-          return;
-        }
-
-        if (lowerError.includes('username') || lowerError.includes('משתמש')) {
-          setFieldErrors(prev => ({ ...prev, userName: 'יש להזין שם משתמש' }));
-          return;
-        }
-
-        if (lowerError.includes('already exists') || lowerError.includes('כבר קיים')) {
-          setGeneralError('משתמש עם כתובת הדוא"ל הזאת כבר קיים');
-          return;
-        }
-
-        // כל שגיאה שלא זוהתה
-        setGeneralError('אירעה שגיאה. נסו שוב');
         return;
       }
 
@@ -258,5 +223,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
     </div>
   );
 };
+
 
 export default AuthForm;

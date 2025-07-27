@@ -400,6 +400,43 @@ if (error) {
       throw error;
     }
   }
+  async upsertManyItems(items: Item[]): Promise<Item[]> {
+  if (!items.length) return [];
+
+  try {
+    console.log(`UPSERT ${items.length} items to Supabase`);
+    const dbItems = items.map(({ tagsId, ...rest }) => this.toDbItem(rest));
+
+    const { data, error } = await this.supabase
+      .from(this.tableName)
+      .upsert(dbItems, { onConflict: 'item_code' })
+      .select('*');
+
+    if (error) {
+      console.error('Error upserting items:', error);
+      throw new Error(`Failed to upsert items: ${error.message}`);
+    }
+
+    // מוסיפים את ה־tagsId מחדש
+    const upsertedItems: Item[] = [];
+    for (const dbItem of data || []) {
+      const camelCaseItem = this.fromDbItem(dbItem) as Item;
+      const originalItem = items.find(i => i.itemCode === camelCaseItem.itemCode);
+      camelCaseItem.tagsId = originalItem?.tagsId ?? [];
+      if (camelCaseItem.tagsId.length > 0) {
+        await this.setTagsForItem(camelCaseItem.itemCode, camelCaseItem.tagsId);
+      }
+      upsertedItems.push(camelCaseItem);
+    }
+
+    console.log(`UPSERT completed successfully for ${upsertedItems.length} items.`);
+    return upsertedItems;
+  } catch (error: any) {
+    console.error(`Error in upsertManyItems: ${error.message}`);
+    throw error;
+  }
+}
+
 
   async getAllItems(): Promise<Item[]> {
     try {
