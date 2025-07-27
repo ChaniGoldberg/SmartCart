@@ -105,7 +105,7 @@ export class PriceRepository implements IPriceRepository {
         }
     }
 
-    async upsertManyPrices(prices: Price[]): Promise<Price[]> {
+    async updateManyPrices(prices: Price[]): Promise<Price[]> {
         if (prices.length === 0) {
             console.log('No prices to update.');
             return [];
