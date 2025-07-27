@@ -1,4 +1,4 @@
-import { Tag } from "../../../../shared/src/tag";
+import { Tag } from "@smartcart/shared";
 
 export interface ITagRepository {
     addTag(tagName: string): Promise<Tag>

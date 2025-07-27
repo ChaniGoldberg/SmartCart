@@ -1,6 +1,6 @@
 // src/repositories/item.repository.ts
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Item } from "../../../../shared/src/item"; // ודא שהנתיב ל-Item נכון
+import { Item } from "@smartcart/shared"; // ודא שהנתיב ל-Item נכון
 import { IItemRepository } from "../IRepositories/IitemRepository"; // ודא שהנתיב ל-IItemRepository נכון
 
 

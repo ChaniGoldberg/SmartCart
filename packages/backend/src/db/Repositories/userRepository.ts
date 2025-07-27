@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { IUserRepository } from "../IRepositories/IUserRepository";
-import { User } from "../../../../shared/src/user";
+import { User } from "@smartcart/shared";
 
 export class UserRepository implements IUserRepository {
     private readonly tableName = 'users';

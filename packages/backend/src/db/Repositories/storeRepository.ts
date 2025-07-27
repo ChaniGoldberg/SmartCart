@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { IStoreRepository } from "../IRepositories/IStoreRepository";
-import { Store } from "../../../../shared/src/store";
+import { Store } from "@smartcart/shared";
 
 export class StoreRepository implements IStoreRepository {
     private readonly tableName = 'store';
