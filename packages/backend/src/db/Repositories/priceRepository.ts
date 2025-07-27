@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Price } from "../../../../shared/src/price";
+import { Price } from "@smartcart/shared";
 import { IPriceRepository } from "../IRepositories/IPriceRepository";
 
 export class PriceRepository implements IPriceRepository {

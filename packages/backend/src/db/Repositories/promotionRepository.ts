@@ -1,7 +1,7 @@
 // src/repositories/promotion.repository.ts
 import { SupabaseClient } from "@supabase/supabase-js";
 import { IPromotionRepository } from "../IRepositories/IpromotionRepository";
-import { Promotion } from "../../../../shared/src/promotion";
+import { Promotion } from "@smartcart/shared";
 
 
 export class PromotionRepository implements IPromotionRepository {

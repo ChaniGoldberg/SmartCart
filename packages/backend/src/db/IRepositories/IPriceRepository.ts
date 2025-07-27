@@ -1,4 +1,4 @@
-import { Price } from "../../../../shared/src/price";
+import { Price } from "@smartcart/shared";
 
 export interface IPriceRepository {
   getAllPrices(): Promise<Price[]>; 

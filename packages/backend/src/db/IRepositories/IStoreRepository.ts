@@ -1,4 +1,4 @@
-import { Store } from "../../../../shared/src/store";
+import { Store } from "@smartcart/shared";
 
 export interface IStoreRepository {
   addStore(store: Store): Promise<Store>;
