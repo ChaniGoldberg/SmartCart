@@ -35,7 +35,7 @@ const searchController = {
         try {
             const itemPrices = await itemPriceService.getItemsWithPrices(itemTxt);
             const filteredPrices = itemPrices.filter(itemPrice =>
-                itemPrice.price?.store_pk === storePK
+                itemPrice.price?.storePK === storePK
             );
             const Products: ProductDTO[] = filteredPrices.map(itemPrice => parseToProductDTO(itemPrice.item, itemPrice.price))
             res.json(Products);
