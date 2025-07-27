@@ -18,7 +18,7 @@ export default function MapPage() {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/stores');
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/stores`);
         if (!res.ok) throw new Error('קריאת API נכשלה');
         const rawStores = await res.json();
         const processed = rawStores
@@ -45,7 +45,7 @@ export default function MapPage() {
   // פונקציית גאוקודינג עם OpenStreetMap Nominatim
   const geocode = async (query: string): Promise<[number, number] | null> => {
     try {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+      const url = `${process.env.REACT_APP_NOMINATIM_URL}${encodeURIComponent(query)}`;
       const res = await fetch(url);
       const data = await res.json();
       if (data && data.length > 0) {
@@ -71,7 +71,6 @@ export default function MapPage() {
 
     if (found) {
       setPosition([found.latitude, found.longitude]);
-      setSelectedstore(found);
     } else {
       // אם לא נמצא סניף, מחפשים בגאוקודינג
       const geoPos = await geocode(searchWord);
