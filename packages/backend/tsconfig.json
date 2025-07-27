@@ -50,7 +50,7 @@
     "sourceMap": true,
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*", "scripts/**/*", "jest.config.js"],
+  "include": ["src/**/*", "scripts/**/*", "jest.config.js","../../shared/src"],
   "exclude": [
     "node_modules",
     "dist",
