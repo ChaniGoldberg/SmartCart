@@ -249,49 +249,96 @@ export class PromotionRepository implements IPromotionRepository {
       throw error;
     }
   }
-
-  async updateManyPromotions(promotions: Promotion[]): Promise<Promotion[]> {
-    if (promotions.length === 0) {
-      console.log('No promotions to update.');
-      return [];
-    }
-
-    try {
-      console.log(`Updating ${promotions.length} promotions in Supabase`);
-      const updatedPromotions: Promotion[] = [];
-      for (const promotion of promotions) {
-        // הפרד promotionItemsCode
-        const { promotionItemsCode, ...promoToUpdate } = promotion;
-
-        const { data, error } = await this.supabase
-          .from(this.tableName)
-          .update(this.toDbPromotion(promoToUpdate))
-          .eq('promotion_id', promotion.promotionId)
-          .select('*');
-
-        if (error) {
-          console.error(`Error updating promotion with id ${promotion.promotionId}:`, error);
-          throw new Error(`Failed to update promotion with id ${promotion.promotionId}: ${error.message}`);
-        }
-
-        if (!data || data.length === 0) {
-          console.error(`No data returned after updating promotion with id ${promotion.promotionId}.`);
-          continue;
-        }
-
-        // עדכן את הקישורים בטבלת הקישור
-        if (promotionItemsCode !== undefined) {
-          await this.setItemsForPromotion(promotion.promotionId, promotion.promotionItemsCode);
-        }
-        updatedPromotions.push(promotion);
-      }
-      console.log(`${updatedPromotions.length} promotions updated successfully.`);
-      return updatedPromotions;
-    } catch (error: any) {
-      console.error(`Error in updateManyPromotions: ${error.message}`);
-      throw error;
-    }
+async updateManyPromotions(promotions: Promotion[]): Promise<Promotion[]> {
+  if (promotions.length === 0) {
+    console.log('No promotions to update.');
+    return [];
   }
+
+  try {
+    console.log(`UPSERT ${promotions.length} promotions in Supabase`);
+
+    // נפריד פריטים מהמבצעים
+    const promotionItems = promotions.flatMap(p =>
+      p.promotionItemsCode.map(code => ({
+        promotion_id: p.promotionId,
+        item_code: code,
+      }))
+    );
+
+    // מבצעים UPSERT לכל המבצעים
+    const { data: promotionsData, error: promotionsError } = await this.supabase
+      .from(this.tableName)
+      .upsert(promotions.map(p => this.toDbPromotion(p)), { onConflict: 'promotion_id' })
+      .select('*');
+
+    if (promotionsError) {
+      console.error('Error upserting promotions:', promotionsError);
+      throw promotionsError;
+    }
+
+    // מוחקים פריטים ישנים ומכניסים חדשים
+    const promotionIds = promotions.map(p => p.promotionId);
+    const { error: deleteError } = await this.supabase
+      .from('promotion_items')
+      .delete()
+      .in('promotion_id', promotionIds);
+
+    if (deleteError) {
+      console.error('Error deleting old promotion items:', deleteError);
+      throw deleteError;
+    }
+
+    if (promotionItems.length > 0) {
+      const { error: insertError } = await this.supabase
+        .from('promotion_items')
+        .upsert(promotionItems, { onConflict: 'promotion_id,item_code' });
+
+      if (insertError) {
+        console.error('Error inserting promotion items:', insertError);
+        throw insertError;
+      }
+    }
+
+    console.log(`${promotionsData?.length ?? promotions.length} promotions upserted successfully.`);
+    return promotions;
+  } catch (error: any) {
+    console.error(`Error in updateManyPromotions: ${error.message}`);
+    throw error;
+  }
+}
+
+async upsertManyPromotions(promotions: Promotion[]): Promise<void> {
+  // אותו קוד בדיוק כמו ה-updateManyPromotions החדשה שלך
+  const promotionItems = promotions.flatMap(p =>
+    p.promotionItemsCode.map(code => ({
+      promotion_id: p.promotionId,
+      item_code: code,
+    }))
+  );
+
+  const { error: promotionsError } = await this.supabase
+    .from(this.tableName)
+    .upsert(promotions.map(p => this.toDbPromotion(p)), { onConflict: 'promotion_id' });
+
+  if (promotionsError) throw promotionsError;
+
+  const promotionIds = promotions.map(p => p.promotionId);
+  const { error: deleteError } = await this.supabase
+    .from('promotion_items')
+    .delete()
+    .in('promotion_id', promotionIds);
+
+  if (deleteError) throw deleteError;
+
+  if (promotionItems.length > 0) {
+    const { error: insertError } = await this.supabase
+      .from('promotion_items')
+      .upsert(promotionItems, { onConflict: 'promotion_id,item_code' });
+    if (insertError) throw insertError;
+  }
+}
+
 
   async getAllPromotions(): Promise<Promotion[]> {
     try {

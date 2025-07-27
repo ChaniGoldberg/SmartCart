@@ -1,7 +1,6 @@
 import { Store } from "@smartcart/shared/src/store";
 import { db } from "../db/dbProvider";
-
-import { StoreLocationDto } from "@smartcart/shared";
+import { StoreLocationDto } from "@smartcart/shared/src/dto/StoreLocation.dto";
 import { StoreRepository } from '../db/Repositories/storeRepository';
 import { databaseService } from '../services/database';
 import { createClient } from "@supabase/supabase-js";
