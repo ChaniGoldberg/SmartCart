@@ -111,7 +111,7 @@ export async function getProductwithPomotionPrice(shoppingCart: Price[], promoti
     productList.push({
      product : {
         itemCode: item.itemCode,
-        priceId:item.priceId,
+        priceId:item.priceId ??0,
         ProductName:itemDetails?.itemName ?? "",
         storePK: item.storePK,
         itemName:itemDetails?.itemName ?? "",
