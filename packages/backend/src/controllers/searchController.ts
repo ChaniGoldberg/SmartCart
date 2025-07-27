@@ -32,10 +32,11 @@ const searchController = {
         }
 
         const itemPriceService = new searchService();
-        try {
+        try {          
             const itemPrices = await itemPriceService.getItemsWithPrices(itemTxt);
             const filteredPrices = itemPrices.filter(itemPrice =>
-                itemPrice.price?.storePK === storePK
+                itemPrice.price?.store_pk === storePK
+ 
             );
             const Products: ProductDTO[] = filteredPrices.map(itemPrice => parseToProductDTO(itemPrice.item, itemPrice.price))
             res.json(Products);

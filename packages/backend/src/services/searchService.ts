@@ -15,11 +15,10 @@ export class searchService implements ISearchService {
         this.priceService = new PriceService(this.priceRepository);
     }
 
-    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price:Price | null }[]> {
+    async getItemsWithPrices(itemTxt: string): Promise<{ item: Item, price: any | null }[]> {
         try {
             const items = await this.itemRepository.fuzzySearchItemsByText(itemTxt);
             const prices = await this.priceService.getAllPrices();
-
 
             return items.map(item => {
                 const price = prices.find(price => price.item_code === item.itemCode )//&& item.itemStatus === true);את זה צריך להוריד מירוק אחרי שיכניסו לדטה בייס מוצרים פעילים

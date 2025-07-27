@@ -27,7 +27,7 @@ const ProductSearchComponent: React.FC = () => {
     let storePK = user?.preferred_store||"";
     //חנות דפולטיבית
     if(user?.preferred_store==undefined){
-      storePK = "7290058140886-1-001"; // חנות דפולטיבית אם לא נבחרה חנות מועדפת
+      storePK = "7290058140886-1-048"; // חנות דפולטיבית אם לא נבחרה חנות מועדפת
     }
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
