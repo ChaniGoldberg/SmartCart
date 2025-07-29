@@ -25,7 +25,6 @@ export function normalizePromotions(rawData: any): Promotion[] {
     const chainId = rawData?.Root?.ChainId?.[0];
     const subChainId = rawData?.Root?.SubChainId?.[0];
     const storeId = rawData?.Root?.StoreId?.[0];
-    console.log("== promo json sample 😃😃😃😃😃😃😃😃😃😃😃😃😃==");
     console.log(JSON.stringify(promotionsArray[0], null, 2));
     
     return promotionsArray.map((promo: any) =>
@@ -46,8 +45,6 @@ function convertRawPromotionToPromotion(
   const promotionItemsCode = (rawPromo?.PromotionItems || []).map((item: any) => 
     item?.Item?.[0]?.ItemCode?.[0] ?? "");
 
-  console.log("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
-  console.log(promotionItemsCode);
 
 
   return {

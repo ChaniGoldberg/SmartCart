@@ -9,7 +9,7 @@ import { getLatestPriceFilesPerStore } from './PriceUtils';
 import { getLatestPromoFilesPerStore } from './promoUtils';
 import { getMostUpdatedStroeFile } from './storeUtils';
 import { downloadFileWithZip } from './downloadFile';
-import { parsePriceFullXmlToItemJson } from './priceFull-Parser';
+import { parsePriceFullXmlToItemJson } from './parsePriceFullXmlToItemJson';
 import { parsePriceFullXmlToPriceJson } from './parsePriceFullToPriceJson';
 import { parseXmlPromotionsToJson } from './parseXMLPromosFullToJsonFile';
 import { parseStoresXmlFileToStores } from './parse_stores';
@@ -223,8 +223,8 @@ async function main() {
 
 
   await clearFolder(storeDir);
-  // await clearFolder(promoDir);
-  // await clearFolder(priceDir);
+  await clearFolder(promoDir);
+  await clearFolder(priceDir);
   console.log('✅ תיקיות נקיות ומוכנות לעבודה');
 
   console.log('📥 מתחבר ל־FTP ומביא את רשימת הקבצים...');
