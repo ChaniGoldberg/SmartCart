@@ -1,5 +1,5 @@
 import { useUserLocation } from "frontend/src/hooks/useUserLocation";
-import { getValidStores } from "../src/services/storeService";
+import { getStoresWithCoordinates } from "../src/services/storeService";
 import { StoreLocationDto } from "@smartcart/shared";
 
 interface Location {
@@ -10,7 +10,7 @@ interface Location {
 }
 export async function findStoresWithinRadius(userlocation: Location, radius: number): Promise<{ store: StoreLocationDto; distance: number }[]>  {
 
-    const storeLocation = await getValidStores();
+    const storeLocation = await getStoresWithCoordinates();
     const distances: { store: StoreLocationDto; distance: number }[] = []; // טיפוס מפורש
 
     for (const store of storeLocation) {

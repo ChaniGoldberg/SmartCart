@@ -1,32 +1,27 @@
-import { Store } from "@smartcart/shared";
-import { db } from "../db/dbProvider";
-
+import { Store } from "@smartcart/shared/src/store";
 import { StoreLocationDto } from "@smartcart/shared";
 import { StoreRepository } from '../db/Repositories/storeRepository';
-import { databaseService } from '../services/database';
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_ANON_KEY
-// בדיקה שהמשתנים קיימים
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables')
+  throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-//זכרון זמני לכתובות
+// זיכרון זמני לכתובות
 const addressCache = new Map<string, { lat: number; lng: number } | null>();
-const OPENCAGE_API_KEY = process.env.OPENCAGE_API_KEY;//מפתח ה־API של OpenCage
+const OPENCAGE_API_KEY = process.env.OPENCAGE_API_KEY;
+
+const storeRepository = new StoreRepository(supabase);
 
 // פונקציה להמרת כתובת לקואורדינטות
-//באמצעות שימוש ב- penCage API,
-//הפונקציה מקבלת כתובת ומחזירה את הקואורדינטות שלה
-const geocodeAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
+export const geocodeAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
   if (!OPENCAGE_API_KEY) {
     throw new Error("OPENCAGE_API_KEY is not defined. Please set it in your environment.");
   }
-  // בדיקה אם הכתובת כבר בזיכרון
   if (addressCache.has(address)) {
     return addressCache.get(address)!;
   }
@@ -38,33 +33,29 @@ const geocodeAddress = async (address: string): Promise<{ lat: number, lng: numb
       throw new Error(`Geocoding API returned status ${response.status}`);
     }
     const data: any = await response.json();
-    //בדיקה האם התוצאה שחזרה מכילה את הנתונים
     if (data && data.results && data.results.length > 0) {
       const lat = data.results[0].geometry.lat;
       const lng = data.results[0].geometry.lng;
-      // בדיקה אם הקואורדינטות תקינות
       if (typeof lat === 'number' && typeof lng === 'number'
         && lat >= -90 && lat <= 90
         && lng >= -180 && lng <= 180) {
         const result = { lat, lng };
-        addressCache.set(address, result); // שומר את התוצאה בזיכרון
+        addressCache.set(address, result);
         return result;
-      }
-      else {
+      } else {
         console.log("קואורדינטות לא תקינות:", lat, lng);
         return null;
-    }
+      }
     }
     return null;
-  }
-  catch (error) {//טיפול בשגיאה במרת הכתובת
+  } catch (error) {
     console.error('שגיאה בהמרת כתובת:', error);
     return null;
   }
 };
 
-//מנגנון Limit
-async function limitConcurrency<T, R>(
+// מנגנון Limit לניהול concurrency
+export async function limitConcurrency<T, R>(
   items: T[],
   handler: (item: T) => Promise<R>,
   limit: number
@@ -83,79 +74,31 @@ async function limitConcurrency<T, R>(
   return results;
 }
 
+// --- פונקציה לעדכון קואורדינטות בטבלה, להוסיף למחלקת StoreRepository ---
 
 
-const storeRepository = new StoreRepository(supabase);
+// --- פונקציה קיימת (משודרגת) לטעינת חנויות תקינות (כולל קואורדינטות) ---
 
-export const getValidStores = async (): Promise<StoreLocationDto[]> => {
+export const getStoresWithCoordinates = async (): Promise<StoreLocationDto[]> => {
   try {
     const stores: Store[] = await storeRepository.getAllStores();
 
-    const isValidAddress = (store: Store) => {
-      return (
-        typeof store.address === 'string' &&
-        store.address.trim() !== '' &&
-        typeof store.city === 'string' &&
-        store.city.trim() !== ''
-      );
-    };
-
-    const validStores = stores.filter(isValidAddress);
-
-    const addressCoords = await limitConcurrency(validStores, async (s) => {
-      const fullAddress = `${s.address}, ${s.city}`;
-
-      const coords = await geocodeAddress(fullAddress);
-      if (!coords) {
-        console.warn(`⚠️ מדלג: לא נמצאו קואורדינטות לכתובת "${fullAddress}"`);
-        return null;
-      }
-
-      return new StoreLocationDto(
+    const filtered = stores
+      .filter(s => typeof s.latitude === 'number' && typeof s.longitude === 'number')
+      .map(s => new StoreLocationDto(
         s.storePK,
         s.chainId,
         s.chainName,
         s.storeName,
-        fullAddress,
-        coords.lat,
-        coords.lng
-      );
-    }, 10);
+        `${s.address}, ${s.city}`,
+        s.latitude!,
+        s.longitude!
+      ));
 
-    // סינון של null
-    const filtered = addressCoords.filter((r): r is StoreLocationDto => r !== null);
-
-    console.log(`✅ ${filtered.length} חנויות תקינות נטענו`);
+    console.log(`✅ נטענו ${filtered.length} חנויות עם קואורדינטות`);
     return filtered;
   } catch (error) {
-    console.error('❌ Failed to load valid stores:', error);
+    console.error('❌ שגיאה בשליפת חנויות עם קואורדינטות:', error);
     throw error;
   }
 };
-
-export async function addManyStoresToDb(stores: Store[]): Promise<void> {
-  if (!stores || stores.length === 0) {
-    console.warn("📭 לא התקבלו חנויות להוספה");
-    return;
-  }
-
-  try {
-    await storeRepository.addManyStores(stores); // שימוש בפונקציה שמוסיפה מערך
-    console.log("✅ חנויות הוזנו בהצלחה");
-  } catch (error) {
-    console.error("❌ שגיאה בהוספת חנויות:", error);
-    throw error;
-  }
-}
-
-
-
-export async function addSOneStoreToDb(store: Store): Promise<void> {
-  try {
-    await storeRepository.addStore(store);
-    console.log(`✅ חנות "${store.storeName}" הוזנה בהצלחה`);
-  } catch (error) {
-    console.error(`❌ שגיאה בהוספת חנות "${store.storeName}":`, error);
-    throw error;
-  }
-}
