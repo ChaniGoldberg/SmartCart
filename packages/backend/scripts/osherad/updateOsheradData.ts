@@ -222,8 +222,8 @@ async function main() {
   }
 
 
-  // await clearFolder(storeDir);
-  await clearFolder(promoDir);
+  await clearFolder(storeDir);
+  // await clearFolder(promoDir);
   // await clearFolder(priceDir);
   console.log('✅ תיקיות נקיות ומוכנות לעבודה');
 
@@ -286,6 +286,13 @@ if (storeFile) {
     }
   }, 10);
 
+  for (const store of stores) {
+    const existing = existingCoordsMap.get(store.storePK);
+    if ((!store.latitude || !store.longitude) && existing?.lat && existing?.lng) {
+      store.latitude = existing.lat;
+      store.longitude = existing.lng;
+    }
+  }
   // הכנסת כל החנויות עם upsert
   await storeRepo.addManyStores(stores);
 
@@ -300,7 +307,7 @@ if (storeFile) {
 }
 
 //   *** Price ***
-//  *** Price ***
+// //  *** Price ***
  for (const fileName of priceFiles) {
   console.log(`⬇️ מוריד Price: ${fileName}`);
 
