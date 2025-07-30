@@ -1,5 +1,5 @@
 import * as xml2js from "xml2js";
-import { Promotion } from '@smartcart/shared/src/promotions';
+import { Promotion } from '@smartcart/shared/src/promotion';
 
 export async function parseXmlToJson(xmlContent: string): Promise<object> {
   if (!xmlContent) {
@@ -46,7 +46,7 @@ function convertRawPromotionToPromotion(
 
   return {
     promotionId: parseInt(rawPromo?.PromotionId?.[0] ?? "0"),
-    storeId: parseInt(storeId ?? "0"),
+    storePK: (storeId ?? "0"),
     promotionDescription: rawPromo?.PromotionDescription?.[0] ?? "",
     startDate: new Date(`${rawPromo?.PromotionStartDate?.[0] || ''}T${rawPromo?.PromotionStartHour?.[0] || ''}`),
     endDate: new Date(`${rawPromo?.PromotionEndDate?.[0] || ''}T${rawPromo?.PromotionEndHour?.[0] || ''}`),

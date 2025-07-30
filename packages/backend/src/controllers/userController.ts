@@ -1,3 +1,5 @@
+// packages/backend/src/controllers/userController.ts
+
 import { Request, Response } from "express";
 import validate from "../validators/validator";
 import { registerUser, updateUser, loginUser } from "../services/userService";
@@ -6,8 +8,6 @@ import { supabase } from "../services/supabase";
 import { AuthenticatedRequest } from "../authenticate";
 
 const userRepository = new UserRepository(supabase);
-
-
 
 const userController = {
     getMe: async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -34,7 +34,8 @@ const userController = {
 
     register: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { email, password, userId, userName, preferred_store } = req.body;
+            // הסר את userId מה-destructuring כאן
+            const { email, password, userName, preferred_store } = req.body; 
 
             const emailValidation = validate.checkEmail(email);
             if (emailValidation !== true) {
@@ -48,7 +49,8 @@ const userController = {
                 return;
             }
 
-            const { user, token } = await registerUser(userId, password, userName, preferred_store);
+            // העבר את email כארגומנט הראשון במקום userId
+            const { user, token } = await registerUser(email, password, userName, preferred_store);
 
             res.status(201).json({ message: "User registered successfully", user, token });
 

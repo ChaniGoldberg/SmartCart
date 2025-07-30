@@ -1,10 +1,9 @@
-// packages/backend/src/services/userService.ts
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '@smartcart/shared/src/user';
 import { createClient } from '@supabase/supabase-js';
-import 'dotenv/config';
+
 import { UserRepository } from '../db/Repositories/userRepository';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY || !process.env.JWT_SECRET) {
@@ -12,7 +11,6 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY || !process.env.
 }
 
 const SECRET_KEY = process.env.JWT_SECRET;
-// const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
 const repo = new UserRepository(supabase);
 
