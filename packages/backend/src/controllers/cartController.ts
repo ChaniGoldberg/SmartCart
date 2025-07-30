@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getValidStores } from "../services/storeService";
+import { getStoresWithCoordinates } from '../services/storeService';
 import { getPriceByStorePKItemID, getProductwithPomotionPrice, getRelevantPromotionsForCart } from "../services/cartService";
 import { promotionsService } from "../services/promotionServices";
 import { shoppingCartTotalSummary } from "../services/cartService";

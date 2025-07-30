@@ -25,6 +25,7 @@ export async function parsePriceFullXmlToItemJson(xmlFilePath: string): Promise<
       quantityInPackage: (() => {
         const val = Number(item.QtyInPackage);
         return isNaN(val) ? null : val;
+        
       })(),
       itemStatus: item.ItemStatus === true,
       itemId: item.ItemId !== undefined ? Number(item.ItemId) : undefined,

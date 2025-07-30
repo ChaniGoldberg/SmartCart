@@ -1,10 +1,9 @@
-// packages/backend/src/services/userService.ts
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '@smartcart/shared/src/user';
 import { createClient } from '@supabase/supabase-js';
-import 'dotenv/config';
+
 import { UserRepository } from '../db/Repositories/userRepository';
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY || !process.env.JWT_SECRET) {
@@ -12,11 +11,11 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY || !process.env.
 }
 
 const SECRET_KEY = process.env.JWT_SECRET;
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
 const repo = new UserRepository(supabase);
 
 export function createUserTokenByJWT(user: User): string {
-    return jwt.sign(user, SECRET_KEY);
+    return jwt.sign({ userId: user.userId, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
 }
 
 export function hashPassword(password: string): Promise<string> {
@@ -29,7 +28,6 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function registerUser(
-    userId: string | undefined,
     email: string,
     password: string,
     userName: string,
@@ -76,30 +74,38 @@ export async function loginUser(email: string, password: string): Promise<{ toke
 
 export async function updateUser(
     userId: string,
-    email: string,
     password: string,
     userName: string,
     preferred_store: string
-): Promise<User> {
-    const existingUser = await getUserByEmail(email); 
+): Promise<{ user: User; token: string }> {
+    try {
+        const existingUser = await repo.getUserById(userId);
 
-    if (!existingUser || existingUser.userId !== userId) {
-        throw new Error('User not found or unauthorized to update this profile');
+        if (!existingUser) {
+            throw new Error('User not found');
+        }
+
+        let updatedPassword = existingUser.password;
+        if (password && password.trim() !== '') {
+            updatedPassword = await hashPassword(password);
+        }
+
+        const updatedUser: User = {
+            userId,
+            email: existingUser.email,
+            password: updatedPassword,
+            userName: userName?.trim() ? userName : existingUser.userName,
+            preferred_store: preferred_store?.trim() ? preferred_store : existingUser.preferred_store
+        };
+
+        console.log('Updating user with ID:', userId);
+        const savedUser = await repo.updateUser(updatedUser);
+        const token = createUserTokenByJWT(savedUser);
+        return { user: savedUser, token };
+
     }
-
-    const hashedPassword = await hashPassword(password);
-
-    const updatedUser: User = {
-        userId: existingUser.userId,
-        email,
-        password: hashedPassword,
-        userName,
-        preferred_store
-    };
-
-    console.log("Attempting to update user in DB:", updatedUser);
-    const savedUser = await repo.updateUser(updatedUser);
-
-    console.log("User successfully updated and returned from DB:", savedUser);
-    return savedUser;
+    catch (error: any) {
+        console.error(`Error in userService.updateUser: ${error.message}`);
+        throw error;
+    }
 }

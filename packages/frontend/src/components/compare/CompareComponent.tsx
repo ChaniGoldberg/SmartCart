@@ -2,8 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Search, Package, Tags } from 'lucide-react';
 import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
 import { Tag } from '@smartcart/shared/src/tag';
-import { searchApiService } from '../../services/searchApi';
-import { searchAnotherApiService } from '../../services/searchAnotherApi';
+import { searchProductApiService } from '../../services/searcProductApi';
 import { StoreContext } from 'src/store/storage/StoreProvider';
 export const CompareComponent = () => {
   const { selectedStores } = useContext(StoreContext); // get stores from context
@@ -44,7 +43,7 @@ export const CompareComponent = () => {
     setError('');
     try {
       let res;
-      res = await searchAnotherApiService.getSearchProduct(searchTerm, storePKs);
+      res = await searchProductApiService.getSearchProduct(searchTerm, storePKs);
       setProducts(res);
     } catch (error) {
       console.error('שגיאה בשליפת מוצרים:', error);
