@@ -1,5 +1,6 @@
 
 
+
 export interface Store {
   storePK: string; //pk `${chainId}-${subChainId}-${storeId}`
   storeId: number;
@@ -11,5 +12,8 @@ export interface Store {
   address: string;
   city: string;
   zipCode: string;
+  latitude?: number | null;
+  longitude?: number | null;
+
 }
 
