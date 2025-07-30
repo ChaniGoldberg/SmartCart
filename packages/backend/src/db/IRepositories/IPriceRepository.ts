@@ -12,7 +12,8 @@ export interface IPriceRepository {
      // *** הוסף את השורה הבאה ***
     getAllPrices(): Promise<Price[]>;
     // *** הוסף גם את זו, שראיתי במימוש ששלחת:
-    getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null>;
+    getPriceByStorePKItemID(storePK: string, itemCode: string): Promise<Price | null>;
+  getPriceByStorePK(storePK: string, itemName: string): Promise<Price[]> 
 
 }
 

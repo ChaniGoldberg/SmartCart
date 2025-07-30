@@ -1,20 +1,22 @@
-import { Price } from "@smartcart/shared"
+import { Price } from "@smartcart/shared/src/price"
 import { db } from "../db/dbProvider";
-import { Promotion } from "@smartcart/shared";
-import { Item } from "@smartcart/shared";
+import { Promotion } from "@smartcart/shared/src/promotion";
+import { Item } from "@smartcart/shared/src/item";
 import { PriceRepository } from "../db/Repositories/priceRepository";
 import { PromotionRepository } from "../db/Repositories/promotionRepository";
 import { supabase } from "./supabase";
-import { ProductCartDTO } from "@smartcart/shared";
+import { ProductCartDTO } from "@smartcart/shared/src";
+import { ItemRepository } from "../db/Repositories/itemRepository";
 
 
 
-const priceRepo=new PriceRepository(supabase)
+const ItemRepo = new ItemRepository(supabase)
+const priceRepo = new PriceRepository(supabase)
 
-export async function getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
-  const price=await priceRepo.getPriceByStorePKItemID(storePK, itemId)
+export async function getPriceByStorePKItemID(storePK: string, itemCode: string): Promise<Price | null> {
+  const price = await priceRepo.getPriceByStorePKItemID(storePK, itemCode)
   if (!price) {
-    console.warn(`Price not found for storeId: ${storePK} and itemId: ${itemId}`);
+    console.warn(`Price not found for storeId: ${storePK} and itemId: ${itemCode}`);
   }
 
   return price || null;
@@ -31,8 +33,8 @@ interface PromotionFilterOptions {
 const promotionRepo = new PromotionRepository(supabase);
 export async function getRelevantPromotionsForCart(
   cartItems: Price[],
-  options:PromotionFilterOptions={}
-){
+  options: PromotionFilterOptions = {}
+) {
   const promotionsFromDB = await promotionRepo.getAllPromotions();
   return promotionsFromDB.filter(promo => {
     // בדיקת תוקף
@@ -80,7 +82,7 @@ export async function shoppingCartTotalSummary(shoppingCart: ProductCartDTO[]): 
 
   let totalPrice = 0
   for (const item of shoppingCart) {
-    totalPrice += item.product.price* item.quantity;
+    totalPrice += item.product.price * item.quantity;
   }
   return totalPrice
 }
@@ -98,29 +100,30 @@ export async function getItemByItemCode(itemCode: string): Promise<Item | null> 
 export async function getProductwithPomotionPrice(shoppingCart: Price[], promotions: Promotion[]): Promise<ProductCartDTO[]> {
 
   const productList: ProductCartDTO[] = []
-  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart);
+  const relevantPromotions = await getRelevantPromotionsForCart(shoppingCart);
   for (const item of shoppingCart) {
     const promotion = [...relevantPromotions].find(p =>
       p.promotionItemsCode.includes(item.itemCode)
     )
 
     const itemPrice = promotion?.discountedPrice ?? item.price;
-    const itemDetails = await getItemByItemCode(item.itemCode.toString());
+    const itemDetails = await getItemByItemCode(item.itemCode);
 
 
     productList.push({
-     product : {
+      product: {
         itemCode: item.itemCode,
-        priceId:item.priceId ??0,
-        ProductName:itemDetails?.itemName ?? "",
+        priceId: item?.priceId ?? 0,
+        ProductName: itemDetails?.itemName ?? "",
         storePK: item.storePK,
-        itemName:itemDetails?.itemName ?? "",
+        itemName: itemDetails?.itemName ?? "",
         itemStatus: itemDetails?.itemStatus ?? false,
-        manufacturerItemDescription:itemDetails?.manufacturerItemDescription ?? "",
-        manufacturerName: itemDetails?.manufacturerName ?? "",  
+        manufacturerItemDescription: itemDetails?.manufacturerItemDescription ?? "",
+        manufacturerName: itemDetails?.manufacturerName ?? "",
         price: itemPrice,
-        unitOfMeasurePrice: item.unitOfMeasurePrice ,
+        unitOfMeasurePrice: item.unitOfMeasurePrice,
         quantityInPackage: item?.quantityInPackage,
+
       },
       quantity: item.quantity,
 
@@ -130,4 +133,9 @@ export async function getProductwithPomotionPrice(shoppingCart: Price[], promoti
 
   return productList;
 
+}
+export async function getStoreItemByName(storePK: string, itemName: string): Promise<Price | null> {
+  const storeItems = await priceRepo.getPriceByStorePK(storePK, itemName);
+
+  return storeItems[0] || null;;
 }
