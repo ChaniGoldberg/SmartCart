@@ -2,10 +2,7 @@ import React, { useContext, useState } from 'react';
 import { ProductDTO } from "@smartcart/shared";
 import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { cartContext } from '../store/redux/cartRedux';
-import ItemCard from './ItemCard';
 import AlternativeItemsList from './AlternativeItemsList';
-import { itemfuzzySearch } from '../../../backend/src/controllers/fuzzySearchController'
-import { searchApiService } from '../services/searchApi';
 interface ProductDetailsProps {
   productCart: ProductCartDTO;
   onQuantityChange?: (newQty: number) => void;
