@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { Search, Package, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
-import { searchApiService } from '../services/searchApi';
 import { Check } from 'lucide-react';
 import { useUser } from '../store/redux/userContext';
 import { cartContext } from '../store/redux/cartRedux';
 import { log } from 'console';
 import { ProductCartDTO } from "@smartcart/shared";
+import { searchProductApiService } from 'src/services/searcProductApi';
 
 const ProductSearchComponent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -24,11 +24,11 @@ const ProductSearchComponent: React.FC = () => {
   };
 
   const { user } = useUser();
-    let storePK = user?.preferred_store||"";
-    //חנות דפולטיבית
-    if(user?.preferred_store==undefined){
-      storePK = "7290058140886-1-048"; // חנות דפולטיבית אם לא נבחרה חנות מועדפת
-    }
+  let storePK = user?.preferred_store || "";
+  //חנות דפולטיבית
+  if (user?.preferred_store == undefined) {
+    storePK = "7290058140886-1-048"; // חנות דפולטיבית אם לא נבחרה חנות מועדפת
+  }
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
       setError('אנא הזן מונח חיפוש');
@@ -38,8 +38,10 @@ const ProductSearchComponent: React.FC = () => {
     setError('');
     setHasSearched(true);
     try {
-      const results = await searchApiService.getSearchProduct(searchTerm, storePK);
-      setProducts(results);
+      const results = await searchProductApiService.getSearchProduct(searchTerm, [storePK]);
+      setProducts(
+        results
+      );
       const initialStates = results.reduce((acc, product) => {
         acc[product.itemCode] = { quantity: 1, isActive: false };
         return acc;
@@ -156,7 +158,7 @@ const ProductSearchComponent: React.FC = () => {
                 <th className="border px-4 py-3 text-right">תיאור</th>
                 <th className="border px-4 py-3 text-right">מחיר</th>
                 <th className="border px-4 py-3 text-right">כמות באריזה</th>
-                <th className="border px-4 py-3 text-right">סטטוס</th>
+
                 <th className="border px-4 py-3 text-right">פעולות</th>
               </tr>
             </thead>
@@ -166,17 +168,12 @@ const ProductSearchComponent: React.FC = () => {
                 return (
                   <tr key={product.itemCode} className="hover:bg-gray-50">
                     <td className="border px-4 py-2">{product.itemCode}</td>
-                    <td className="border px-4 py-2">{product.ProductName}</td>
+                    <td className="border px-4 py-2">{product.itemName}</td>
                     <td className="border px-4 py-2">{product.manufacturerName}</td>
                     <td className="border px-4 py-2 text-sm text-gray-600">{product.manufacturerItemDescription}</td>
                     <td className="border px-4 py-2 text-teal-700 font-bold">₪{product.price.toFixed(2)}</td>
                     <td className="border px-4 py-2">{product.quantityInPackage}</td>
-                    <td className="border px-4 py-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.itemStatus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-800'
-                        }`}>
-                        {product.itemStatus ? 'זמין' : 'לא זמין'}
-                      </span>
-                    </td>
+
                     <td className="border px-1 py-2 text-left">
                       {!cartState?.isActive ? (
                         <button

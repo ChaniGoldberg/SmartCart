@@ -1,6 +1,6 @@
 // src/repositories/item.repository.ts
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Item } from "@smartcart/shared"; // ודא שהנתיב ל-Item נכון
+import { Item, ProductCartDTO, ProductDTO } from "@smartcart/shared"; // ודא שהנתיב ל-Item נכון
 import { IItemRepository } from "../IRepositories/IitemRepository"; // ודא שהנתיב ל-IItemRepository נכון
 
 
@@ -52,65 +52,65 @@ export class ItemRepository implements IItemRepository {
   }
 
   async fuzzySearchItemsByText(itemText: string): Promise<Item[]> {
-  if (!this.supabase) {
-    console.warn("⚠️ Supabase client not initialized");
-    return [];
-  }
-
-  try {
-    // 1. קריאה לפונקציית RPC
-    const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items', {
-      search_query: itemText
-    });
-
-    if (error) {
-      console.error("❌ Error calling fuzzy_search_items:", error.message);
-      throw new Error(`Failed fuzzy search: ${error.message}`);
-    }
-
-    if (!rawItems || rawItems.length === 0) {
+    if (!this.supabase) {
+      console.warn("⚠️ Supabase client not initialized");
       return [];
     }
 
-    // 2. שליפת תגיות לכל item_code שחזר בתוצאות
-    const itemCodes = rawItems.map((item:Item)=> item.itemCode as string);
+    try {
+      // 1. קריאה לפונקציית RPC
+      const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items', {
+        search_query: itemText
+      });
 
-    const { data: itemTagsData, error: itemTagsError } = await this.supabase
-      .from(this.itemTagsTableName)
-      .select('item_code, tag_id')
-      .in('item_code', itemCodes);
-
-    if (itemTagsError) {
-      console.error("❌ Error fetching item-tags:", itemTagsError.message);
-      throw new Error(`Failed to fetch item-tags: ${itemTagsError.message}`);
-    }
-
-    // 3. בניית מפת תגיות לכל item_code (כמחרוזת)
-    const itemTagsMap = new Map<string, number[]>();
-    if (itemTagsData) {
-      for (const row of itemTagsData) {
-        const itemCode = row.item_code as string;
-        const tagId = row.tag_id;
-        if (!itemTagsMap.has(itemCode)) {
-          itemTagsMap.set(itemCode, []);
-        }
-        itemTagsMap.get(itemCode)!.push(tagId);
+      if (error) {
+        console.error("❌ Error calling fuzzy_search_items:", error.message);
+        throw new Error(`Failed fuzzy search: ${error.message}`);
       }
+
+      if (!rawItems || rawItems.length === 0) {
+        return [];
+      }
+
+      // 2. שליפת תגיות לכל item_code שחזר בתוצאות
+      const itemCodes = rawItems.map((item: Item) => item.itemCode as string);
+
+      const { data: itemTagsData, error: itemTagsError } = await this.supabase
+        .from(this.itemTagsTableName)
+        .select('item_code, tag_id')
+        .in('item_code', itemCodes);
+
+      if (itemTagsError) {
+        console.error("❌ Error fetching item-tags:", itemTagsError.message);
+        throw new Error(`Failed to fetch item-tags: ${itemTagsError.message}`);
+      }
+
+      // 3. בניית מפת תגיות לכל item_code (כמחרוזת)
+      const itemTagsMap = new Map<string, number[]>();
+      if (itemTagsData) {
+        for (const row of itemTagsData) {
+          const itemCode = row.item_code as string;
+          const tagId = row.tag_id;
+          if (!itemTagsMap.has(itemCode)) {
+            itemTagsMap.set(itemCode, []);
+          }
+          itemTagsMap.get(itemCode)!.push(tagId);
+        }
+      }
+
+      // 4. המרת rawItems ל־Item עם camelCase + תגיות
+      const itemsWithTags: Item[] = rawItems.map((raw: any) => {
+        const item = this.fromDbItem(raw) as Item;
+        item.tagsId = itemTagsMap.get(String(item.itemCode)) || [];
+        return item;
+      });
+
+      return itemsWithTags;
+    } catch (err: any) {
+      console.error("💥 Error in fuzzySearchItemsByText:", err.message);
+      throw err;
     }
-
-    // 4. המרת rawItems ל־Item עם camelCase + תגיות
-    const itemsWithTags: Item[] = rawItems.map((raw:any) => {
-      const item = this.fromDbItem(raw) as Item;
-      item.tagsId = itemTagsMap.get(String(item.itemCode)) || [];
-      return item;
-    });
-
-    return itemsWithTags;
-  } catch (err: any) {
-    console.error("💥 Error in fuzzySearchItemsByText:", err.message);
-    throw err;
   }
-}
 
 
   async linkTagToItem(itemCode: string, tagId: number): Promise<void> {
@@ -280,20 +280,20 @@ export class ItemRepository implements IItemRepository {
         .insert(dbItemsToInsert)
         .select('*');
 
-if (error) {
-  console.error('❌ Error inserting multiple items:', error);
-  try {
-    console.error('Error JSON:', JSON.stringify(error, null, 2));
-  } catch (jsonError) {
-    // אם לא ניתן להמיר ל־JSON, פשוט נמשיך
-  }
-  const message =
-    typeof error === 'object' && error !== null
-      ? error.message || JSON.stringify(error)
-      : String(error);
+      if (error) {
+        console.error('❌ Error inserting multiple items:', error);
+        try {
+          console.error('Error JSON:', JSON.stringify(error, null, 2));
+        } catch (jsonError) {
+          // אם לא ניתן להמיר ל־JSON, פשוט נמשיך
+        }
+        const message =
+          typeof error === 'object' && error !== null
+            ? error.message || JSON.stringify(error)
+            : String(error);
 
-  throw new Error(`Failed to add multiple items: ${message}`);
-}
+        throw new Error(`Failed to add multiple items: ${message}`);
+      }
 
 
       if (!data) {
@@ -401,41 +401,41 @@ if (error) {
     }
   }
   async upsertManyItems(items: Item[]): Promise<Item[]> {
-  if (!items.length) return [];
+    if (!items.length) return [];
 
-  try {
-    console.log(`UPSERT ${items.length} items to Supabase`);
-    const dbItems = items.map(({ tagsId, ...rest }) => this.toDbItem(rest));
+    try {
+      console.log(`UPSERT ${items.length} items to Supabase`);
+      const dbItems = items.map(({ tagsId, ...rest }) => this.toDbItem(rest));
 
-    const { data, error } = await this.supabase
-      .from(this.tableName)
-      .upsert(dbItems, { onConflict: 'item_code' })
-      .select('*');
+      const { data, error } = await this.supabase
+        .from(this.tableName)
+        .upsert(dbItems, { onConflict: 'item_code' })
+        .select('*');
 
-    if (error) {
-      console.error('Error upserting items:', error);
-      throw new Error(`Failed to upsert items: ${error.message}`);
-    }
-
-    // מוסיפים את ה־tagsId מחדש
-    const upsertedItems: Item[] = [];
-    for (const dbItem of data || []) {
-      const camelCaseItem = this.fromDbItem(dbItem) as Item;
-      const originalItem = items.find(i => i.itemCode === camelCaseItem.itemCode);
-      camelCaseItem.tagsId = originalItem?.tagsId ?? [];
-      if (camelCaseItem.tagsId.length > 0) {
-        await this.setTagsForItem(camelCaseItem.itemCode, camelCaseItem.tagsId);
+      if (error) {
+        console.error('Error upserting items:', error);
+        throw new Error(`Failed to upsert items: ${error.message}`);
       }
-      upsertedItems.push(camelCaseItem);
-    }
 
-    console.log(`UPSERT completed successfully for ${upsertedItems.length} items.`);
-    return upsertedItems;
-  } catch (error: any) {
-    console.error(`Error in upsertManyItems: ${error.message}`);
-    throw error;
+      // מוסיפים את ה־tagsId מחדש
+      const upsertedItems: Item[] = [];
+      for (const dbItem of data || []) {
+        const camelCaseItem = this.fromDbItem(dbItem) as Item;
+        const originalItem = items.find(i => i.itemCode === camelCaseItem.itemCode);
+        camelCaseItem.tagsId = originalItem?.tagsId ?? [];
+        if (camelCaseItem.tagsId.length > 0) {
+          await this.setTagsForItem(camelCaseItem.itemCode, camelCaseItem.tagsId);
+        }
+        upsertedItems.push(camelCaseItem);
+      }
+
+      console.log(`UPSERT completed successfully for ${upsertedItems.length} items.`);
+      return upsertedItems;
+    } catch (error: any) {
+      console.error(`Error in upsertManyItems: ${error.message}`);
+      throw error;
+    }
   }
-}
 
 
   async getAllItems(): Promise<Item[]> {
@@ -610,6 +610,35 @@ if (error) {
     } catch (error: any) {
       console.error(`Error in getItemsWithoutTags: ${error.message}`);
       throw error;
+    }
+  }
+
+
+
+  async fuzzySearchItemsJoinPriceForStores(itemText: string, storepks: string[]): Promise<ProductDTO[]> {
+    if (!this.supabase) {
+      console.warn("⚠️ Supabase client not initialized");
+      return [];
+    }
+
+    try {
+      const { data: rawItems, error } = await this.supabase.rpc('fuzzy_search_items_join_price_for_stores', {
+        search_query: itemText,
+        storepks: storepks
+      });
+
+      if (error) {
+        console.error("❌ Error calling fuzzy_search_items_join_price_for_stores:", error.message);
+        throw new Error(`Failed fuzzy search: ${error.message}`);
+      }
+
+      if (!rawItems || rawItems.length === 0) {
+        return [];
+      }
+      return rawItems as ProductDTO[];
+    } catch (err: any) {
+      console.error("💥 Error in fuzzySearchItemsJoinPriceForStores:", err.message);
+      throw err;
     }
   }
 }
