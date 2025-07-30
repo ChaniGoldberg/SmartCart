@@ -6,32 +6,66 @@ interface UserContextType {
   setUser: (user: User | null) => void;
   token: string | null;
   setToken: (token: string | null) => void;
+  loading: boolean;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('token');
+  });
 
-  // useEffect שנטען פעם אחת עם טעינת הקומפוננטה
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const fetchUser = async () => {
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("User fetch failed");
+        }
+
+        const user = await res.json();
+        setUser(user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
     }
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
+  }, [token]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, token, setToken }}>
+    <UserContext.Provider value={{ user, setUser, token, setToken, loading }}>  
       {children}
     </UserContext.Provider>
   );
 };
+
 
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
