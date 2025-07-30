@@ -17,34 +17,52 @@ export const promotionsService: IPromotions = {
     if (!storePK || typeof storePK !== "string") {
       throw { status: 400, message: "Invalid or missing storePK" };
     }
-    if (typeof itemCode !== "string" ) {
+    if (typeof itemCode !== "string") {
       throw { status: 400, message: "Invalid or missing itemCode. Expected a string." };
     }
-
+  
     const today = new Date().toISOString();
-
-    const { data, error } = await supabase
+  
+    // 1. קבל את כל המבצעים החלים בחנות בטווח תאריכים
+    const { data: promotions, error: promotionsError } = await supabase
       .from("promotion")
       .select("*")
       .eq("store_pk", storePK)
-      .eq("promotion_items_code", itemCode)
       .lte("start_date", today)
       .gte("end_date", today);
-
-    if (error) {
-      console.error("Supabase error:", error.message);
+  
+    if (promotionsError || !promotions) {
+      console.error("Supabase error:", promotionsError?.message);
       throw { status: 500, message: "Failed to fetch promotions" };
     }
-
-    const promotions = data.map((promotion: Promotion) => ({
-      promotionId: promotion.promotionId,
-      promotionDescription: promotion.promotionDescription,
-      isActive: promotion.isActive,
-      requiresCoupon: promotion.requiresCoupon,
+  
+    // 2. קבל את כל רשומות הקישור של פריטי מבצעים בטבלה promotion_items
+    const promotionIds = promotions.map(p => p.promotion_id);
+  
+    const { data: promotionItems, error: promotionItemsError } = await supabase
+      .from("promotion_items")
+      .select("promotion_id, item_code")
+      .in("promotion_id", promotionIds)
+      .eq("item_code", itemCode);
+  
+    if (promotionItemsError) {
+      console.error("Supabase error:", promotionItemsError.message);
+      throw { status: 500, message: "Failed to fetch promotion items" };
+    }
+  
+    const matchedPromotionIds = new Set(promotionItems.map(pi => pi.promotion_id));
+  
+    // 3. סנן את המבצעים שיש להם את הפריט המבוקש
+    const filteredPromotions = promotions.filter(p => matchedPromotionIds.has(p.promotion_id));
+  
+    // 4. החזר את התוצאות בפורמט הרצוי
+    return filteredPromotions.map(promotion => ({
+      promotionId: promotion.promotion_id,
+      promotionDescription: promotion.promotion_description,
+      isActive: promotion.is_active,
+      requiresCoupon: promotion.requires_coupon,
     }));
-
-    return promotions;
-  },
-};
+  }
+}  
   
 export default promotionsService;

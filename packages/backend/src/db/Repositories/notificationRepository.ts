@@ -31,11 +31,11 @@ export class NotificationRepository implements INotificationRepository {
     return {
       notificationId: dbNotification.notification_id,
       productCode: dbNotification.product_code,
-      username: dbNotification.username,
+      username: dbNotification.user_name,
       isActive: dbNotification.is_active,
       hasBeenTriggered: dbNotification.has_been_triggered,
       notificationType: dbNotification.notification_type,
-      createdAt: new Date(dbNotification.createdat),
+      createdAt: new Date(dbNotification.created_at),
       updatedAt: new Date(dbNotification.updated_at),
     };
   }
@@ -183,7 +183,7 @@ export class NotificationRepository implements INotificationRepository {
       const notifications = data.map((dbNotification: any) => ({
         notificationId: dbNotification.notificationid,
         productCode: dbNotification.productcode,
-        username: dbNotification.username,
+        username: dbNotification.user_name,
         isActive: dbNotification.isactive,
         hasBeenTriggered: dbNotification.hasbeentriggered,
         notificationType: dbNotification.notificationtype,
@@ -269,7 +269,7 @@ export class NotificationRepository implements INotificationRepository {
         .select('*')
         .eq('is_active', true)
         .eq('has_been_triggered', false)
-        .order('createdat', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching active untriggered notifications:', error);

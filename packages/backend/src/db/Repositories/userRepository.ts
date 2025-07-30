@@ -209,6 +209,31 @@ export class UserRepository implements IUserRepository {
         }
     }
 
+    async getUserByUsername(username: string): Promise<User | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .select('*')
+                .eq('user_name', username)
+                .single();
+    
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    return null;
+                }
+                console.error('Error fetching user by username:', error);
+                throw new Error(`Failed to fetch user by username: ${error.message}`);
+            }
+    
+            return data ? this.fromDbUser(data) : null;
+        } catch (error: any) {
+            console.error(`Error in getUserByUsername: ${error.message}`);
+            throw error;
+        }
+    }
+    
+
+
     async deleteUserById(userId: string): Promise<void> {
         try {
             const { error } = await this.supabase
