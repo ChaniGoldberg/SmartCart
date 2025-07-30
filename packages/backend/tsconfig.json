@@ -48,15 +48,26 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "composite": true
   },
-  "include": ["src/**/*", "scripts/**/*", "jest.config.js"],
+  "include": [
+  "src/**/*",
+  "scripts/**/*",
+  "jest.config.js",
+  "utils/**/*",
+  "mockData/**/*",
+  "../../shared/src"
+],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.spec.ts",
     "**/*.test.ts",
     "src/services/tests/**"
+  ],
+  "references": [
+    { "path": "../shared" }
   ],
   "ts-node": {
     "esm": false

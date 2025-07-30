@@ -20,7 +20,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
-  const [selectedStorePK, setSelectedStorePK] = useState<number | null>(null);
+  const [selectedStorePK, setSelectedStorePK] = useState<string | null>(null);
   const [stores, setStores] = useState<Store[]>([]);
 
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; userName?: string }>({});
@@ -134,7 +134,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 
             <select
               value={selectedStorePK ?? ''}
-              onChange={(e) => setSelectedStorePK(Number(e.target.value))}
+              onChange={(e) => setSelectedStorePK(e.target.value)} 
               className="p-3 rounded-md border border-gray-300 text-base"
               required
             >

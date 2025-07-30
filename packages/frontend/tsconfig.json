@@ -29,6 +29,7 @@
 // }
 
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -45,13 +46,15 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-
-    // ✅ נוספו:
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "paths": {
       "@smartcart/shared": ["../shared/src/index.ts"],
       "@smartcart/shared/*": ["../shared/src/*"]
-    }
+    },
+    "composite": true
   },
-  "include": ["src", "../shared/src"]
+  "include": ["src", "../shared/src"],
+  "references": [
+    { "path": "../shared" }
+  ]
 }

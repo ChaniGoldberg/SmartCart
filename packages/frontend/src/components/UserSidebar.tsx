@@ -9,7 +9,13 @@ interface UserSidebarProps {
 }
 
 const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
-  const { user, setUser, setToken } = useUser();
+  const { user, setUser, token, setToken } = useUser();
+  useEffect(() => {
+    if (token !== null) {
+      console.log("🔑 Current token:", token);
+    }
+  }, [token]);
+
   const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -27,8 +33,40 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
     setEmail(user?.email || '');
   }, [user]);
 
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'user') {
+        setUser(event.newValue ? JSON.parse(event.newValue) : null);
+      }
+      if (event.key === 'token') {
+        setToken(event.newValue);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [setUser, setToken]);
+
+
   const handleLogout = async () => {
-    setIsSwalActive(true); 
+    setIsSwalActive(true);
 
     const result = await Swal.fire({
       title: 'האם את/ה בטוח/ה שברצונך להתנתק?',
@@ -47,7 +85,7 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
     setIsSwalActive(false);
 
     if (result.isConfirmed) {
-      setIsSwalActive(true);  
+      setIsSwalActive(true);
       await Swal.fire({
         title: 'התנתקת בהצלחה',
         icon: 'success',
@@ -58,7 +96,7 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
           popup: 'text-right rtl',
         },
       });
-      setIsSwalActive(false);  
+      setIsSwalActive(false);
 
       localStorage.removeItem('user');
       localStorage.removeItem('token');
@@ -69,7 +107,7 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -82,32 +120,110 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    const updatedUser = {
-      ...user,
-      userName: name,
+    if (!user?.userId) {
+      console.error("❌ User ID is missing. Cannot update user.");
+      return;
+    }
+
+    const updatedUser: any = {
       email,
-      password: password || user?.password || '',
     };
 
-    alert('הפרופיל עודכן בהצלחה!');
-    setIsEditing(false);
-    onClose();
-  };
 
+    if (name.trim() && name !== user?.userName) {
+      updatedUser.userName = name;
+    }
+    if (user?.preferred_store) {
+      updatedUser.preferred_store = user.preferred_store;
+    }
+    if (password) {
+      updatedUser.password = password;
+    }
+
+    if (
+      !updatedUser.userName &&
+      !updatedUser.preferred_store &&
+      !updatedUser.password
+    ) {
+      Swal.fire({
+        icon: 'info',
+        title: 'לא בוצע שינוי',
+        text: 'לא הזנת אף שדה לעדכון',
+        confirmButtonText: 'סגור',
+        customClass: {
+          popup: 'text-right rtl',
+        },
+      });
+      return;
+    }
+
+
+    try {
+      const response = await fetch('/api/users/updateUser', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedUser),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Swal.fire({
+          icon: 'error',
+          title: 'עדכון נכשל',
+          confirmButtonText: 'אוקיי',
+          customClass: {
+            popup: 'text-right rtl',
+          },
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'עודכן בהצלחה',
+        confirmButtonText: 'אישור',
+        confirmButtonColor: '#3085d6',
+        customClass: {
+          popup: 'text-right rtl',
+        },
+      });
+
+      setUser(data.user);
+      setToken(data.token);
+      localStorage.setItem('token', data.token);
+
+      setIsEditing(false);
+      onClose();
+
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'שגיאת שרת',
+        text: 'נסי שוב מאוחר יותר',
+        confirmButtonText: 'סגור',
+        confirmButtonColor: '#d33',
+        customClass: {
+          popup: 'text-right rtl',
+        },
+      });
+    }
+  };
   return (
     <>
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-40"
           onClick={onClose}
-          style={{ display: isSwalActive ? 'none' : 'block' }}  
         />
       )}
 
       <div
         className={`fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'
           } flex flex-col`}
-        style={{ pointerEvents: isSwalActive ? 'none' : 'auto' }} 
       >
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-lg font-bold text-teal-700">
@@ -159,8 +275,7 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ isOpen, onClose }) => {
             <input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              readOnly
               className="mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
               required
             />

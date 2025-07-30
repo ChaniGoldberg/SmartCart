@@ -1,14 +1,13 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { IUserRepository } from "../IRepositories/IUserRepository";
-import { User } from "../../../../shared/src/user";
+import { User } from "@smartcart/shared";
 
 export class UserRepository implements IUserRepository {
     private readonly tableName = 'users';
 
     constructor(private supabase: SupabaseClient) {}
 
-    // המרה ל-snake_case (עבור שליחה ל-DB)
-    private toDbUser(user: Partial<User>) {
+    private toDbUserInsert(user: Omit<User, 'userId'>) {
         return {
             email: user.email,
             password: user.password,
@@ -17,7 +16,15 @@ export class UserRepository implements IUserRepository {
         };
     }
 
-    // המרה מ-snake_case ל-camelCase (כאשר מקבלים מה-DB)
+    private toDbUserUpdate(user: User) {
+        return {
+            email: user.email,
+            password: user.password,
+            user_name: user.userName,
+            preferred_store: user.preferred_store || null,
+        };
+    }
+
     private fromDbUser(dbUser: any): User {
         return {
             userId: dbUser.user_id,
@@ -32,7 +39,7 @@ export class UserRepository implements IUserRepository {
         try {
             const { data, error } = await this.supabase
                 .from(this.tableName)
-                .insert([this.toDbUser(user)])
+                .insert([this.toDbUserInsert(user)])
                 .select('*');
 
             if (error) {
@@ -58,7 +65,7 @@ export class UserRepository implements IUserRepository {
         }
 
         try {
-            const dbUsers = users.map(user => this.toDbUser(user));
+            const dbUsers = users.map(user => this.toDbUserInsert(user));
             const { data, error } = await this.supabase
                 .from(this.tableName)
                 .insert(dbUsers)
@@ -84,7 +91,7 @@ export class UserRepository implements IUserRepository {
         try {
             const { data, error } = await this.supabase
                 .from(this.tableName)
-                .update(this.toDbUser(user))
+                .update(this.toDbUserUpdate(user))
                 .eq('user_id', user.userId)
                 .select('*');
 
@@ -115,7 +122,7 @@ export class UserRepository implements IUserRepository {
             for (const user of users) {
                 const { data, error } = await this.supabase
                     .from(this.tableName)
-                    .update(this.toDbUser(user))
+                    .update(this.toDbUserUpdate(user))
                     .eq('user_id', user.userId)
                     .select('*');
 
@@ -201,6 +208,31 @@ export class UserRepository implements IUserRepository {
             throw error;
         }
     }
+
+    async getUserByUsername(username: string): Promise<User | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .select('*')
+                .eq('user_name', username)
+                .single();
+    
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    return null;
+                }
+                console.error('Error fetching user by username:', error);
+                throw new Error(`Failed to fetch user by username: ${error.message}`);
+            }
+    
+            return data ? this.fromDbUser(data) : null;
+        } catch (error: any) {
+            console.error(`Error in getUserByUsername: ${error.message}`);
+            throw error;
+        }
+    }
+    
+
 
     async deleteUserById(userId: string): Promise<void> {
         try {

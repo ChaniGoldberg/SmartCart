@@ -14,6 +14,5 @@ export interface Store {
   zipCode: string;
   latitude?: number | null;
   longitude?: number | null;
-
 }
 

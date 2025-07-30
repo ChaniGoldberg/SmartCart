@@ -1,4 +1,4 @@
-import { User } from "../../../../shared/src/user";
+import { User } from "@smartcart/shared";
 
 export interface IUserRepository {
   addUser(user: User): Promise<User>;
