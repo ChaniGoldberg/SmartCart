@@ -25,6 +25,7 @@
     "concurrently": "^8.2.2",
     "jest": "^29.7.0",
     "postcss": "^8.5.6",
+    "sweetalert2": "^11.22.2",
     "ts-jest": "^29.4.0"
   },
   "dependencies": {
