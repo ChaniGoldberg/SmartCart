@@ -4,20 +4,85 @@ import { ProductDTO } from '@smartcart/shared/src/dto/Product.dto';
 import { Tag } from '@smartcart/shared/src/tag';
 import { searchProductApiService } from '../../services/searcProductApi';
 import { StoreContext } from 'src/store/storage/StoreProvider';
+import { Store } from '@smartcart/shared/src';
+
+// סופרים קבועים
+const staticStores: Store[] = [
+  {
+    storePK: "7290058140886-1-010",
+    storeId: 10,
+    chainName: "רמי לוי שיווק השקמה",
+    chainId: "7290058140886",
+    subChainName: "מודיעין חדש",
+    subChainId: 1,
+    storeName: "מודיעין חדש",
+    address: "א.ת שילת",
+    city: "מודיעין עילית",
+    zipCode: "7318800"
+  },
+  {
+    storePK: "7290103152017-1-028",
+    storeId: 28,
+    chainName: "אושר עד",
+    chainId: "7290103152017",
+    subChainName: "שמגר",
+    subChainId: 1,
+    storeName: "שמגר",
+    address: "שמגר 16",
+    city: "ירושלים",
+    zipCode: "9446116"
+  },
+  {
+    storePK: "7290103152017-1-031",
+    storeId: 31,
+    chainName: "אושר עד",
+    chainId: "7290103152017",
+    subChainName: "כפר סבא",
+    subChainId: 1,
+    storeName: "כפר סבא",
+    address: "דרך הים 9",
+    city: "כפר סבא",
+    zipCode: "4418001"
+  },
+  {
+    storePK: "7290058140886-1-048",
+    storeId: 48,
+    chainName: "רמי לוי שיווק השקמה",
+    chainId: "7290058140886",
+    subChainName: "עטרות",
+    subChainId: 1,
+    storeName: "עטרות",
+    address: "קניון עטרות",
+    city: "ירושלים",
+    zipCode: "9711471"
+  }
+];
+
 export const CompareComponent = () => {
-  const { selectedStores } = useContext(StoreContext); // get stores from context
-  // Always include these PKs
+  const { selectedStores } = useContext(StoreContext);
+
+  // תמיד לכלול את הסופרים הקבועים
   const alwaysIncludePKs = [
     "7290058140886-1-010",
     "7290058140886-1-048",
     "7290103152017-1-031",
     "7290103152017-1-028"
   ];
-  // Merge storePKs from context with alwaysIncludePKs (no duplicates)
+
+  // מיזוג storePKs מהקונטקסט עם הקבועים (ללא כפילויות)
   const storePKs = [
     ...(selectedStores ? selectedStores.map((store: any) => store.storePK) : []),
     ...alwaysIncludePKs
   ].filter((pk, idx, arr) => arr.indexOf(pk) === idx);
+
+  // מיזוג כל הסופרים (נבחרים + קבועים) ללא כפילויות
+  const allStores: Store[] = [
+    ...(selectedStores ?? []),
+    ...staticStores
+  ].filter(
+    (store, idx, arr) => arr.findIndex(s => s.storePK === store.storePK) === idx
+  );
+
   const [tags, setTags] = useState<Tag[]>([]);
   const [products, setProducts] = useState<ProductDTO[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +90,7 @@ export const CompareComponent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -37,7 +103,9 @@ export const CompareComponent = () => {
     };
     fetchTags();
   }, []);
+
   const handleSearch = async () => {
+    setProducts([]); // איפוס רשימת המוצרים לפני חיפוש חדש
     setHasSearched(true);
     setLoading(true);
     setError('');
@@ -52,6 +120,7 @@ export const CompareComponent = () => {
       setLoading(false);
     }
   };
+
   const handleTagClick = async (tagId: number) => {
     setSearchTerm('');
     setSelectedTagId(tagId);
@@ -69,6 +138,7 @@ export const CompareComponent = () => {
       setLoading(false);
     }
   };
+
   return (
     <div
       className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg"
@@ -142,13 +212,21 @@ export const CompareComponent = () => {
       )}
       {products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {products.map((product) => (
-            <div key={product.priceId} className="border p-4 rounded-lg shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.ProductName}</h3>
-              <p className="text-gray-600 mb-1">תיאור: {product.manufacturerItemDescription}</p>
-              <p className="text-teal-700 font-bold">מחיר: ₪{product.price.toFixed(2)}</p>
-            </div>
-          ))}
+          {products.map((product) => {
+            // מציאת שם החנות לפי ה-storePK מתוך allStores
+            const store = allStores.find((s) => s.storePK === product.storePK);
+            const storeName = store
+              ? `${store.chainName} - ${store.storeName}`
+              : "חנות לא ידועה";
+            return (
+              <div key={product.priceId} className="border p-4 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.ProductName}</h3>
+                <p className="text-gray-600 mb-1">תיאור: {product.manufacturerItemDescription}</p>
+                <p className="text-teal-700 font-bold">מחיר: ₪{product.price.toFixed(2)}</p>
+                <p className="text-gray-500 mt-2">חנות: {storeName}</p>
+              </div>
+            );
+          })}
         </div>
       ) : (
         hasSearched &&
