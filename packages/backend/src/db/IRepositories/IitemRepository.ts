@@ -1,4 +1,4 @@
-import { Item } from "../../../../shared/src/item";
+import { Item } from "@smartcart/shared";
 
 export interface IItemRepository {
   addItem(item: Item): Promise<Item>;

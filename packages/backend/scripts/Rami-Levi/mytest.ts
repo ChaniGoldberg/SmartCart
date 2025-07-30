@@ -1,4 +1,4 @@
-import { testItemsFromLocalFilesOnly } from './updateDailyDataForRamiLevi';
+import {updateDailyForData } from './updateDailyDataForRamiLevi';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -26,7 +26,7 @@ console.error = (...args: any[]) => {
 (async () => {
   console.log('🚀 התחלת הבדיקה של updateDailyForData');
   try {
-    await testItemsFromLocalFilesOnly();
+    await updateDailyForData();
     console.log('✅ הפונקציה הסתיימה בהצלחה');
   } catch (err) {
     console.error('❌ שגיאה במהלך הרצת הפונקציה:', err);

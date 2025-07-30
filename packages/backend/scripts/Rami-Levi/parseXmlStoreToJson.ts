@@ -1,4 +1,4 @@
-import { Store } from "@smartcart/shared/src/store";
+import { Store } from "@smartcart/shared";
 import { parseStringPromise } from "xml2js";
 import * as fs from "fs/promises";
 import * as iconv from "iconv-lite";
@@ -48,7 +48,7 @@ export async function readAndParseXmlFile(xmlFilePath: string): Promise<any> {
 export function extractStoresFromXmlToStore(jsonData: any): Store[] {
   console.log("in the 3 function!!!!!!!!!!!!!!!");
 
-  const chainId = Number(jsonData?.ChainID ?? 0);
+  const chainId = jsonData?.ChainID ?? "";
   const chainName = jsonData?.ChainName ?? "";
 
   const subChain = jsonData?.SubChains?.SubChain;
@@ -62,7 +62,6 @@ export function extractStoresFromXmlToStore(jsonData: any): Store[] {
     storePK: `${chainId}-${subChainId}-${store.StoreID}`,
     storeId: Number(store.StoreID ?? 0),
     chainId,
-    chainName,
     subChainId,
     subChainName,
     storeName: store.StoreName ?? "",

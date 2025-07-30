@@ -1,12 +1,17 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { cartContext } from '../store/redux/cartRedux';
 import ProductDetails from './ProductDetails';
 import '../index.css';
 import '../App.css';
 import CheapProductAlternatives from './AlternativeItemsList';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, X } from 'lucide-react';
+import ShareCartPopup from './ShareCartPopup'; // חדש
+import ProductSearchComponent from './product-search-component';
+
 const Cart: React.FC = () => {
   const context = useContext(cartContext);
+    const [showPopup, setShowPopup] = useState(false);
+  const [showProductSearch, setShowProductSearch] = useState(false); // State for ProductSearchComponent
   if (!context) {
     throw new Error("Cart must be used within a CartProvider");
   }
@@ -20,6 +25,15 @@ const Cart: React.FC = () => {
         <ShoppingCart className="h-8 w-8 text-teal-600" />
         סל קניות
       </h1>
+      <button
+        onClick={() => setShowProductSearch(!showProductSearch)} // Toggle the ProductSearchComponent visibility
+        className="mt-4 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded"
+      >
+        {showProductSearch ? 'סגור חיפוש מוצרים' : 'חיפוש מוצרים'} 
+      </button>
+
+      {showProductSearch && <div className="w-full">< ProductSearchComponent /></div>} {/* Conditionally render the component */}
+     
 
       <main className="w-full max-w-6xl flex flex-col items-center">
         <h2 className="text-2xl mb-8 text-gray-800 text-right w-full "> ({cartItems.length}):כמות פריטים בסל</h2>
@@ -33,6 +47,13 @@ const Cart: React.FC = () => {
           </div>
         )}
       </main>
+       <button
+        onClick={() => setShowPopup(true)}
+  className="mt-10 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded"
+      >
+        שתף סל במייל
+      </button>
+  {showPopup && <ShareCartPopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 };

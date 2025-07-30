@@ -1,7 +1,7 @@
 
 // src/services/notificationService.ts
 import { INotificationRepository } from "../db/IRepositories/INotificationRepository";
-import { Notification } from "@smartcart/shared/src/notification";
+import { Notification } from "@smartcart/shared";
 import { NotificationRepository } from "../db/Repositories/notificationRepository";
 import { supabase } from "./supabase";
 

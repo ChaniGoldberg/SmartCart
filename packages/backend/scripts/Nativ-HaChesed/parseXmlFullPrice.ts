@@ -17,7 +17,7 @@ export async function convertXMLPriceFullStringToFilteredJson(xmlFilePath: strin
     // Map each raw item to your Item interface
     const items: Item[] = itemsArray.map((item: any) => ({
       // PriceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : new Date(),
-      itemCode: item.itemCode !== undefined ? Number(item.itemCode) : 0,
+      itemCode: item.itemCode !== undefined ? String(item.itemCode) : "",
       itemType: item.itemType !== undefined ? Number(item.itemType) : 0,
       itemName: item.itemName || "",
       manufacturerName: item.manufacturerName || "",

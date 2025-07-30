@@ -1,7 +1,7 @@
 
 
 // src/IRepositories/INotificationRepository.ts
-import { Notification } from "@smartcart/shared/src/notification";
+import { Notification } from "@smartcart/shared";
 
 export interface INotificationRepository {
   // הוספה

@@ -1,7 +1,7 @@
-import { Tag } from "@smartcart/shared/src/tag";
+import { Tag } from "@smartcart/shared";
 import "../../mockData/tags.json";
 import "../../mockData/items.json";
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 import path from 'path';
 
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });

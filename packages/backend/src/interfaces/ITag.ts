@@ -1,5 +1,5 @@
 
-import { Tag } from "@smartcart/shared/src/tag"
+import { Tag } from "@smartcart/shared"
 export interface ITag {
 
     getAllTags(): Promise<Tag[] | null>

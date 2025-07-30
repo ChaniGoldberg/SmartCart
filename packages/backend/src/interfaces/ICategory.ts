@@ -1,8 +1,8 @@
-import { Category } from "@smartcart/shared/src/categories"
+// import { Category } from "@smartcart/shared"
 
-export interface ICategory {
+// export interface ICategory {
 
-    getAllcategory():Promise<Category[]>
-    addCategory(categoryName: string): Promise<Category> 
+//     getAllcategory():Promise<Category[]>
+//     addCategory(categoryName: string): Promise<Category> 
 
-}
+// }

@@ -1,4 +1,4 @@
-import { Price } from "@smartcart/shared/src/price"
+import { Price } from "@smartcart/shared"
 
 export interface IPrice {
 

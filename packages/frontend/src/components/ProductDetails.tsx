@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { ProductDTO } from "@smartcart/shared/src/dto/Product.dto";
-import { ProductCartDTO } from '@smartcart/shared';
+import { ProductDTO } from "@smartcart/shared";
+import { ProductCartDTO } from '@smartcart/shared/src/dto/ProductCart.dto';
 import { cartContext } from '../store/redux/cartRedux';
-import ItemCard from './ItemCard';
+import AlternativeItemsList from './AlternativeItemsList';
 interface ProductDetailsProps {
   productCart: ProductCartDTO;
   onQuantityChange?: (newQty: number) => void;
@@ -13,8 +13,17 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
   const [currentQty, setCurrentQty] = useState<number>(productCart.quantity);
   const [showConfirm, setShowConfirm] = useState(false);
   const [suggestClick, setSuggestClick] = useState(false);
+  const [alternativesItem, setAlternativesItems] = useState<ProductDTO[]>([])
 
   const { addToCart, removeFromCart } = useContext(cartContext);
+  const popUpAlternatives = async () => {
+    const updatedProductsList = [productCart.product]//.map(item => {
+  //    return { ...item, ProductName: "vvv", itemCode: "6" }; // עדכן את שם המוצר
+  //  });
+    setAlternativesItems(updatedProductsList);
+    setSuggestClick(true);
+
+  }
 
   const changeQuantity = (delta: number) => {
     const newQty = Math.max(1, currentQty + delta);
@@ -71,7 +80,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
 
   return (
     <div className="w-full max-w-10xl mx-auto mt-3 bg-white border rounded-xl shadow-md p-6 hover:shadow-lg transition group">
-      <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{productCart.product.itemName}</h2>
+      <h2 className="text-2xl font-bold text-right text-gray-800 mb-6">{productCart.product.ProductName}</h2>
       <div className="flex flex-row flex-wrap gap-4 text-sm text-gray-800 text-right relative" dir='rtl'>
         {fields.map(({ value }, index) => (
           <div key={index} className="flex items-center whitespace-nowrap">
@@ -101,7 +110,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
         <button onClick={handleRemoveItem} className="ml-1 px-1 py-1 bg-red-50 text-red-600 rounded">
           מחק פריט
         </button>
-        <button onClick={() => setSuggestClick(true)} className="ml-1 px-1 py-1 bg-blue-50 text-blue-600 rounded">
+        <button onClick={() => popUpAlternatives()} className="ml-1 px-1 py-1 bg-blue-50 text-blue-600 rounded">
           מוצר חלופי
         </button>
       </div>
@@ -126,10 +135,29 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ productCart, onQuantity
             </div>
           </div>
         </div>
+
       )}
-      {/* {suggestClick && (
-        <ItemCard item={}  />
-      )} */}
+     
+    
+      {suggestClick && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div
+            className="bg-white shadow-lg p-8 w-full max-w-md relative animate-fade-in text-right"
+            style={{ maxHeight: '80vh', overflowY: 'auto' }} // הוספת גלילה וגובה מקסימלי
+          >
+            <button
+              className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 text-xl"
+              onClick={() => setSuggestClick(false)}
+            >
+              ×
+            </button>
+            <AlternativeItemsList
+              originalItem={productCart.product}
+              alternatives={alternativesItem}
+            />
+          </div>
+        </div>
+      )}
     </div>
 
   );

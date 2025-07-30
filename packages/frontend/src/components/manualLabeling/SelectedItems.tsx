@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 interface SelectedItemsProps {
     initialItems: Item[];
     setSelectedItems: React.Dispatch<React.SetStateAction<Item[]>>

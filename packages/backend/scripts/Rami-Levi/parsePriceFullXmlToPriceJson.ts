@@ -1,6 +1,6 @@
 import * as fs from "fs/promises";
 import { parseStringPromise } from "xml2js";
-import { Price } from "@smartcart/shared/src/price";
+import { Price } from "@smartcart/shared";
 export async function parsePriceFullXmlToPriceJson(xmlFilePath: string): Promise<Price[]> {
     try {
         // Read the XML file as a string
@@ -23,10 +23,9 @@ export async function parsePriceFullXmlToPriceJson(xmlFilePath: string): Promise
         const itemsArray = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
         // Map each raw item to your Item interface
         const prices: Price[] = itemsArray.map((price: any) => ({
-            priceId: 0,
             storePK: `${chainId}-${subChainId}-${storeId}`,
-            itemId: price.itemId !== undefined ? Number(price.ItemId) : 0, // Uncomment if you add ItemId to the interface
-            itemCode: price.itemCode !== undefined ? String(price.ItemCode) : "",
+            itemId: price.ItemId !== undefined ? Number(price.ItemId) : 0, // Uncomment if you add ItemId to the interface
+            itemCode: price.ItemCode !== undefined ? String(price.ItemCode) : "",
             price: price.ItemPrice !== undefined ? Number(price.ItemPrice) : 0,
             priceUpdateDate: price.PriceUpdateDate ? new Date(price.PriceUpdateDate) : new Date(),
             unitQuantity: price.UnitQty || "",

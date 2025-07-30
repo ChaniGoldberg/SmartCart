@@ -1,4 +1,4 @@
-import { Promotion } from "../../../../shared/src/promotion";
+import { Promotion } from "@smartcart/shared";
 
 export interface IPromotionRepository {
   addPromotion(promotion: Promotion): Promise<Promotion>;

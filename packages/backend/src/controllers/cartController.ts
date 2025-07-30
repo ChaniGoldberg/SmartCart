@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { getValidStores } from "../services/storeService";
-import { getPriceByStoreIDItemID, getProductwithPomotionPrice, getRelevantPromotionsForCart } from "../services/cartService";
+import { getPriceByStorePKItemID, getProductwithPomotionPrice, getRelevantPromotionsForCart } from "../services/cartService";
 import { promotionsService } from "../services/promotionServices";
 import { shoppingCartTotalSummary } from "../services/cartService";
 import { CartDTO, ProductCartDTO, ProductDTO } from "@smartcart/shared";
-import { Price } from "@smartcart/shared/src/price";
+import { Price } from "@smartcart/shared";
 import { findStoresWithinRadius } from "../../utils/findStoresWithinRadius";
+
 
 export const compareCart = async (req: Request, res: Response) => {
   console.log("compareCart called with body:", req.body);
@@ -29,7 +29,7 @@ export const compareCart = async (req: Request, res: Response) => {
       // שלב 4: עבור כל פריט בסל הקניות
       for (const item of cartItems) {
         // שלב 5: קבלת המחיר עבור פריט וסופרמרקט
-        const priceData = await getPriceByStoreIDItemID(store.store.storePK, item.itemId);
+        const priceData = await getPriceByStorePKItemID(store.store.storePK, item.itemId);
         console.log(`Price for item ${item.itemId} in store ${store.store.storePK}:`, priceData);
 
         if (priceData) {
@@ -41,7 +41,7 @@ export const compareCart = async (req: Request, res: Response) => {
       }
 
       const promotions = await promotionsService.selectPromotionsByStorePK(store.store.storePK);
-      const relevantPromotions =await getRelevantPromotionsForCart(prices, promotions);
+      const relevantPromotions =await getRelevantPromotionsForCart(prices);
       // הוספת פרטי הפריט עם המחיר והמבצעים
       const productsList=await getProductwithPomotionPrice(prices, relevantPromotions);
 

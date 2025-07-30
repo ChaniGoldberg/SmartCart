@@ -2,7 +2,7 @@
 // src/controllers/notificationController.ts
 import { Request, Response } from 'express';
 import notificationService from '../services/notificationsService';
-import { Notification } from "@smartcart/shared/src/notification";
+import { Notification } from "@smartcart/shared";
 
 export class NotificationController {
 
@@ -55,11 +55,11 @@ export class NotificationController {
 
   // מחיקת התראה לפי ID
   async deleteNotification(
-    req: Request<{ notificationId: string }>,
+    req: Request<{ notificationId: number }>,
     res: Response
   ): Promise<void> {
     try {
-      const notificationId = parseInt(req.params.notificationId);
+      const notificationId = req.params.notificationId
 
       if (isNaN(notificationId)) {
         res.status(400).json({ message: 'Invalid notification ID' });
@@ -82,37 +82,37 @@ export class NotificationController {
 
   // עדכון סטטוס התראה (הפעלה/כיבוי)
   async toggleNotificationStatus(
-    req: Request<{ notificationId: string }, {}, { isActive: boolean }>,
-    res: Response
-  ): Promise<void> {
-    try {
-      const notificationId = parseInt(req.params.notificationId);
-      const { isActive } = req.body;
+  req: Request<{ notificationId: string; isActive: string }>,
+  res: Response
+): Promise<void> {
 
-      if (isNaN(notificationId)) {
-        res.status(400).json({ message: 'Invalid notification ID' });
-        return;
-      }
+  
+  try {
+    const notificationId = parseInt(req.params.notificationId);
+    const isActiveParam = req.params.isActive.toLowerCase();
 
-      if (typeof isActive !== 'boolean') {
-        res.status(400).json({ message: 'isActive must be a boolean' });
-        return;
-      }
-
-      const result = await notificationService.toggleNotificationStatus(notificationId, isActive);
-
-      res.status(200).json({ 
-        message: `Notification ${isActive ? 'activated' : 'deactivated'} successfully`,
-        isActive: result
-      });
-    } catch (error: any) {
-      console.error('Error updating notification status:', error);
-      res.status(500).json({ 
-        message: 'Failed to update notification status', 
-        error: error.message 
-      });
+    if (isNaN(notificationId)) {
+      res.status(400).json({ message: 'Invalid notification ID' });
+      return;
     }
+
+    // הופך את המחרוזת ל־boolean
+    const isActive = isActiveParam === 'true';
+
+    const result = await notificationService.toggleNotificationStatus(notificationId, isActive);
+
+    res.status(200).json({
+      message: `Notification ${isActive ? 'activated' : 'deactivated'} successfully`,
+      isActive: result
+    });
+  } catch (error: any) {
+    console.error('Error updating notification status:', error);
+    res.status(500).json({
+      message: 'Failed to update notification status',
+      error: error.message
+    });
   }
+}
 
   // שליפת כל ההתראות לפי משתמש
   async getNotificationsByUsername(
@@ -148,6 +148,8 @@ export class NotificationController {
     req: Request,
     res: Response
   ): Promise<void> {
+    console.log("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+    ("in the controller")
     try {
       const notifications = await notificationService.getAllNotifications();
 

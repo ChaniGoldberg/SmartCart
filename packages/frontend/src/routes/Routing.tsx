@@ -6,6 +6,9 @@ import Cart from "../components/Cart"
 import AuthForm from "../components/authForm";
 import Login from "../pages/Login";
 import ProductSearchComponent from "../components/product-search-component";
+import AlertsList from "../components/Notification";
+import path from "path";
+import UserEditComponent from "../pages/EditUser";
 
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },
@@ -14,7 +17,8 @@ export const routes = [
     //  { path: "/login", element: <Login />, label: "התחברות" },
      { path: "/cart", element: <Cart />, label: "סל" },
     { path: "/search", element: <ProductSearchComponent />, label: "סל" },
-
+ { path: "/notification", element: <AlertsList/>, label: "ההתראות שלי" },
+    {path:"/profile",element:<UserEditComponent></UserEditComponent>,label:"פרופיל"}
 ];
 
 export const Routing = () => {

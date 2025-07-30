@@ -1,7 +1,7 @@
 
 import { SupabaseClient } from "@supabase/supabase-js";
 import { ITagRepository } from "../IRepositories/ItagRepository";
-import { Tag } from "../../../../shared/src/tag";
+import { Tag } from "@smartcart/shared";
 
 export class TagRepository implements ITagRepository {
     private readonly tableName = 'tag';

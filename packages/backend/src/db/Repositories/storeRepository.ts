@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { IStoreRepository } from "../IRepositories/IStoreRepository";
-import { Store } from "../../../../shared/src/store";
+import { Store } from "@smartcart/shared";
 
 export class StoreRepository implements IStoreRepository {
     private readonly tableName = 'store';
@@ -20,6 +20,8 @@ export class StoreRepository implements IStoreRepository {
             address: store.address,
             city: store.city,
             zip_code: store.zipCode,
+            latitude: store.latitude ?? null,  
+            longitude: store.longitude ?? null,
         };
     }
 
@@ -35,65 +37,62 @@ export class StoreRepository implements IStoreRepository {
           address: db.address,
           city: db.city,
           zipCode: db.zip_code,
-        };
-      }
-
+          latitude: db.latitude ?? null,  
+          longitude: db.longitude ?? null,
+      };
+    }
     async addStore(store: Store): Promise<Store> {
-        try {
-            console.log(`Adding store: ${store.storeName} to Supabase`);
-            const { data, error } = await this.supabase
-                .from(this.tableName)
-                .insert([this.toDbStore(store)])
-                .select('*');
+      try {
+          console.log(`Upserting store: ${store.storeName} to Supabase`);
+          const { data, error } = await this.supabase
+              .from(this.tableName)
+              .upsert([this.toDbStore(store)], { onConflict: 'store_pk' }) // שנה בהתאם לשם העמודה שלך
+              .select('*');
+  
+          if (error) {
+              console.error('Error upserting store:', error);
+              throw new Error(`Failed to upsert store: ${error.message}`);
+          }
+  
+          if (!data || data.length === 0) {
+              throw new Error('No data returned after upserting store.');
+          }
+  
+          console.log('Store upserted successfully:', data[0]);
+          return store;
+      } catch (error: any) {
+          console.error(`Error in addStore: ${error.message}`);
+          throw error;
+      }
+  }
+  
 
-            if (error) {
-                console.error('Error inserting store:', error);
-                throw new Error(`Failed to add store: ${error.message}`);
-            }
-
-            if (!data || data.length === 0) {
-                throw new Error('No data returned after adding store.');
-            }
-
-            console.log('Store added successfully:', data[0]);
-            return store;
-        } catch (error: any) {
-            console.error(`Error in addStore: ${error.message}`);
-            throw error;
+  async addManyStores(stores: Store[]): Promise<Store[]> {
+      if (stores.length === 0) {
+        console.log('No stores to add.');
+        return [];
+      }
+    
+      try {
+        const dbStores = stores.map(store => this.toDbStore(store));
+        const { data, error } = await this.supabase
+          .from(this.tableName)
+          .upsert(dbStores, { onConflict: 'store_pk' })
+          .select('*');
+    
+        if (error) {
+          console.error('Error upserting multiple stores:', error);
+          throw new Error(`Failed to upsert multiple stores: ${error.message}`);
         }
+    
+        console.log(`${data?.length} stores upserted successfully.`);
+        return stores;
+      } catch (error: any) {
+        console.error(`Error in addManyStores: ${error.message}`);
+        throw error;
+      }
     }
-
-    async addManyStores(stores: Store[]): Promise<Store[]> {
-        if (stores.length === 0) {
-            console.log('No stores to add.');
-            return [];
-        }
-
-        try {
-            console.log(`Adding ${stores.length} stores to Supabase via bulk insert`);
-            const dbStores = stores.map(store => this.toDbStore(store));
-            const { data, error } = await this.supabase
-                .from(this.tableName)
-                .insert(dbStores)
-                .select('*');
-
-            if (error) {
-                console.error('Error inserting multiple stores:', error);
-                throw new Error(`Failed to add multiple stores: ${error.message}`);
-            }
-
-            if (!data) {
-                throw new Error('No data returned after adding multiple stores.');
-            }
-
-            console.log(`${data.length} stores added successfully.`);
-            return stores;
-        } catch (error: any) {
-            console.error(`Error in addManyStores: ${error.message}`);
-            throw error;
-        }
-    }
-
+    
     async updateStore(store: Store): Promise<Store> {
         try {
             console.log(`Updating store: ${store.storeName} (id: ${store.storePK}) in Supabase`);
@@ -171,6 +170,25 @@ export class StoreRepository implements IStoreRepository {
           return (data || []).map(this.fromDbStore); // ← ההמרה כאן
         } catch (error: any) {
           console.error(`Error in getAllStores: ${error.message}`);
+          throw error;
+        }
+      }
+
+
+      async getAllStoresMinimal(): Promise<{ store_pk: string; latitude?: number; longitude?: number }[]> {
+        try {
+          const { data, error } = await this.supabase
+            .from(this.tableName)
+            .select('store_pk, latitude, longitude');
+      
+          if (error) {
+            console.error('Error fetching minimal store data:', error);
+            throw new Error(`Failed to fetch stores: ${error.message}`);
+          }
+      
+          return data || [];
+        } catch (error: any) {
+          console.error(`Error in getAllStoresMinimal: ${error.message}`);
           throw error;
         }
       }

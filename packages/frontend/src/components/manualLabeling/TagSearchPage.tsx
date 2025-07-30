@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import ProductSearchPage from "./ProductSearchPage";
 import SearchProduct from "./SearchProduct";
-import { Tag } from "@smartcart/shared/src/tag";
+import { Tag } from "@smartcart/shared";
 import SelectedItems from "./SelectedItems";
-import { Item } from "@smartcart/shared/src/item";
+import { Item } from "@smartcart/shared";
 import ProductTagger from "./ProductTagger";
 
 const TagSearchPage: React.FC = () => {

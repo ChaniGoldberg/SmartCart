@@ -1,10 +1,10 @@
 import React from 'react';
-import { Item } from '@smartcart/shared';
+import { ItemFromTypes } from '@smartcart/shared';
 import AlternativeItemsList from './AlternativeItemsList';
 
 interface ItemCardProps {
-  item: Item;
-  onClick?: (item: Item) => void;
+  item: ItemFromTypes;
+  onClick?: (item: ItemFromTypes) => void;
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({ item, onClick }) => {
@@ -38,10 +38,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onClick }) => {
     >
       <h3 style={{ margin: '0 0 8px 0', color: '#333' }}>{item.name}</h3>
       <p style={{ margin: '4px 0', color: '#666' }}>
-        <strong>Type:</strong> {item.type}
+        <strong>סוג:</strong> {item.type}
       </p>
       <p style={{ margin: '4px 0', color: '#666' }}>
-        <strong>Amount:</strong> ${item.amount}
+        <strong>סכום:</strong> ${item.amount}
       </p>
       <p style={{ margin: '4px 0', fontSize: '12px', color: '#999' }}>
         {item.id}

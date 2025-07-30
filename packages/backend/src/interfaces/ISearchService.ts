@@ -1,5 +1,5 @@
-import { Item } from "@smartcart/shared/src/Item"
-import { Price } from "@smartcart/shared/src/price"
+import { Item } from "@smartcart/shared"
+import { Price } from "@smartcart/shared"
 
 export interface ISearchService {
 

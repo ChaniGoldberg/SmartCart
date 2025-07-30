@@ -1,20 +1,26 @@
-import { Price } from "@smartcart/shared/src/price"
+import { Price } from "@smartcart/shared"
 import { db } from "../db/dbProvider";
+import { Promotion } from "@smartcart/shared";
+import { Item } from "@smartcart/shared";
+import { PriceRepository } from "../db/Repositories/priceRepository";
+import { PromotionRepository } from "../db/Repositories/promotionRepository";
+import { supabase } from "./supabase";
 import { ProductCartDTO } from "@smartcart/shared";
-import { Promotion } from "@smartcart/shared/src/promotion";
-import { Item } from "@smartcart/shared/src/item";
 
 
 
-export async function getPriceByStoreIDItemID(storePK: String, itemId: Number): Promise<Price | null> {
-  const price = db.Price.find(p => p.storePK == storePK && p.itemId == itemId)
+const priceRepo=new PriceRepository(supabase)
 
+export async function getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
+  const price=await priceRepo.getPriceByStorePKItemID(storePK, itemId)
   if (!price) {
     console.warn(`Price not found for storeId: ${storePK} and itemId: ${itemId}`);
   }
 
   return price || null;
 }
+
+
 interface PromotionFilterOptions {
   isClubMember?: boolean;
   clubId?: number;
@@ -22,12 +28,13 @@ interface PromotionFilterOptions {
   // אפשר להוסיף עוד תנאים בעתיד
 }
 
+const promotionRepo = new PromotionRepository(supabase);
 export async function getRelevantPromotionsForCart(
   cartItems: Price[],
-  promotions: Promotion[],
-  options: undefined | PromotionFilterOptions = {}
-): Promise<Promotion[]> {
-  return promotions.filter(promo => {
+  options:PromotionFilterOptions={}
+){
+  const promotionsFromDB = await promotionRepo.getAllPromotions();
+  return promotionsFromDB.filter(promo => {
     // בדיקת תוקף
     const now = new Date();
     if (!promo.isActive || now < promo.startDate || now > promo.endDate) return false;
@@ -91,20 +98,20 @@ export async function getItemByItemCode(itemCode: string): Promise<Item | null> 
 export async function getProductwithPomotionPrice(shoppingCart: Price[], promotions: Promotion[]): Promise<ProductCartDTO[]> {
 
   const productList: ProductCartDTO[] = []
-  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart, promotions);
+  const relevantPromotions =await getRelevantPromotionsForCart(shoppingCart);
   for (const item of shoppingCart) {
     const promotion = [...relevantPromotions].find(p =>
       p.promotionItemsCode.includes(item.itemCode)
     )
 
     const itemPrice = promotion?.discountedPrice ?? item.price;
-    const itemDetails = await getItemByItemCode(item.itemCode);
+    const itemDetails = await getItemByItemCode(item.itemCode.toString());
 
 
     productList.push({
      product : {
         itemCode: item.itemCode,
-        priceId:item.priceId,
+        priceId:item.priceId ??0,
         ProductName:itemDetails?.itemName ?? "",
         storePK: item.storePK,
         itemName:itemDetails?.itemName ?? "",

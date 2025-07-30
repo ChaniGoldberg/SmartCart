@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { Item } from "@smartcart/shared/src/item";
-import { Tag } from "@smartcart/shared/src/tag";
+import { Item } from "@smartcart/shared";
+import { Tag } from "@smartcart/shared";
 import { itemService } from "../../injection.config";
 import { tagService } from "../../injection.config";
 import { searchTagsByText } from "./searchTagByText";

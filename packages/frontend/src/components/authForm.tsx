@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../store/redux/authSlice';
+import { useUser } from '../store/redux/userContext';
+import GoogleLoginButton from './GoogleLoginButton';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthFormProps {
   onClose: () => void;
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
-  const dispatch = useDispatch();
+  const { setUser } = useUser();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,68 +36,36 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        console.log("🔥 error message from server:", data);
+      if (data.error) {
+        const lowerError = data.error.toLowerCase();
 
-        let errorMessage = '';
-
-        if (typeof data.error === 'string') {
-          errorMessage = data.error;
-        } else if (data?.error?.message) {
-          errorMessage = data.error.message;
-        } else if (data?.message) {
-          errorMessage = data.message;
+        if (url === '/login') {
+          setFieldErrors({ password: data.error });
         } else {
-          errorMessage = 'שגיאה לא ידועה';
+          if (lowerError.includes('email') || lowerError.includes('אימייל')) {
+            setFieldErrors(prev => ({ ...prev, email: data.error }));
+          } else if (lowerError.includes('password') || lowerError.includes('סיסמה')) {
+            setFieldErrors(prev => ({ ...prev, password: data.error }));
+          } else if (lowerError.includes('username') || lowerError.includes('משתמש')) {
+            setFieldErrors(prev => ({ ...prev, userName: data.error }));
+          } else {
+            setGeneralError(data.error);
+          }
         }
-
-        const lowerError = errorMessage.toLowerCase();
-
-        if (isLogin && (lowerError.includes('user not found') || lowerError.includes('invalid password'))) {
-          setFieldErrors({ password: 'דוא"ל או סיסמה שגויים' });
-          return;
-        }
-
-        if (
-          lowerError.includes('email') ||
-          lowerError.includes('אימייל') ||
-          lowerError.includes('דוא') ||
-          lowerError.includes('@') ||
-          lowerError.includes('must include') ||
-          lowerError.includes('אחרי')
-        ) {
-          setFieldErrors(prev => ({ ...prev, email: 'אימייל לא תקין' }));
-          return;
-        }
-
-        if (lowerError.includes('password') || lowerError.includes('סיסמה')) {
-          setFieldErrors(prev => ({ ...prev, password: 'הסיסמה לא תקינה' }));
-          return;
-        }
-
-        if (lowerError.includes('username') || lowerError.includes('משתמש')) {
-          setFieldErrors(prev => ({ ...prev, userName: 'יש להזין שם משתמש' }));
-          return;
-        }
-
-        if (lowerError.includes('already exists') || lowerError.includes('כבר קיים')) {
-          setGeneralError('משתמש עם כתובת הדוא"ל הזאת כבר קיים');
-          return;
-        }
-
-        // כל שגיאה שלא זוהתה
-        setGeneralError('אירעה שגיאה. נסו שוב');
         return;
       }
 
+      // שמירה בקונטקסט + ב-localStorage
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
 
-      dispatch(loginSuccess(data.token));
       onClose();
+      navigate('/');
     } catch (error) {
       setGeneralError('שגיאה בחיבור לשרת');
     }
   };
-
 
   return (
     <div style={{
@@ -117,14 +87,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
         {isLogin ? 'התחברות' : 'הרשמה'}
       </h2>
 
-      {/* שגיאה כללית כמו "משתמש כבר קיים" */}
       {generalError && (
         <div className="text-red-600 text-center font-medium mb-4">
           {generalError}
         </div>
       )}
 
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div >
+          <GoogleLoginButton></GoogleLoginButton>
+        </div>
         {!isLogin && (
           <>
             <input
@@ -250,5 +223,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
     </div>
   );
 };
+
 
 export default AuthForm;

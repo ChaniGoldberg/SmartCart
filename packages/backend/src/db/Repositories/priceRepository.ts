@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Price } from "../../../../shared/src/price";
+import { Price } from "@smartcart/shared";
 import { IPriceRepository } from "../IRepositories/IPriceRepository";
 
 export class PriceRepository implements IPriceRepository {
@@ -11,7 +11,6 @@ export class PriceRepository implements IPriceRepository {
     private toDbPrice(price: Price) {
         return {
             store_pk: price.storePK,
-             item_id: price.itemId,
             item_code: price.itemCode,
             price: price.price,
             price_update_date: price.priceUpdateDate,
@@ -114,33 +113,24 @@ export class PriceRepository implements IPriceRepository {
 
         try {
             console.log(`Updating ${prices.length} prices in Supabase`);
-            const updatedPrices: Price[] = [];
-            for (const price of prices) {
-                const { data, error } = await this.supabase
-                    .from(this.tableName)
-                    .update(this.toDbPrice(price))
-                    .eq('price_id', price.priceId)
-                    .select('*');
-
-                if (error) {
-                    console.error(`Error updating price with id ${price.priceId}:`, error);
-                    throw new Error(`Failed to update price with id ${price.priceId}: ${error.message}`);
-                }
-
-                if (!data || data.length === 0) {
-                    throw new Error(`No data returned after updating price with id ${price.priceId}.`);
-                }
-
-                updatedPrices.push(price);
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .upsert(prices.map(this.toDbPrice), {
+                    onConflict: 'store_pk,item_code', 
+                    ignoreDuplicates: false // ברירת מחדל — מעדכן אם קיים
+                })
+                .select(); 
+            if (error) {
+                console.error('❌ Error in upsert:', error);
+                throw new Error(`Upsert failed: ${error.message}`);
             }
-            console.log(`${updatedPrices.length} prices updated successfully.`);
-            return updatedPrices;
+
+            return data as Price[];
         } catch (error: any) {
             console.error(`Error in updateManyPrices: ${error.message}`);
             throw error;
         }
     }
-
     async getAllPrices(): Promise<Price[]> {
         try {
             const { data, error } = await this.supabase
@@ -199,4 +189,28 @@ export class PriceRepository implements IPriceRepository {
             throw error;
         }
     }
+    async getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
+        try {
+            const { data, error } = await this.supabase
+                .from(this.tableName)
+                .select('*')
+                .eq('store_pk', storePK)
+                .eq('item_id', itemId)
+                .single();
+    
+            if (error) {
+                if (error.code === 'PGRST116') { // Not found
+                    return null;
+                }
+                console.error('Error fetching price by storePK and itemId:', error);
+                throw new Error(`Failed to fetch price: ${error.message}`);
+            }
+    
+            return data;
+        } catch (error: any) {
+            console.error(`Error in getPriceByStorePKItemID: ${error.message}`);
+            throw error;
+        }
+    }
+    
 }
