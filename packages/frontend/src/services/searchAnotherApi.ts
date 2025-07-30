@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,12 +27,12 @@ export const searchAnotherApiService = {
   },
 
   getSearchProduct: async (itemTxt: string, storePKs: string[]): Promise<ProductDTO[]> => {
-    const response = await apiClient.post(`/searchAnotherProduct/${itemTxt}`, {
-      storePKs: storePKs, // Send storePKs in the request body
-    });
+
+    const response = await apiClient.post(`/searchAnotherProduct/${itemTxt}`, { storePKs });
 
     console.log("response", response);
     if (response.status === 200) {
+      console.log("response.data", response.data);
       return response.data || [];
     }
     throw new Error(response.data.error);
