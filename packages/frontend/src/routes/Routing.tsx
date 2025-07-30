@@ -9,6 +9,7 @@ import ProductSearchComponent from "../components/product-search-component";
 import AlertsList from "../components/Notification";
 import path from "path";
 import UserEditComponent from "../pages/EditUser";
+import CartComparison from "src/components/CartComparison";
 
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },
@@ -18,7 +19,9 @@ export const routes = [
      { path: "/cart", element: <Cart />, label: "סל" },
     { path: "/search", element: <ProductSearchComponent />, label: "סל" },
  { path: "/notification", element: <AlertsList/>, label: "ההתראות שלי" },
-    {path:"/profile",element:<UserEditComponent></UserEditComponent>,label:"פרופיל"}
+    {path:"/profile",element:<UserEditComponent></UserEditComponent>,label:"פרופיל"},
+    { path: "/compare", element: <CartComparison></CartComparison>, label: "השווה סל" }
+
 ];
 
 export const Routing = () => {

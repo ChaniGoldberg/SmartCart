@@ -189,28 +189,42 @@ export class PriceRepository implements IPriceRepository {
             throw error;
         }
     }
-    async getPriceByStorePKItemID(storePK: string, itemId: number): Promise<Price | null> {
+     async getPriceByStorePKItemID(storePK: string, itemCode: string): Promise<Price | null> {
         try {
             const { data, error } = await this.supabase
                 .from(this.tableName)
                 .select('*')
                 .eq('store_pk', storePK)
-                .eq('item_id', itemId)
+                .eq('item_code', itemCode)
                 .single();
-    
+
             if (error) {
                 if (error.code === 'PGRST116') { // Not found
                     return null;
                 }
-                console.error('Error fetching price by storePK and itemId:', error);
+                console.error('Error fetching price by storePK and itemCode:', error);
                 throw new Error(`Failed to fetch price: ${error.message}`);
             }
-    
+
             return data;
         } catch (error: any) {
-            console.error(`Error in getPriceByStorePKItemID: ${error.message}`);
+            console.error(`Error in getPriceByStorePKItemCode: ${error.message}`);
             throw error;
         }
     }
-    
+     async getPriceByStorePK(storePK: string, itemName: string): Promise<Price[]> {
+    const { data, error } = await this.supabase
+        .from('price')
+        .select('*, item(*)')  // בחר את כל הנתונים מטבלת Price וגם את הנתונים מטבלת Item
+        .eq('store_pk', storePK)  // פילטר לחנות
+        .ilike('item.item_name', itemName);  // חיפוש שם המוצר בטבלת Item עם התאמה רכה (case-insensitive)
+
+    if (error) {
+        console.error('Error fetching data:', error);
+        throw new Error('Error fetching data');
+    } else {
+        console.log('Price data:', data);
+        return data;  // מחזיר את המידע
+    }
+}
 }
