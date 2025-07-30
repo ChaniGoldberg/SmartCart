@@ -14,56 +14,68 @@ const tagRepository = new TagRepository(supabase);
 const itemRepository = new ItemRepository(supabase);
 
 export async function labelItemsWithAI() {
-  try {
-    const items: Item[] = await itemRepository.getItemsWithoutTags();
-    if (!items || items.length === 0) {
-      logToFile("אין מוצרים ללא תיוגים לעיבוד.🩵🩵🩵🩵");
-      return;
-    }
+    try {
+        const items: Item[] = await itemRepository.getItemsWithoutTags();
+        if (!items || items.length === 0) return;
 
-    logToFile(`items fetched: ${items.length} items 🩵🩵🩵🩵`);
-    logToFile(`items fetched: ${items.map(t => t.itemName).join(", ")} 🩵🩵🩵🩵`);
+        const tags: Tag[] | null = await tagRepository.getAllTags();
+        if (!tags) return;
 
-    const tags: Tag[] | null = await tagRepository.getAllTags();
-    if (!tags) {
-      logToFile("לא נמצאו תיוגים לעיבוד.🩵🩵🩵🩵");
-      return;
-    }
+        const tagNames = tags.map(t => t?.tagName).filter(Boolean) as string[];
 
-    logToFile(`Tags fetched: ${tags.length} tags 🩵🩵🩵🩵`);
-    logToFile(`tags fetched: ${tags.map(t => t.tagName).join(", ")} 🩵🩵🩵🩵`);
+        const instructions: string = `
+Your goal: Tag each product in a rich, precise, and comprehensive way — covering all possible aspects such as usage, ingredients, category, and context — using a predefined list of tags, and creating new tags when necessary.
 
-    const instructions: string = `
-הנך מקבל רשימת מוצרים יחד עם רשימת תיוגים קיימים. לכל מוצר, תאתר תיוגים מתאימים מתוך הרשימה.
-אם לדעתך יש תיוגים מתאימים נוספים – תוסיף אותם עם כוכבית בסוף (לדוגמה: תיוג חדש*). 
-הפלט צריך להיות מחרוזת, כאשר כל שורה בפורמט:
-שם מוצר: שם תיוג 1, שם תיוג 2, תיוג חדש *
-- כל שורה מופרדת ב־;
-- אל תוסיף הסברים, רק את המחרוזת בפורמט הזה.
-- אל תשתמש בגרשיים או סוגריים.
-- חשוב: אם אין תיוג רלוונטי מתוך הרשימה, תוכל להשתמש רק בתיוגים חדשים (מסומנים בכוכבית).
+Instructions:
+- If the existing tag list is insufficient, create new tags and mark them with an asterisk (*) at the end.
+- It is better to **over-tag** than to miss a relevant tag.
+- Do not hesitate to create new tags.
+- Do not guess information that is not explicitly stated in the product name (e.g., “vegan”, “gluten-free”, “diet”).
+- Use the **exact wording** of the existing tags without modifying or expanding them.
+
+---
+
+To encourage creation of new tags:
+- Always create a new tag (marked with an asterisk *) if you believe a relevant tag does not exist in the predefined list.
+- It is better to create many new tags than to miss important aspects of the product.
+- If unsure whether a tag exists, assume it does not and mark it as new.
+- New tags should be precise and relevant to the product name only.
+- Over-tagging is preferred over under-tagging.
+- **Do not change or guess tag wording.**
+
+---
+
+**Strict formatting rules:**
+- **Each output line must follow this format exactly:**  
+ספריי לשיער חזק מאוד: טואלטיקה והיגיינה, מוצרי שיער*, טיפוח*, עיצוב שיער*;
+
+- **Do not add any numbers, bullets, or explanation before or after the lines**
+- **Do not return results as a list or numbered lines — just one formatted product per line.**
+- When adding new tags, **only write the tag name followed by an asterisk (*), without any extra words like "new tag" or explanations**
+- **Do not add a period** at the end of the line; end only with a semicolon (;)**
+- **Do not return a period in the end of line in any case**
+
+---
 `;
 
-    const result: string = await tagProductsByGPT(items, tags, instructions);
-    logToFile(`tagProductsByGPT result: ${result || 0} 🩵🩵🩵🩵`);
-    logToFile(`send the result to parseAndSaveTagsFromResponse 🩵🩵🩵🩵`);
+        for (let i = 0; i < items.length; i += 100) {
+            const batch = items.slice(i, i + 100);
+            const productNames = batch.map(p => p.itemName);
 
-    await parseAndSaveTagsFromResponse(result);
-    logToFile(`parseAndSaveTagsFromResponse was called 🩵🩵🩵🩵`);
+            try {
+                const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
+                await parseAndSaveTagsFromResponse(result);
+            } catch (error: any) {
+                logToFile(`Batch processing error: ${error.message || error}`);
+                throw error;
+            }
+        }
 
-    logToFile(`autoTagNewTags is calling 🩵🩵🩵🩵`);
-    await autoTagNewTags();
-    logToFile(`autoTagNewTags finished 🩵🩵🩵🩵`);
+        await autoTagNewTags();
+        logToFile("Product tagging completed successfully.");
 
-    console.log("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-    logToFile("🚀 תהליך התיוג הושלם בהצלחה 🩵🩵🩵🩵");
-    logToFile(`תוצאה סופית:\n${result}`);
-
-    return result;
-
-  } catch (error: any) {
-    console.error("❌ שגיאה בתהליך התיוג:", error);
-    logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} 🩵🩵🩵🩵`);
-    throw error;
-  }
+    } catch (error: any) {
+        logToFile(`General tagging process error: ${error.message || error}`);
+        throw error;
+    }
 }

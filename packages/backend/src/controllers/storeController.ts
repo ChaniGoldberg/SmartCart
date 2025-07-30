@@ -1,5 +1,5 @@
 import { StoreRepository } from "../db/Repositories/storeRepository";
-import { getValidStores } from "../services/storeService";
+import { getStoresWithCoordinates } from "../services/storeService";
 import { Request, Response } from "express";
 
 /**
@@ -17,7 +17,7 @@ import { Request, Response } from "express";
 
 export const storeController = async (req: Request, res: Response) => {
     try{
-const coordinates= await getValidStores();//מחכה לתוצאה של הפונקציה getValidStores
+const coordinates= await getStoresWithCoordinates();//מחכה לתוצאה של הפונקציה getValidStores
 res.status(200).json(coordinates);
     }
     catch(error){
