@@ -13,29 +13,17 @@ import { ItemRepository } from "../../src/db/Repositories/itemRepository";
 const tagRepository = new TagRepository(supabase);
 const itemRepository = new ItemRepository(supabase);
 
-
-
 export async function labelItemsWithAI() {
     try {
         const items: Item[] = await itemRepository.getItemsWithoutTags();
-        const productNames = items.map(p => p.itemName);
-
-        if (!items || items.length === 0) {
-            logToFile("אין מוצרים ללא תיוגים לעיבוד.");
-            return
-        }
-
-        logToFile(`items fetched: ${items.length} items `);
+        if (!items || items.length === 0) return;
 
         const tags: Tag[] | null = await tagRepository.getAllTags();
-        if (!tags) {
-            logToFile("לא נמצאו תיוגים לעיבוד.🩵🩵🩵🩵");
-            return;
-        }
+        if (!tags) return;
+
         const tagNames = tags.map(t => t?.tagName).filter(Boolean) as string[];
 
         const instructions: string = `
-    
 Your goal: Tag each product in a rich, precise, and comprehensive way — covering all possible aspects such as usage, ingredients, category, and context — using a predefined list of tags, and creating new tags when necessary.
 
 Instructions:
@@ -68,31 +56,26 @@ To encourage creation of new tags:
 - **Do not return a period in the end of line in any case**
 
 ---
-
 `;
-        //Split items into batches of 100
+
         for (let i = 0; i < items.length; i += 100) {
             const batch = items.slice(i, i + 100);
             const productNames = batch.map(p => p.itemName);
 
-            logToFile(`Processing batch ${i / 100 + 1}: ${productNames.length} items`);
-
-        try {
-            const result: string = await tagProductsByGPT(productNames, tagNames, instructions)
-
-            await parseAndSaveTagsFromResponse(result);
-
-        } catch (error: any) {
-            console.error("❌ שגיאה בתהליך התיוג:", error);
-            logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} `);
-            throw error;
+            try {
+                const result: string = await tagProductsByGPT(productNames, tagNames, instructions);
+                await parseAndSaveTagsFromResponse(result);
+            } catch (error: any) {
+                logToFile(`Batch processing error: ${error.message || error}`);
+                throw error;
+            }
         }
-         }
+
         await autoTagNewTags();
+        logToFile("Product tagging completed successfully.");
+
     } catch (error: any) {
-        console.error("❌ שגיאה בתהליך התיוג:", error);
-        logToFile(`❌ שגיאה בתהליך התיוג: ${error.message || error} `);
+        logToFile(`General tagging process error: ${error.message || error}`);
         throw error;
     }
-  
 }

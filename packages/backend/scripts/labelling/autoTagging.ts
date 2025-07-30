@@ -5,56 +5,44 @@ import { TagRepository } from "../../src/db/Repositories/tagRepository";
 import tagProductsByGPT from './productLabellingByAI';
 import { logToFile } from './logger';
 
-// פונקציה לנרמול אובייקט מוצר לשמות שדות camelCase
-const LOG_HEARTS = "💙💙💙💙💙";
-
 function log(message: string) {
-  logToFile(`${message}${LOG_HEARTS}`);
+  logToFile(`[autoTagNewTags] ${message}`);
 }
 
 export async function autoTagNewTags(): Promise<string> {
-  log("🚀 התחלת תהליך תיוג אוטומטי");
+  log("Starting auto-tagging process.");
 
   const itemRepository = new ItemRepository(supabase);
   const tagRepository = new TagRepository(supabase);
 
-  log("📥 שליפת כל התגיות מהמאגר...");
   const allTags = await tagRepository.getAllTags() || [];
-  log(`נשלפו ${allTags.length} תגיות`);
-
-  log("📥 שליפת כל המוצרים מהמאגר...");
   const allItems = await itemRepository.getAllItems() || [];
-  log(`נשלפו ${allItems.length} מוצרים`);
 
   const taggedNow = new Set<string>();
   const unscannedTags = allTags.filter(t => !t.isAlreadyScanned);
-  log(`נמצאו ${unscannedTags.length} תגיות שלא סומנו`);
+  log(`Found ${unscannedTags.length} unscanned tags.`);
 
   for (const tag of unscannedTags) {
-    log(`🔍 טיפול בתג "${tag.tagName}" (ID: ${tag.tagId})`);
+    log(`Processing tag "${tag.tagName}" (ID: ${tag.tagId})`);
+
     let similarByName: any[] = [];
 
     const taggedItem = tag.tagId !== undefined
       ? allItems.find(item => item?.tagsId?.includes(tag.tagId!))
       : undefined;
+
     if (taggedItem) {
-      log(`➕ נמצא מוצר שמכיל את התג: "${taggedItem.itemName}"`);
       similarByName = await itemRepository.fuzzySearchItemsByText(taggedItem.itemName);
-      log(`🔍 נמצאו ${similarByName.length} מוצרים דומים לפי שם מוצר`);
-    } else {
-      log("⚠️ לא נמצא מוצר שמכיל את התג הזה מראש");
     }
 
-    let similarByTagName = await itemRepository.fuzzySearchItemsByText(tag.tagName);
-    log(`🔍 נמצאו ${similarByTagName.length} מוצרים דומים לפי שם תג`);
-
+    const similarByTagName = await itemRepository.fuzzySearchItemsByText(tag.tagName);
     const combinedItems = [...similarByName, ...similarByTagName];
+
     const similarItems = [...new Map(
       combinedItems
         .filter(item => item?.itemCode)
         .map(item => [item.itemCode, item])
     ).values()];
-    log(`✅ לאחר סינון כפילויות: ${similarItems.length}  מוצרים ייחודיים לתיוג בעלי שם זהה לתג או למוצר שמכיל את התג`);
 
     let didTag = false;
 
@@ -70,11 +58,8 @@ export async function autoTagNewTags(): Promise<string> {
         };
 
         await itemRepository.updateItem(updatedItemForDb);
-        log(`🏷️ תויג "${item.itemName}" (קוד: ${item.itemCode})`);
         taggedNow.add(item.itemCode);
         didTag = true;
-      } else {
-        log(`⏭️ המוצר "${item.itemName}" כבר מכיל את התג`);
       }
     }
 
@@ -85,38 +70,56 @@ export async function autoTagNewTags(): Promise<string> {
         is_already_scanned: tag.isAlreadyScanned,
       };
       await tagRepository.updateTag(updatedTagForDb);
-      log(`✅ תג "${tag.tagName}" עודכן כ"נסרק"`);
-    } else {
-      log(`ℹ️ לא נוספו תיוגים חדשים לתג "${tag.tagName}"`);
     }
   }
-  const instructions =  `
-ברשותך רשימת מוצרים ורשימת תיוגים קיימים. עבור כל מוצר, בחר תיוגים רלוונטיים מתוך הרשימה בלבד.
-הפלט צריך להיות מחרוזת, כאשר כל שורה בפורמט הבא:
-שם מוצר: תיוג 1, תיוג 2
-הנחיות:
-- כל שורה תופרד באמצעות ;
-- אין להוסיף תיוגים חדשים
-- אין להוסיף הסברים או טקסטים נוספים
-- אין להשתמש בגרשיים, סוגריים או תווים מיוחדים
-    `
+
+  const instructions = `
+Your goal: Tag each product using only the provided list of tags, without creating any new tags.
+
+Instructions:
+- Use only tags from the provided list.
+- Do not invent or create any new tags.
+- Only tag based on information explicitly stated in the product name.
+- Do not assume properties such as “vegan”, “organic”, “diet”, etc., unless they are mentioned.
+- Use exact tag wording from the list without modification.
+
+---
+
+Strict formatting rules:
+- Each output line must follow this format exactly:  
+ספריי לשיער חזק מאוד: טואלטיקה והיגיינה,טיפוח;
+- Separate each line with a semicolon (;)
+- Do not include any numbers, bullets, or list formatting
+- Do not use quotation marks, parentheses, or any special characters
+- Do not add explanations or additional text before or after
+- Do not add a period at the end of any line — only end with a semicolon
+
+---
+
+Example:
+ספריי לשיער חזק מאוד: טואלטיקה והיגיינה,טיפוח;
+
+
+`;
 
   const untaggedItems = allItems.filter(item => !taggedNow.has(String(item.itemCode)));
-  log(`📦 מספר מוצרים שנותרו ללא תיוג: ${untaggedItems.length}`);
-
-  log(`🧠 שולח מוצרים ללא תיוג ל־GPT...`);
+  log(`Remaining untagged items: ${untaggedItems.length}`);
 
   let finalResult = "";
   for (let i = 0; i < untaggedItems.length; i += 100) {
     const batch = untaggedItems.slice(i, i + 100);
     const productNames = batch.map(item => item.itemName);
-    log(`🧠 שולח אצווה ${i / 100 + 1} ל-GPT (${batch.length} מוצרים)`);
+    log(`Sending batch ${i / 100 + 1} to GPT (${batch.length} items)`);
 
-    const resultString = await tagProductsByGPT(productNames, allTags.map(tag => tag.tagName),instructions);
+    const resultString = await tagProductsByGPT(
+      productNames,
+      allTags.map(tag => tag.tagName),
+      instructions
+    );
 
-    log(`🎯 הסתיים תיוג אצווה ${i / 100 + 1} בעזרת GPT`);
     finalResult += resultString + "\n";
   }
 
+  log("Auto-tagging process completed.");
   return finalResult.trim();
 }
