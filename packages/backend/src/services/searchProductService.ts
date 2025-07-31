@@ -3,7 +3,7 @@ import { ItemRepository } from "@smartcart/backend/src/db/Repositories/itemRepos
 import { PriceRepository } from "@smartcart/backend/src/db/Repositories/priceRepository";
 import PriceService from "./priceService";
 import { Price } from "@smartcart/shared";
-import { IsearchProductService } from "../interfaces/iSearchProductService";
+import { IsearchProductService } from "../interfaces/IsearchProductService";
 import { supabase } from "./supabase";
 export class searchProductService implements IsearchProductService {
     private priceService: PriceService;

@@ -19,24 +19,23 @@ export async function parseXmlItemsToJson(xmlFilePath: string): Promise<Item[]> 
     const itemsArray = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
 
     // Map each raw item to your Item interface
-    const items : Item[] = itemsArray.map((item: any) => ({
-      PriceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : new Date(),
-      ItemCode: item.ItemCode || "",
-      ItemType: item.ItemType !== undefined ? Number(item.ItemType) : 0,
-      ItemName: item.ItemName || "",
-      ManufacturerName: item.ManufacturerName || "",
-      ManufactureCountry: item.ManufactureCountry || "",
-      ManufacturerItemDescription: item.ManufacturerItemDescription || "",
-      UnitQty: item.UnitQty || "",
-      Quantity: item.Quantity !== undefined ? Number(item.Quantity) : 0,
-      UnitOfMeasure: item.UnitOfMeasure || "",
-      bIsWeighted: item.bIsWeighted !== undefined ? Number(item.bIsWeighted) : 0,
-      QtyInPackage: item.QtyInPackage || "",
-      ItemPrice: item.ItemPrice !== undefined ? Number(item.ItemPrice) : 0,
-      UnitOfMeasurePrice: item.UnitOfMeasurePrice !== undefined ? Number(item.UnitOfMeasurePrice) : 0,
-      AllowDiscount: item.AllowDiscount !== undefined ? Number(item.AllowDiscount) : 0,
-      ItemStatus: item.ItemStatus !== undefined ? Number(item.ItemStatus) : 0,
-      // ItemId: item.ItemId !== undefined ? Number(item.ItemId) : 0, // Uncomment if you add ItemId to the interface
+     const items: Item[] = itemsArray.map((item: any) => ({
+      itemCode: item.ItemCode !== undefined ? String(item.ItemCode) : "",
+      itemType: item.ItemType !== undefined ? Number(item.ItemType) : 0,
+      itemName: item.ItemName || "",
+      manufacturerName: item.ManufacturerName || "",
+      manufactureCountry: item.ManufactureCountry || "",
+      manufacturerItemDescription: item.ManufacturerItemDescription || "",
+      quantityInPackage: (() => {
+        const val = Number(item.QtyInPackage);
+        return isNaN(val) ? null : val;
+        
+      })(),
+      itemStatus: item.ItemStatus === true,
+      itemId: item.ItemId !== undefined ? Number(item.ItemId) : 0,
+      tagid: item.Tagid ? (Array.isArray(item.Tagid) ? item.Tagid.map(Number) : [Number(item.Tagid)]) : [],
+      correctItemName: item.CorrectItemName || "",
+      priceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : null
     }));
 
     return items;

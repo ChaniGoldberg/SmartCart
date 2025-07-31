@@ -122,7 +122,7 @@ export async function saveAllPricesToDb(
         const uniqueBatch = removeDuplicatePrices(batch);
 
         console.log(`UPSERT ${uniqueBatch.length} prices to Supabase`);
-        const upserted = await priceRepo.updateManyPrices(uniqueBatch);
+        const upserted = await priceRepo.upsertManyPrices(uniqueBatch);
         totalUpserted += upserted.length;
         console.log(`✅ נשמרו ${upserted.length} מחירים בבאטצ' ${i / BATCH_SIZE + 1}`);
       }

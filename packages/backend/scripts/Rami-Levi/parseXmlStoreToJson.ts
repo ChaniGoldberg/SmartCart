@@ -63,6 +63,7 @@ export function extractStoresFromXmlToStore(jsonData: any): Store[] {
     storeId: Number(store.StoreID ?? 0),
     chainId,
     subChainId,
+    chainName,            // <-- הוסף פה את הערך
     subChainName,
     storeName: store.StoreName ?? "",
     address: store.Address ?? "",

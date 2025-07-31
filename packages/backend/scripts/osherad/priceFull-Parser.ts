@@ -27,7 +27,7 @@ export async function parsePriceFullXmlToItemJson(xmlFilePath: string): Promise<
         return isNaN(val) ? null : val;
       })(),
       itemStatus: item.ItemStatus === true,
-      itemId: item.ItemId !== undefined ? Number(item.ItemId) : undefined,
+      itemId: item.ItemId !== undefined ? Number(item.ItemId) : 0,
       tagid: item.Tagid ? (Array.isArray(item.Tagid) ? item.Tagid.map(Number) : [Number(item.Tagid)]) : [],
       correctItemName: item.CorrectItemName || "",
       priceUpdateDate: item.PriceUpdateDate ? new Date(item.PriceUpdateDate) : null
