@@ -14,6 +14,7 @@ import { StoreLocator } from "src/components/compare/distanceSelector";
 import { ProductList } from "src/components/compare/compare";
 import ComparePage from "src/pages/ComparePage";
 import CompareComponent from "src/components/compare/CompareComponent";
+import CartComparison from "src/components/CartComparison";
 
 export const routes = [
     { path: "/", element: <Home />, label: "בית" },
@@ -22,12 +23,14 @@ export const routes = [
     //  { path: "/login", element: <Login />, label: "התחברות" },
     { path: "/cart", element: <Cart />, label: "סל" },
     { path: "/search", element: <ProductSearchComponent />, label: "סל" },
-    { path: "/notification", element: <AlertsList />, label: "ההתראות שלי" },
-    { path: "/profile", element: <UserEditComponent></UserEditComponent>, label: "פרופיל" },
-    { path: "/compare", element: <ComparePage />, label: "השוואת מוצר" },
+    { path: "/comparePage", element: <ComparePage />, label: "השוואת מוצר" },
     { path: "/storePopupSelector", element: <StorePopupSelector /> },
     { path: "/storeLocator", element: <StoreLocator />, label: "" },
     { path: "/productList", element: <ProductList />, label: "" },
+ { path: "/notification", element: <AlertsList/>, label: "ההתראות שלי" },
+    {path:"/profile",element:<UserEditComponent></UserEditComponent>,label:"פרופיל"},
+    { path: "/compare", element: <CartComparison></CartComparison>, label: "השווה סל" }
+
 ];
 
 export const Routing = () => {

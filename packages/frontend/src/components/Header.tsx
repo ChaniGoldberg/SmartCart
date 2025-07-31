@@ -36,7 +36,7 @@ const Header: React.FC = () => {
             <Link to="/" className="hover:underline">דף הבית</Link>
             <Link to="/map" className="hover:underline">מפה</Link>
             <Link to="/search" className="hover:underline">חיפוש מוצרים</Link>
-            <Link to="/compare" className="hover:underline">השוואת מוצר</Link>
+            <Link to="/comparePage" className="hover:underline">השוואת מוצר</Link>
             {user && (
               <Link to="/notification" className="hover:underline">
                 ההתראות שלי
