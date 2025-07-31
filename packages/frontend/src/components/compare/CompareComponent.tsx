@@ -60,8 +60,18 @@ export const CompareComponent = () => {
     setLoading(true);
     setError('');
     try {
+      const response = await fetch('/api/products/by-category', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          categoryName: tags.find(t => t.tagId === tagId)?.tagName,
+          storePKs: storePKs
+        })
+      });
+      const data = await response.json();
+      setProducts(data);
+      console.log(data);
       // כאן יש להוסיף קריאת שרת לשליפת מוצרים לפי קטגוריה
-      alert('כאן יש להוסיף קריאת שרת לשליפת מוצרים לפי קטגוריה');
     } catch (error) {
       console.error('שגיאה בטעינת מוצרים מהקטגוריה:', error);
       setError('אירעה שגיאה בשליפת המוצרים');

@@ -287,6 +287,83 @@ export class StoreRepository implements IStoreRepository {
         }
     }
 
+async getProductsByCategoryAndStores(categoryName: string, storePKs: string[]): Promise<any[]> {
+    if (!categoryName || !Array.isArray(storePKs) || storePKs.length === 0) {
+        console.warn(':warning: categoryName או storePKs לא תקינים בעת שליפת מוצרים לפי קטגוריה');
+        return [];
+    }
+    try {
+        console.log(`:mag: שליפת מחירים מהטבלה price עבור ${storePKs.length} חנויות`);
+        // 1. שליפת מחירים לפי storePKs
+        const { data: prices, error: priceError } = await this.supabase
+            .from("price")
+            .select("*")
+            .in("store_pk", storePKs);
+        if (priceError) {
+            console.error(":x: שגיאה בשליפת מחירים:", priceError);
+            throw new Error(`Failed to fetch prices: ${priceError.message}`);
+        }
+        if (!prices || prices.length === 0) {
+            return [];
+        }
+        const uniqueItemCodes = [...new Set(prices.map(p => p.item_code))];
+        // 2. שליפת tag_id מתוך הטבלה tag לפי שם הקטגוריה
+        const { data: tags, error: tagError } = await this.supabase
+            .from("tag")
+            .select("tag_id")
+            .eq("tag_name", categoryName)
+            .limit(1);
+        if (tagError) {
+            console.error(":x: שגיאה בשליפת tag:", tagError);
+            throw new Error(`Failed to fetch tag: ${tagError.message}`);
+        }
+        if (!tags || tags.length === 0) {
+            console.warn(`:warning: לא נמצא tag בשם "${categoryName}"`);
+            return [];
+        }
+        const tagId = tags[0].tag_id;
+        // 3. שליפת item_code מתוך item_tags לפי tag_id
+        const { data: itemTags, error: tagsError } = await this.supabase
+            .from("item_tags")
+            .select("item_code")
+            .eq("tag_id", tagId);
+        if (tagsError) {
+            console.error(":x: שגיאה בשליפת item_tags:", tagsError);
+            throw new Error(`Failed to fetch item_tags: ${tagsError.message}`);
+        }
+        const taggedItemCodes = itemTags?.map(t => t.item_code) || [];
+        const filteredItemCodes = uniqueItemCodes.filter(code => taggedItemCodes.includes(code));
+        if (filteredItemCodes.length === 0) {
+            console.log(":warning: לא נמצאו פריטים תואמים בין item_tags ל-price");
+            return [];
+        }
+        // 4. שליפת פריטים מתוך item
+        const { data: items, error: itemError } = await this.supabase
+            .from("item")
+            .select("*")
+            .in("item_code", filteredItemCodes);
+        if (itemError) {
+            console.error(":x: שגיאה בשליפת פריטים:", itemError);
+            throw new Error(`Failed to fetch items: ${itemError.message}`);
+        }
+        // 5. התאמה בין item למחירים
+        const itemMap = new Map(items.map(item => [item.item_code, item]));
+        const results = prices
+            .filter(price => filteredItemCodes.includes(price.item_code))
+            .map(price => {
+                const item = itemMap.get(price.item_code);
+                if (!item) return null;
+                return { ...price, Item: item }; // שמירה על מבנה אחיד
+            })
+            .filter(r => r !== null);
+        console.log(`:white_check_mark: נמצאו ${results.length} התאמות של פריטים למחירים`);
+        return results;
+    } catch (error: any) {
+        console.error(`:x: שגיאה ב־getProductsByCategoryAndStores: ${error.message}`);
+        throw new Error(`Failed to fetch products by category: ${error.message}`);
+    }
+}
+
     async addManyStores(stores: Store[]): Promise<Store[]> {
         if (stores.length === 0) {
             console.log('No stores to add.');
