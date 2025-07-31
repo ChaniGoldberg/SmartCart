@@ -20,6 +20,7 @@ import promotionRoutes from './routes/promotionRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import shareCart from './routes/shareCart';
 import searchProductRoute from './routes/searchProductRoute';
+import findStoresWithinRadiusRouter from './routes/findStoresWithinRadiusRouter';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -58,7 +59,7 @@ app.use('/api/users', userRoutes)
 app.use("/api/fuzzySearch", fuzzySearchRoutes); 
 app.use("/api/cart",cartRoutes);
 app.use("/api/notification",notificationRoutes);
-
+app.use("/api/findStores",findStoresWithinRadiusRouter);
 app.use("/api", shareCart);
 
 setupSwagger(app);
