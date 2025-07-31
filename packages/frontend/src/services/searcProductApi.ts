@@ -30,7 +30,7 @@ export const searchProductApiService = {
     const response = await apiClient.post(`/searchProduct/${itemTxt}`, {
       storePKs: storePKs, // Send storePKs in the request body
     });
-    console.log("response!!!!", response);
+    console.log("response", response);
     if (response.status === 200) {
       return response.data.map((item: any) => ({
         itemCode: item.item_code,
