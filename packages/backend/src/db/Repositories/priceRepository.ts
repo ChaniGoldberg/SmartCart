@@ -8,9 +8,10 @@ export class PriceRepository implements IPriceRepository {
     constructor(private supabase: SupabaseClient) { }
 
     // פונקציה להמרה ל-snake_case
-    private toDbPrice(price: Price) {
+    public toDbPrice(price: Price):any {
         return {
             store_pk: price.storePK,
+            item_id: price.itemId, // אם יש לך itemId במקום itemCode
             item_code: price.itemCode,
             price: price.price,
             price_update_date: price.priceUpdateDate,
@@ -23,6 +24,23 @@ export class PriceRepository implements IPriceRepository {
             allow_discount: price.allowDiscount,
         };
     }
+    private fromDbToPrice(price:any ): Price {
+        return {
+          storePK: price.store_pk,
+            itemId: price.item_id, // אם יש לך itemId במקום itemCode
+          itemCode: price.item_code,
+          price: price.price,
+          priceUpdateDate: price.price_update_date,
+          unitQuantity: price.unit_quantity,
+          quantity: price.quantity,
+          unitOfMeasure: price.unit_of_measure,
+          isWeighted: price.is_weighted,
+          quantityInPackage: price.quantity_in_package,
+          unitOfMeasurePrice: price.unit_of_measure_price,
+          allowDiscount: price.allow_discount,
+        };
+      }
+      
 
     async addPrice(price: Price): Promise<Price> {
         try {
@@ -212,19 +230,40 @@ export class PriceRepository implements IPriceRepository {
             throw error;
         }
     }
-     async getPriceByStorePK(storePK: string, itemName: string): Promise<Price[]> {
-    const { data, error } = await this.supabase
-        .from('price')
-        .select('*, item(*)')  // בחר את כל הנתונים מטבלת Price וגם את הנתונים מטבלת Item
-        .eq('store_pk', storePK)  // פילטר לחנות
-        .ilike('item.item_name', itemName);  // חיפוש שם המוצר בטבלת Item עם התאמה רכה (case-insensitive)
-
-    if (error) {
-        console.error('Error fetching data:', error);
-        throw new Error('Error fetching data');
-    } else {
-        console.log('Price data:', data);
-        return data;  // מחזיר את המידע
-    }
-}
+     
+    async  getStoreItemByName(itemCode: string, storePks: string[]): Promise<Price[]> {
+        try {
+          const { data, error } = await this.supabase
+            .from('price')
+            .select('*')
+            .eq('item_code', itemCode);
+      
+          if (error) {
+            console.error(`Error fetching prices for itemCode: ${itemCode}`, error);
+            return [];
+          }
+      
+          if (!data || data.length === 0) {
+            console.log(`Item not found for itemCode: ${itemCode}`);
+            return [];
+          }
+      
+          // מסנן רק רשומות שה-store_pk שלהן בתוך storePks
+          const filtered = data.filter(row => storePks.includes(row.store_pk));
+      
+          if (filtered.length === 0) {
+            console.log(`No prices found in requested stores for itemCode: ${itemCode}`);
+            return [];
+          }
+      
+          // ממפה את הרשומות למבנה Price (בהנחה שיש לך פונקציה כזו)
+          const result = filtered.map(this.fromDbToPrice);
+      
+          return result;
+        } catch (e) {
+          console.error(`Unexpected error fetching prices for itemCode: ${itemCode}`, e);
+          return [];
+        }
+      }
+      
 }

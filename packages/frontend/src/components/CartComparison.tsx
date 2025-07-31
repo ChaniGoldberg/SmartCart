@@ -122,8 +122,10 @@ const CartComparison = () => {
                                 key={i}
                                 className={`flex justify-between items-center border-b pb-1 ${p.isMissing ? "text-red-500 line-through" : ""}`}
                               >
-                                <span className="text-right">{p.product.ProductName}</span>
+                                 <span className="text-right">{p.quantity}</span>
+                                <span className="text-right">{p.product.itemName}</span>
                                 <span className="text-left">{p.product.price.toFixed(2)} ₪</span>
+
                               </li>
                             ));
                           })()}
@@ -201,6 +203,7 @@ const CartComparison = () => {
                     {product.product.price.toFixed(2)} ₪
                   </span>
                   <span>{product.product.ProductName}</span>
+                  <span>{product.quantity}</span>
                 </li>
               ))}
             </ul>

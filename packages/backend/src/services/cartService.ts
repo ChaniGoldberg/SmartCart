@@ -64,7 +64,8 @@ export async function getRelevantPromotionsForCart(
         promo.promotionItemsCode.includes(item.itemCode)
       );
       const totalPromoQty = promoItemsInCart.reduce((sum, item) => sum + item.quantity, 0);
-
+ //
+ 
       if (totalPromoQty < promo.minQuantity || (promo.maxQuantity && totalPromoQty > promo.maxQuantity)) {
         return false;
       }
@@ -81,14 +82,19 @@ export async function getRelevantPromotionsForCart(
 export async function shoppingCartTotalSummary(shoppingCart: ProductCartDTO[]): Promise<number> {
 
   let totalPrice = 0
-  for (const item of shoppingCart) {
-    totalPrice += item.product.price * item.quantity;
-  }
+  
+    for (const item of shoppingCart) {
+      console.log(`product: ${item.product.itemCode}, price: ${item.product.price}, quantity: ${item.quantity}`);
+      totalPrice += item.product.price * item.quantity;
+    }
+    
+
+  
   return totalPrice
 }
 
 export async function getItemByItemCode(itemCode: string): Promise<Item | null> {
-  const item = db.Item.find(i => i.itemCode === itemCode);
+  const item = await ItemRepo.getItemByItemCode(itemCode);
   if (!item) {
     console.warn(`Item not found for itemCode: ${itemCode}`);
     return null;
@@ -108,6 +114,7 @@ export async function getProductwithPomotionPrice(shoppingCart: Price[], promoti
 
     const itemPrice = promotion?.discountedPrice ?? item.price;
     const itemDetails = await getItemByItemCode(item.itemCode);
+    
 
 
     productList.push({
@@ -116,7 +123,7 @@ export async function getProductwithPomotionPrice(shoppingCart: Price[], promoti
         priceId: item?.priceId ?? 0,
         ProductName: itemDetails?.itemName ?? "",
         storePK: item.storePK,
-        itemName: itemDetails?.itemName ?? "",
+        itemName:itemDetails?.itemName ?? itemDetails?.itemName ?? "",
         itemStatus: itemDetails?.itemStatus ?? false,
         manufacturerItemDescription: itemDetails?.manufacturerItemDescription ?? "",
         manufacturerName: itemDetails?.manufacturerName ?? "",
@@ -134,8 +141,8 @@ export async function getProductwithPomotionPrice(shoppingCart: Price[], promoti
   return productList;
 
 }
-export async function getStoreItemByName(storePK: string, itemName: string): Promise<Price | null> {
-  const storeItems = await priceRepo.getPriceByStorePK(storePK, itemName);
+export async function getStoreItemByName(itemCode: string, AllstorePK: string[]): Promise<Price[]> {
+  const storeItems = await priceRepo.getStoreItemByName(itemCode, AllstorePK);
 
-  return storeItems[0] || null;;
+  return storeItems;;
 }
