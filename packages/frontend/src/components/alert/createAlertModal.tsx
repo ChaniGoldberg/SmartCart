@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { ProductDTO } from '@smartcart/shared';
-import { StoreLocationDto } from '../../../../shared/src/dto/StoreLocation.dto';
+import { StoreLocationDto } from '@smartcart/shared';
 import ProductSearchAndSelection from './productSearchAndSelection';
 import StoreChainSelector from './storeChainSelector';
 import NotificationMethods from './notificationMethodSelector';

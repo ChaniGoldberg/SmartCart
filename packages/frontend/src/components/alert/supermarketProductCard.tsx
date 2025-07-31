@@ -1,7 +1,7 @@
 import React from "react";
 import { StoreLocationDto, ProductDTO } from "@smartcart/shared";
-import { Price } from "../../../../shared/src/price";
-import { Promotion } from "../../../../shared/src/promotion";
+import { Price } from "@smartcart/shared";
+import { Promotion } from "@smartcart/shared";
 
 export interface SupermarketProductData {
   store: StoreLocationDto;
