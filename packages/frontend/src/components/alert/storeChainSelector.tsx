@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { StoreLocationDto } from "../../../../shared/src/dto/StoreLocation.dto";
+import { StoreLocationDto } from "@smartcart/shared";
 import { ProductDTO } from "@smartcart/shared";
 
 export interface StoreChainSelectorProps {

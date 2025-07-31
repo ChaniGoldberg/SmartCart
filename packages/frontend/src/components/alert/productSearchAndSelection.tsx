@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ProductSearchResult } from './createAlertModal';
 import { ProductDTO } from '@smartcart/shared';
-import { StoreLocationDto } from '../../../../shared/src/dto/StoreLocation.dto';
+import { StoreLocationDto } from '@smartcart/shared';
 import { calculateDiscountPercentage } from './math';
 
 interface ProductSearchAndSelectionProps {

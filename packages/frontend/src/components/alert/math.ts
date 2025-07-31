@@ -1,7 +1,7 @@
 // packages/frontend/src/components/alert/math.ts
 
 import { ProductDTO } from '@smartcart/shared';
-import { StoreLocationDto } from '../../../../shared/src/dto/StoreLocation.dto';
+import { StoreLocationDto } from '@smartcart/shared';
 import { ProductSearchResult } from './createAlertModal'; // ✅ ייבוא ProductSearchResult
 
 // נתוני דמה למוצרים בכל החנויות.
