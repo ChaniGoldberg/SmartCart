@@ -5,7 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_URL,
-  timeout: 60000,
+  timeout: 70000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -30,13 +30,13 @@ export const searchProductApiService = {
     const response = await apiClient.post(`/searchProduct/${itemTxt}`, {
       storePKs: storePKs, // Send storePKs in the request body
     });
-    console.log("response", response);
+    console.log("response!!!!", response);
     if (response.status === 200) {
       return response.data.map((item: any) => ({
         itemCode: item.item_code,
         priceId: item.price_id,
         itemName: item.product_name,
-        storePK: item.storepk,
+        storePK: item.store_pk,
         manufacturerItemDescription: item.manufacturer_item_description,
         manufacturerName: item.manufacturer_name,
         price: item.price,
