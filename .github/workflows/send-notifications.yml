@@ -1,0 +1,28 @@
+name: Run Send Notification Script
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # כל יום ב-06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npx tsc
+
+      - name: Run Send Notification Script
+        run: node dist/packages/backend/scripts/sendNotification.js
